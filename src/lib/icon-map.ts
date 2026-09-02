@@ -1,0 +1,55 @@
+import {
+  ArrowRight,
+  Bot,
+  Calculator,
+  Check,
+  Clock,
+  Code,
+  DollarSign,
+  Gauge,
+  Globe,
+  HandHeart,
+  HeartHandshake,
+  LayoutDashboard,
+  Lightbulb,
+  Palette,
+  Shield,
+  ShoppingCart,
+  Smartphone,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  ArrowRight,
+  Bot,
+  Calculator,
+  Check,
+  Clock,
+  Code,
+  DollarSign,
+  Gauge,
+  Globe,
+  HandHeart,
+  HeartHandshake,
+  LayoutDashboard,
+  Lightbulb,
+  Palette,
+  Shield,
+  ShoppingCart,
+  Smartphone,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+};
+
+export function getIcon(name: string | null, fallback: LucideIcon = Globe): LucideIcon {
+  if (!name) return fallback;
+  return iconMap[name] ?? fallback;
+}

@@ -1,0 +1,126 @@
+# Mistravora
+
+> Mistravora is a Sri Lankan software company that builds high-performance websites, web platforms, e-commerce stores, business software, and AI-powered features for clients in Sri Lanka and worldwide. Founded and headquartered in Kurunegala, Sri Lanka. Serving clients globally including Dubai, UAE.
+
+## Identity
+
+- Legal name: Mistravora
+- Website: https://mistravora.com
+- Email: hello@mistravora.com
+- Phone/WhatsApp: +94 77 330 6063
+- Address: Paragahadeniya, Kurunegala, Sri Lanka
+- Coordinates: 7.421684, 80.466742
+- Business hours: Mon-Fri 9:00-18:00 (Asia/Colombo)
+- Type: Software development company
+- Specialization: Web platforms, business software, e-commerce, AI integration
+
+## What Mistravora Does
+
+Mistravora designs, builds, and maintains custom software products including:
+
+- **Custom Web Platforms** — High-performance marketing sites, portals, and web apps built on Next.js with strict performance budgets.
+- **Business Software** — Internal tools, dashboards, and workflow systems that replace spreadsheets and manual processes.
+- **E-Commerce** — Fast storefronts and ordering systems optimized for Sri Lankan and international customers.
+- **Mobile-Ready Products** — Progressive web apps that install like native apps and keep working on slow networks.
+- **AI-Powered Features** — Chat assistants, smart search, and automation grounded in your own business data.
+- **Care & Maintenance** — Ongoing support, monitoring, and iteration so your platform keeps improving after launch.
+
+## Services (Individual Service Pages)
+
+- [Custom Web Platforms](/solutions) — Next.js, React, TypeScript
+- [Business Software](/solutions) — Dashboards, portals, internal tools
+- [E-Commerce](/solutions) — Online stores, payment integration, inventory
+- [AI-Powered Features](/solutions) — Chat assistants, automation, data analysis
+- [SEO & Performance](/solutions) — Structured data, Core Web Vitals, technical SEO
+
+## Pricing
+
+- **Starter** (LKR 150k+) — 5-8 page marketing website, CMS, SEO, analytics, contact forms, 30 days support
+- **Growth** (LKR 400k+) — Everything in Starter plus calculators, blog, case studies, booking, automation, 90 days support
+- **Custom** (scoped quote) — Everything in Growth plus client portals, dashboards, AI features, dedicated delivery, ongoing partnership
+
+## Industries Served
+
+- [Retail & E-commerce](/industries/retail) — E-commerce platforms, POS integrations, inventory management
+- [Hospitality & Tourism](/industries/hospitality) — Booking systems, guest experience, operations management
+- [Healthcare](/industries/healthcare) — Patient portals, appointment scheduling, secure records
+- [Manufacturing](/industries/manufacturing) — Production tracking, supply chain, ERP modules
+
+## Case Studies (Proven Results)
+
+- [ShopMate — E-commerce Platform](/case-studies/shopmate-ecommerce-platform) — 65% increase in online orders, real-time inventory sync, POS integration
+- [Unic Motors — Service Management](/case-studies/unic-motors-service-management) — 50% reduction in missed appointments, automated SMS reminders
+- [Dubai Store — Online Store](/case-studies/dubai-store-online-store) — 30% of revenue from online, AI-powered search, multi-currency
+- [Assalafiya Book Shop — Bookstore Management](/case-studies/assalafiya-book-shop-management) — 80% reduction in inventory errors, barcode scanning
+- [TamDrill — Drilling Services Management](/case-studies/tamdrill-drilling-services-management) — 45% reduction in equipment downtime, conflict-free scheduling
+- [Amaluna Resorts — Booking System](/case-studies/amaluna-resorts-booking-system) — 70% increase in direct bookings, double bookings eliminated
+- [Wijesinghe Jewellers — Inventory & POS](/case-studies/wijesinghe-jewellers-inventory-pos) — 99% inventory accuracy, live gold rate tracking
+
+## Pages
+
+- [Home](/) — Company overview, value proposition, key statistics
+- [Solutions](/solutions) — Full service offerings with features, technologies, and pricing packages
+- [Industries](/industries) — Industry-specific solutions with challenges and approaches
+- [Pricing](/pricing) — Transparent pricing tiers, add-ons, and notes
+- [Projects / Case Studies](/case-studies) — Real client results with measurable outcomes
+- [Blog](/blog) — Insights on software development, web performance, and digital growth
+- [Research](/research) — Technical research articles and analysis
+- [About](/about) — Company story, team, core values
+- [Careers](/careers) — Open positions and company benefits
+- [Free Tools](/tools) — Cost calculator, ROI calculator, website audit
+- [Contact](/contact) — Get in touch via WhatsApp, phone, or email
+- [AI Assistant](/assistant) — Ask questions about Mistravora services
+
+## Free Tools
+
+- [Cost Calculator](/tools/cost-calculator) — Estimate the cost of your website, e-commerce store, or web app
+- [ROI Calculator](/tools/roi-calculator) — Calculate the return on investment for your software project
+- [Website Audit](/tools/website-audit) — Free automated audit of your website's performance, SEO, and accessibility
+
+## Tech Stack
+
+- Frontend: Next.js, React, TypeScript, Tailwind CSS, Three.js
+- Backend: Node.js, Supabase, PostgreSQL
+- AI: Anthropic Claude, OpenAI
+- Infrastructure: Cloudflare R2, Vercel, AWS S3
+- Monitoring: Sentry, PostHog
+- Payments: Stripe
+- Email: Resend
+
+## Key Differentiators
+
+- Performance-first engineering — sub-second load times, Core Web Vitals in green
+- Privacy-first defaults — GDPR-aware, data ownership
+- AI-powered — AI assistants and automation baked in where they create real leverage
+- Mobile-ready — touch-first layouts tested across devices
+- SEO-optimized — semantic markup, structured data, clean URLs
+- Sri Lanka-based, globally serving — clients in Sri Lanka, UAE, and beyond
+
+## API Endpoints (Machine-Readable)
+
+- [Services API](/api/services) — JSON list of all published solutions
+- [Company API](/api/company) — JSON with company identity, contact, social links
+- [Case Studies API](/api/case-studies) — JSON list of all published case studies
+- [Industries API](/api/industries) — JSON list of all industries with challenges and solutions
+- [Contact API](/api/contact) — JSON with contact information
+- [FAQs API](/api/faqs) — JSON list of all published FAQs
+
+## Social Media
+
+- LinkedIn: https://www.linkedin.com/company/mistravora
+- X (Twitter): https://x.com/mistravora
+- Facebook: https://facebook.com/mistravora
+- Instagram: https://instagram.com/mistravora
+- WhatsApp: https://wa.me/94773306063
+
+## Legal
+
+- [Privacy Policy](/policies/privacy-policy)
+- [Terms of Service](/policies/terms-of-service)
+- [Cookie Policy](/policies/cookie-policy)
+- [Refund Policy](/policies/refund-policy)
+
+## Sitemap
+
+- XML sitemap: https://mistravora.com/sitemap.xml
+- Robots: https://mistravora.com/robots.txt
