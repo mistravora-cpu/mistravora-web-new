@@ -15,10 +15,21 @@ export const metadata: Metadata = {
 };
 
 const brandColors = [
-  { name: "Primary", hex: "#6366f1", usage: "Buttons, links, accents" },
-  { name: "Dark Surface", hex: "#0a1118", usage: "Backgrounds, dark mode" },
-  { name: "Light Surface", hex: "#ffffff", usage: "Backgrounds, light mode" },
-  { name: "Foreground", hex: "#f8fafc", usage: "Text on dark backgrounds" },
+  { name: "Deep Night Blue", hex: "#050A10", usage: "Primary background — dark mode base" },
+  { name: "Pure Black", hex: "#000000", usage: "Max contrast backgrounds" },
+  { name: "Vibrant Cyan (Brand Blue)", hex: "#0099FF", usage: "Primary accent — buttons, links, highlights" },
+  { name: "Silver / Light Ash", hex: "#E0E0E0", usage: "Secondary text, borders, muted surfaces" },
+  { name: "Pure White", hex: "#FFFFFF", usage: "Light mode background, primary text on dark" },
+];
+
+const growthBluePalette = [
+  { name: "Midnight Navy", hex: "#0B1D3A" },
+  { name: "Dark Navy", hex: "#002855" },
+  { name: "Deep Blue", hex: "#003B73" },
+  { name: "Medium-Deep Blue", hex: "#004E92" },
+  { name: "Rich Cobalt Blue", hex: "#0055A4" },
+  { name: "Vibrant Ocean Blue", hex: "#0066C5" },
+  { name: "Vibrant Sapphire", hex: "#0077E6" },
 ];
 
 const assets = [
@@ -103,8 +114,15 @@ export default function BrandPage() {
 
         {/* Brand colors */}
         <ScrollReveal animation="fade-up" delay={200} className="mt-10">
-          <h2 className="text-xl font-semibold">Brand colors</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <h2 className="text-xl font-semibold">Primary brand colors</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            The core Mistravora palette:{" "}
+            <code className="text-xs">#050A10</code> +{" "}
+            <code className="text-xs">#0099FF</code> +{" "}
+            <code className="text-xs">#E0E0E0</code> +{" "}
+            <code className="text-xs">#FFFFFF</code>
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {brandColors.map((color) => (
               <div
                 key={color.name}
@@ -115,11 +133,35 @@ export default function BrandPage() {
                   style={{ backgroundColor: color.hex }}
                   aria-hidden
                 />
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-semibold">{color.name}</span>
                   <code className="text-xs text-muted-foreground">{color.hex}</code>
                 </div>
-                <p className="text-xs text-muted-foreground">{color.usage}</p>
+                <p className="text-xs leading-4 text-muted-foreground">{color.usage}</p>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+
+        {/* Growth Blue palette */}
+        <ScrollReveal animation="fade-up" delay={300} className="mt-8">
+          <h2 className="text-xl font-semibold">Growth Blue palette</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Extended blue scale for gradients, depth, and visual hierarchy.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-7">
+            {growthBluePalette.map((color) => (
+              <div
+                key={color.name}
+                className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-3"
+              >
+                <div
+                  className="h-12 w-full rounded-lg"
+                  style={{ backgroundColor: color.hex }}
+                  aria-hidden
+                />
+                <span className="text-xs font-semibold">{color.name}</span>
+                <code className="text-[10px] text-muted-foreground">{color.hex}</code>
               </div>
             ))}
           </div>
@@ -129,10 +171,12 @@ export default function BrandPage() {
         <ScrollReveal animation="fade-up" delay={300} className="mt-10">
           <h2 className="text-xl font-semibold">Usage guidelines</h2>
           <ul className="mt-4 flex flex-col gap-2 text-sm leading-6 text-muted-foreground">
+            <li>• Primary combination: <code className="text-xs">#050A10</code> (background) + <code className="text-xs">#0099FF</code> (accent) + <code className="text-xs">#E0E0E0</code> (muted) + <code className="text-xs">#FFFFFF</code> (text).</li>
+            <li>• Use <code className="text-xs">#0099FF</code> for buttons, links, and interactive highlights.</li>
             <li>• Use the SVG logo for web and digital applications whenever possible.</li>
             <li>• Maintain clear space around the logo equal to at least the logo height.</li>
             <li>• Do not stretch, rotate, or recolor the logo.</li>
-            <li>• For dark backgrounds, the logo&apos;s built-in styling works on any surface.</li>
+            <li>• For dark backgrounds, use <code className="text-xs">#050A10</code> as the base.</li>
             <li>• When referencing Mistravora in text, use &quot;Mistravora&quot; as a proper noun.</li>
           </ul>
         </ScrollReveal>

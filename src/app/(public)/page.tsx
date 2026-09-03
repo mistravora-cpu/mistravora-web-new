@@ -504,13 +504,13 @@ async function CaseStudiesTeaser() {
               <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col">
                 {/* Cover image or initials avatar */}
                 {cs.cover_image ? (
-                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted p-4">
                     <Image
                       src={cs.cover_image}
                       alt={`${cs.title} — ${cs.client}`}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                 ) : (

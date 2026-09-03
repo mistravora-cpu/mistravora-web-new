@@ -95,13 +95,13 @@ export default async function CaseStudyPage({
           </div>
 
           {cs.cover_image && (
-            <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl sm:h-96 lg:h-[28rem]">
+            <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-muted p-6 sm:h-96 lg:h-[28rem]">
               <Image
                 src={cs.cover_image}
                 alt={`${cs.title} — ${cs.client}`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 1024px"
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             </div>
@@ -128,14 +128,17 @@ export default async function CaseStudyPage({
           {cs.results.length > 0 && (
             <section className="mt-6">
               <h2 className="text-xl font-semibold">Results</h2>
-              <ul className="mt-3 flex flex-col gap-2">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {cs.results.map((result, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-foreground/90">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    {result}
-                  </li>
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 rounded-xl border border-border bg-card p-4"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <span className="text-sm leading-6 text-foreground/90">{result}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </section>
           )}
 

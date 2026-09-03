@@ -66,8 +66,8 @@ export async function ClientsMarquee() {
       </div>
 
       {/* Marquee — client logos/names */}
-      <div className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card/50 py-6 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-        <ul className="flex w-max animate-marquee gap-4">
+      <div className="relative mt-10 overflow-hidden rounded-2xl border border-border bg-card/50 py-8 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+        <ul className="flex w-max animate-marquee gap-6">
           {row.map((client, index) => {
             const link = client.demo_url || client.website_url;
             const isDuplicate = index >= clients.length;
@@ -75,20 +75,20 @@ export async function ClientsMarquee() {
               <li
                 key={index}
                 aria-hidden={isDuplicate}
-                className="group flex items-center gap-2.5 rounded-full border-2 border-primary/20 bg-card px-5 py-2.5 transition-colors hover:border-primary/40"
+                className="group flex items-center gap-3 rounded-full border-2 border-primary/20 bg-card px-6 py-3.5 transition-colors hover:border-primary/40"
               >
                 {client.logo ? (
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted p-1">
                     <Image
                       src={client.logo}
                       alt={`${client.name} official logo`}
-                      width={32}
-                      height={32}
-                      className="h-8 w-8 rounded-full object-cover"
+                      width={36}
+                      height={36}
+                      className="h-9 w-9 rounded-full object-contain"
                     />
                   </span>
                 ) : (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                     {client.name
                       .split(" ")
                       .map((word) => word[0])
@@ -96,19 +96,19 @@ export async function ClientsMarquee() {
                       .join("")}
                   </span>
                 )}
-                <span className="whitespace-nowrap text-base font-bold text-foreground">
+                <span className="whitespace-nowrap text-lg font-bold text-foreground">
                   {client.name}
                 </span>
                 {client.demo_url ? (
-                  <span className="flex items-center gap-0.5 text-[10px] font-medium text-primary">
-                    <Play aria-hidden className="h-3 w-3" />
+                  <span className="flex items-center gap-0.5 text-[11px] font-medium text-primary">
+                    <Play aria-hidden className="h-3.5 w-3.5" />
                     Demo
                   </span>
                 ) : null}
                 {link && !client.demo_url && client.website_url ? (
                   <ExternalLink
                     aria-hidden
-                    className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                    className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
                   />
                 ) : null}
               </li>
