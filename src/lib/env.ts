@@ -3,10 +3,11 @@ import { z } from "zod";
 /**
  * Environment variable validation.
  *
- * Public vars (NEXT_PUBLIC_*) are validated at build time and exposed to the
- * browser. Server-only vars are validated lazily — only when accessed by a
- * server route/action — so that builds don't fail when secrets aren't present
- * locally (e.g. during PR previews).
+ * Public vars (NEXT_PUBLIC_*) are validated lazily — only when accessed —
+ * so that builds don't fail when env vars aren't present during the build
+ * step (e.g. Vercel builds, PR previews, fresh clones).
+ *
+ * Server-only vars are also validated lazily via getter properties.
  */
 
 const publicEnvSchema = z.object({
@@ -14,9 +15,30 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
 });
 
-export const env = publicEnvSchema.parse({
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+type PublicEnv = z.infer<typeof publicEnvSchema>;
+
+/**
+ * Lazily-validated public env.
+ * Accessing a property triggers validation — if the env var is missing,
+ * a descriptive error is thrown. This prevents build-time failures when
+ * env vars aren't available (e.g. during `next build` on CI).
+ */
+function getPublicEnv(): PublicEnv {
+  return publicEnvSchema.parse({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
+}
+
+/**
+ * Public env accessor — validates on first access, not at import time.
+ * This allows the module to be imported during builds without env vars.
+ */
+export const env: PublicEnv = new Proxy({} as PublicEnv, {
+  get(_target, prop: string) {
+    const parsed = getPublicEnv();
+    return parsed[prop as keyof PublicEnv];
+  },
 });
 
 /**

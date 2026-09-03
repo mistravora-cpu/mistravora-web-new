@@ -94,13 +94,13 @@ export function ContactForm() {
 
       {/* Honeypot — hidden from humans, bots fill it */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor="website">Website</label>
         <input
           id="website"
           name="website"
           type="text"
           tabIndex={-1}
           autoComplete="off"
+          aria-label="Website"
         />
       </div>
 
