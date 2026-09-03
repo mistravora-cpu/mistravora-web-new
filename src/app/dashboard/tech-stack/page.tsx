@@ -30,7 +30,7 @@ export default async function TechStackAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Tech Stack</h1>
         <p className="text-sm text-muted-foreground">
-          Manage the technologies displayed in the tech stack section. Upload logos or use CDN URLs.
+          Manage the technologies displayed in the tech stack section. Use a CDN URL (e.g. https://cdn.simpleicons.org/react) or upload a logo image.
         </p>
       </div>
       <CrudManager

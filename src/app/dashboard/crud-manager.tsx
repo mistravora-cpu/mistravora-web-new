@@ -68,6 +68,7 @@ function ImageField({
   value: string;
   onChange: (name: string, value: unknown) => void;
 }) {
+  const [mode, setMode] = React.useState<"url" | "upload">("url");
   const [uploading, setUploading] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
@@ -100,17 +101,49 @@ function ImageField({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
+      {/* Toggle between URL and Upload modes */}
+      <div className="inline-flex w-fit rounded-lg border border-border bg-muted p-0.5">
+        <button
+          type="button"
+          onClick={() => setMode("url")}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+            mode === "url" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          URL
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+            mode === "upload" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          Upload
+        </button>
+      </div>
+
+      {mode === "url" ? (
         <input
           type="url"
           value={value}
           onChange={(e) => onChange(name, e.target.value)}
-          placeholder="https://... or upload below"
-          className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          placeholder="https://cdn.simpleicons.org/react"
+          className="h-9 rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
-        <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-          <span className="sr-only">Upload {label}</span>
+      ) : (
+        <label className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/50 px-4 text-sm text-muted-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors">
+          {uploading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Uploading…
+            </>
+          ) : (
+            <>
+              <Upload className="h-4 w-4" />
+              Click to upload image
+            </>
+          )}
           <input
             type="file"
             accept="image/*"
@@ -119,7 +152,7 @@ function ImageField({
             className="sr-only"
           />
         </label>
-      </div>
+      )}
 
       {uploadError ? (
         <p className="text-xs text-red-500">{uploadError}</p>
@@ -128,7 +161,7 @@ function ImageField({
       {value ? (
         <div className="relative h-32 w-full overflow-hidden rounded-lg border border-border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt={label} className="h-full w-full object-cover" />
+          <img src={value} alt={label} className="h-full w-full object-contain p-2" />
         </div>
       ) : null}
     </div>

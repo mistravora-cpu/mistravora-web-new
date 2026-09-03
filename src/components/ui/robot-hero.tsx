@@ -734,6 +734,20 @@ export function RobotHero({
     sombraBlur: 1.7,
   };
 
+  // Handle WebGL context loss — the browser can reclaim the GPU context
+  // at any time (tab switch, GPU driver update, too many contexts).
+  // We prevent the default (which would freeze the canvas) and let R3F
+  // restore the context automatically.
+  const handleCreated = (state: { gl: { domElement: HTMLCanvasElement } }) => {
+    const canvas = state.gl.domElement;
+    canvas.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault();
+    }, { once: false });
+    canvas.addEventListener("webglcontextrestored", () => {
+      // R3F handles restoration automatically — nothing extra needed
+    }, { once: false });
+  };
+
   return (
     <div className="relative w-full h-full">
       <Canvas
@@ -741,6 +755,7 @@ export function RobotHero({
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         dpr={[1, 1.5]}
         performance={{ min: 0.5 }}
+        onCreated={handleCreated}
       >
         <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
         <hemisphereLight args={["#ffffff", "#888888", 0.3]} />

@@ -1,88 +1,59 @@
-const base = "/tech";
-const icon = (slug: string) => `${base}/${slug}.svg`;
-const cdn = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
-const cdnIcon = (slug: string) => `${cdn}/${slug}`;
+// Fallback tech stack — used only when the database has no tech_stack rows.
+// Icons use Simple Icons CDN (https://simpleicons.org) and Iconify for brands
+// not available on Simple Icons. The database is the primary source.
+const si = (slug: string) => `https://cdn.simpleicons.org/${slug}`;
+const ic = (slug: string) => `https://api.iconify.design/logos:${slug}.svg`;
 
 export const techCategories = [
   {
     id: "frontend",
     label: "Frontend",
     items: [
-      { name: "React", icon: icon("react") },
-      { name: "Next.js", icon: icon("nextdotjs") },
-      { name: "TypeScript", icon: icon("typescript") },
-      { name: "Tailwind CSS", icon: icon("tailwindcss") },
+      { name: "React", icon: si("react") },
+      { name: "Next.js", icon: si("nextdotjs") },
+      { name: "TypeScript", icon: si("typescript") },
+      { name: "Tailwind CSS", icon: si("tailwindcss") },
     ],
   },
   {
     id: "backend",
     label: "Backend",
     items: [
-      { name: "Node.js", icon: icon("nodedotjs") },
-      { name: "Python", icon: icon("python") },
-      { name: "Express.js", icon: icon("express") },
-      { name: "REST APIs", icon: "" },
-    ],
-  },
-  {
-    id: "database",
-    label: "Databases",
-    items: [
-      { name: "PostgreSQL", icon: icon("postgresql") },
-      { name: "MySQL", icon: icon("mysql") },
-      { name: "MongoDB", icon: icon("mongodb") },
-      { name: "Supabase", icon: icon("supabase") },
+      { name: "Node.js", icon: si("nodedotjs") },
+      { name: "Supabase", icon: si("supabase") },
+      { name: "PostgreSQL", icon: si("postgresql") },
+      { name: "Zod", icon: si("zod") },
     ],
   },
   {
     id: "cloud",
     label: "Cloud & DevOps",
     items: [
-      { name: "Vercel", icon: icon("vercel") },
-      { name: "AWS", icon: icon("amazonaws") },
-      { name: "Cloudflare", icon: cdnIcon("cloudflare/cloudflare-original.svg") },
-      { name: "Docker", icon: icon("docker") },
-      { name: "GitHub", icon: icon("github") },
+      { name: "Vercel", icon: si("vercel") },
+      { name: "Cloudflare", icon: si("cloudflare") },
+      { name: "AWS S3", icon: ic("aws") },
+      { name: "Docker", icon: si("docker") },
+      { name: "GitHub Actions", icon: si("githubactions") },
     ],
   },
   {
     id: "ai",
     label: "AI",
     items: [
-      { name: "OpenAI", icon: cdnIcon("openai/openai-original.svg") },
-      { name: "Gemini", icon: "" },
-      { name: "Claude", icon: "" },
-      { name: "AI APIs", icon: "" },
-      { name: "AI Agents", icon: "" },
+      { name: "Anthropic Claude", icon: si("anthropic") },
+      { name: "OpenAI", icon: ic("openai") },
+      { name: "Three.js", icon: si("threedotjs") },
+      { name: "Framer Motion", icon: si("framer") },
     ],
   },
   {
-    id: "mobile",
-    label: "Mobile",
+    id: "tools",
+    label: "Tools & Monitoring",
     items: [
-      { name: "React Native", icon: icon("react") },
-      { name: "Expo", icon: cdnIcon("expo/expo-original.svg") },
-      { name: "Android", icon: cdnIcon("android/android-original.svg") },
-      { name: "iOS", icon: cdnIcon("apple/apple-original.svg") },
-    ],
-  },
-  {
-    id: "design",
-    label: "Design",
-    items: [
-      { name: "Figma", icon: icon("figma") },
-      { name: "Adobe", icon: cdnIcon("photoshop/photoshop-original.svg") },
-      { name: "Canva", icon: icon("canva") },
-    ],
-  },
-  {
-    id: "analytics",
-    label: "Analytics & Marketing",
-    items: [
-      { name: "Google Analytics", icon: cdnIcon("googleanalytics/googleanalytics-original.svg") },
-      { name: "Search Console", icon: "" },
-      { name: "Meta", icon: icon("meta") },
-      { name: "Google Ads", icon: icon("googleads") },
+      { name: "Stripe", icon: si("stripe") },
+      { name: "Redis", icon: si("redis") },
+      { name: "Sentry", icon: si("sentry") },
+      { name: "PostHog", icon: si("posthog") },
     ],
   },
 ] as const;
