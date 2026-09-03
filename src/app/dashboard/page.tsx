@@ -59,7 +59,7 @@ export default async function DashboardPage() {
 
   const statsData = [
     { label: "Solutions", count: solutions.length, href: "/dashboard/solutions", desc: "Services & offerings" },
-    { label: "Case Studies", count: caseStudies.length, href: "/dashboard/case-studies", desc: "Client success stories" },
+    { label: "Projects", count: caseStudies.length, href: "/dashboard/case-studies", desc: "Client success stories" },
     { label: "Blog Posts", count: posts.length, href: "/dashboard/blog", desc: "Articles & insights" },
     { label: "Inquiries", count: inquiries.length, href: "/dashboard/inquiries", desc: "Contact form submissions" },
     { label: "Job Openings", count: jobs.length, href: "/dashboard/careers", desc: "Active career posts" },
@@ -71,7 +71,7 @@ export default async function DashboardPage() {
   const quickActions = [
     { label: "Add Solution", href: "/dashboard/solutions", desc: "Create a new service offering" },
     { label: "Write Blog Post", href: "/dashboard/blog", desc: "Publish a new article" },
-    { label: "Add Case Study", href: "/dashboard/case-studies", desc: "Showcase client results" },
+    { label: "Add Project", href: "/dashboard/case-studies", desc: "Showcase client results" },
     { label: "Upload Media", href: "/dashboard/media", desc: "Upload images to R2 CDN" },
     { label: "Manage Pricing", href: "/dashboard/pricing", desc: "Update pricing tiers" },
     { label: "View Inquiries", href: "/dashboard/inquiries", desc: "Check new leads" },

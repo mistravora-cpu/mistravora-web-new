@@ -48,13 +48,13 @@ Mistravora designs, builds, and maintains custom software products including:
 
 ## Case Studies (Proven Results)
 
-- [ShopMate — E-commerce Platform](/case-studies/shopmate-ecommerce-platform) — 65% increase in online orders, real-time inventory sync, POS integration
-- [Unic Motors — Service Management](/case-studies/unic-motors-service-management) — 50% reduction in missed appointments, automated SMS reminders
-- [Dubai Store — Online Store](/case-studies/dubai-store-online-store) — 30% of revenue from online, AI-powered search, multi-currency
-- [Assalafiya Book Shop — Bookstore Management](/case-studies/assalafiya-book-shop-management) — 80% reduction in inventory errors, barcode scanning
-- [TamDrill — Drilling Services Management](/case-studies/tamdrill-drilling-services-management) — 45% reduction in equipment downtime, conflict-free scheduling
-- [Amaluna Resorts — Booking System](/case-studies/amaluna-resorts-booking-system) — 70% increase in direct bookings, double bookings eliminated
-- [Wijesinghe Jewellers — Inventory & POS](/case-studies/wijesinghe-jewellers-inventory-pos) — 99% inventory accuracy, live gold rate tracking
+- [ShopMate — E-commerce Platform](/projects/shopmate-ecommerce-platform) — 65% increase in online orders, real-time inventory sync, POS integration
+- [Unic Motors — Service Management](/projects/unic-motors-service-management) — 50% reduction in missed appointments, automated SMS reminders
+- [Dubai Store — Online Store](/projects/dubai-store-online-store) — 30% of revenue from online, AI-powered search, multi-currency
+- [Assalafiya Book Shop — Bookstore Management](/projects/assalafiya-book-shop-management) — 80% reduction in inventory errors, barcode scanning
+- [TamDrill — Drilling Services Management](/projects/tamdrill-drilling-services-management) — 45% reduction in equipment downtime, conflict-free scheduling
+- [Amaluna Resorts — Booking System](/projects/amaluna-resorts-booking-system) — 70% increase in direct bookings, double bookings eliminated
+- [Wijesinghe Jewellers — Inventory & POS](/projects/wijesinghe-jewellers-inventory-pos) — 99% inventory accuracy, live gold rate tracking
 
 ## Pages
 
@@ -62,7 +62,7 @@ Mistravora designs, builds, and maintains custom software products including:
 - [Solutions](/solutions) — Full service offerings with features, technologies, and pricing packages
 - [Industries](/industries) — Industry-specific solutions with challenges and approaches
 - [Pricing](/pricing) — Transparent pricing tiers, add-ons, and notes
-- [Projects / Case Studies](/case-studies) — Real client results with measurable outcomes
+- [Projects](/projects) — Real client results with measurable outcomes
 - [Blog](/blog) — Insights on software development, web performance, and digital growth
 - [Research](/research) — Technical research articles and analysis
 - [About](/about) — Company story, team, core values
@@ -100,7 +100,7 @@ Mistravora designs, builds, and maintains custom software products including:
 
 - [Services API](/api/services) — JSON list of all published solutions
 - [Company API](/api/company) — JSON with company identity, contact, social links
-- [Case Studies API](/api/case-studies) — JSON list of all published case studies
+- [Projects API](/api/projects) — JSON list of all published case studies
 - [Industries API](/api/industries) — JSON list of all industries with challenges and solutions
 - [Contact API](/api/contact) — JSON with contact information
 - [FAQs API](/api/faqs) — JSON list of all published FAQs

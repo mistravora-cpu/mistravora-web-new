@@ -48,7 +48,7 @@ const themes: Record<
     accent: "text-primary",
     icon: FileText,
   },
-  "case-studies": {
+  "projects": {
     glow: "bg-accent/20",
     pattern: "bg-grid",
     accent: "text-accent",

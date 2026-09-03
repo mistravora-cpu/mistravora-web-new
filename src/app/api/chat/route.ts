@@ -109,7 +109,7 @@ function localReply(message: string, ctx: DbContext): string {
       const list = ctx.caseStudies
         .map((caseStudy) => `• ${caseStudy.title}`)
         .join("\n");
-      return `Recent work:\n\n${list}\n\nSee /case-studies for the full stories.`;
+      return `Recent work:\n\n${list}\n\nSee /projects for the full stories.`;
     }
     return "Our case studies are being prepared — meanwhile, everything on this site (the calculators, the audit tool, this chat) is built by us and shows how we work. Ask us on WhatsApp for a walkthrough.";
   }

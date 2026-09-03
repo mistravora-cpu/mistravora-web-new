@@ -190,7 +190,7 @@ const _getCaseStudies = unstable_cache(
     const rows = await safeQuery(query);
     return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
   },
-  ["case-studies"],
+  ["projects"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 

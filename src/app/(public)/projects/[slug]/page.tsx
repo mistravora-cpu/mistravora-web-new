@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin, Building2, CheckCircle2 } from "lucide-react";
@@ -19,7 +20,7 @@ export async function generateMetadata({
   const cs = await getCaseStudyBySlug(slug);
   if (!cs) return { title: "Project not found" };
 
-  const url = `${site.url}/case-studies/${cs.slug}`;
+  const url = `${site.url}/projects/${cs.slug}`;
   return {
     title: cs.title,
     description: cs.outcome ?? cs.problem_statement ?? undefined,
@@ -52,10 +53,10 @@ export default async function CaseStudyPage({
   return (
     <article className="w-full px-4 py-16 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-3xl">
-        <Breadcrumbs items={[{ label: "Projects", href: "/case-studies" }, { label: cs.title }]} />
+        <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
-            <Link href="/case-studies">
+            <Link href="/projects">
               <ArrowLeft className="h-4 w-4" />
               Back to projects
             </Link>
@@ -94,12 +95,17 @@ export default async function CaseStudyPage({
           </div>
 
           {cs.cover_image && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={cs.cover_image}
-              alt={cs.title}
-              className="mt-8 h-64 w-full rounded-xl object-cover sm:h-80"
-            />
+            <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl sm:h-80">
+              <Image
+                src={cs.cover_image}
+                alt={cs.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="object-cover"
+                unoptimized
+                priority
+              />
+            </div>
           )}
 
           {cs.problem_statement && (

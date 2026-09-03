@@ -104,7 +104,7 @@ export default async function SolutionsPage() {
                 delay={i * 80}
                 className="shine-sweep hover-glow group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
               >
-                <Link href={`/case-studies/${cs.slug}`} className="flex flex-1 flex-col gap-2">
+                <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col gap-2">
                   <h3 className="font-semibold tracking-tight">{cs.title}</h3>
                   {cs.outcome && (
                     <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>

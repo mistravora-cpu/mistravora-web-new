@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import {
@@ -500,18 +501,18 @@ async function CaseStudiesTeaser() {
               delay={i * 80}
               className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
             >
-              <Link href={`/case-studies/${cs.slug}`} className="flex flex-1 flex-col">
+              <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col">
                 {/* Cover image or initials avatar */}
                 {cs.cover_image ? (
                   <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={cs.cover_image}
                       alt={`${cs.title} — ${cs.client}`}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      unoptimized
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 border-b border-border/50 p-5">
@@ -568,7 +569,7 @@ async function CaseStudiesTeaser() {
 
       <ScrollReveal animation="fade-up" delay={200} className="mt-8 text-center">
         <Button variant="outline" asChild className="ripple-click">
-          <Link href="/case-studies">
+          <Link href="/projects">
             View all projects
             <ArrowRight aria-hidden className="h-4 w-4" />
           </Link>

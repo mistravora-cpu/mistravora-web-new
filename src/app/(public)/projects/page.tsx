@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -12,19 +13,19 @@ export const metadata: Metadata = {
   title: "Projects",
   description:
     "Real results from Mistravora projects — measurable outcomes, not vanity screenshots.",
-  alternates: { canonical: `${site.url}/case-studies` },
+  alternates: { canonical: `${site.url}/projects` },
 };
 
 export default async function CaseStudiesPage() {
   const [hero, caseStudies] = await Promise.all([
-    getHeroSection("case-studies"),
+    getHeroSection("projects"),
     getCaseStudies(true),
   ]);
   const published = caseStudies.filter((cs) => cs.published && cs.status !== "archived");
 
   return (
     <>
-    <AnimatedHero hero={hero} page="case-studies" />
+    <AnimatedHero hero={hero} page="projects" />
     <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
       <PageHeader
         title="Our Projects"
@@ -37,18 +38,18 @@ export default async function CaseStudiesPage() {
             const initials = (cs.client || cs.title).split(" ").map((w) => w[0]).slice(0, 2).join("");
             return (
               <ScrollReveal key={cs.id} animation={i % 3 === 0 ? "flip-in" : i % 3 === 1 ? "elastic" : "clip-reveal"} delay={i * 80} className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10">
-                <Link href={`/case-studies/${cs.slug}`} className="flex flex-1 flex-col">
+                <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col">
                   {/* Cover image or logo */}
                   {cs.cover_image ? (
                     <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={cs.cover_image}
                         alt={`${cs.title} — ${cs.client}`}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     </div>
                   ) : (
                     <div className="relative flex items-center gap-3 border-b border-border/50 p-5">
