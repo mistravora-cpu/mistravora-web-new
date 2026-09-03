@@ -136,13 +136,13 @@ const researchMapping = {
 };
 
 const SOLUTION_SELECT =
-  "*, solution_features(feature), solution_technologies(technology), solution_services(service_name), solution_process_steps(step), solution_pricing_packages(package_name, timeline, solution_pricing_package_features(feature))";
+  "*, solution_features!solution_features_solution_id_fkey(feature), solution_technologies!solution_technologies_solution_id_fkey(technology), solution_services!solution_services_solution_id_fkey(service_name), solution_process_steps!solution_process_steps_solution_id_fkey(step), solution_pricing_packages(package_name, timeline, solution_pricing_package_features(feature))";
 const CASE_STUDY_SELECT = "*, case_study_results!case_study_results_case_study_id_fkey(result), case_study_technologies!case_study_technologies_case_study_id_fkey(technology)";
-const POST_SELECT = "*, post_tags(tag)";
-const INDUSTRY_SELECT = "*, industry_challenges(challenge), industry_solutions(solution)";
-const PRICING_TIER_SELECT = "*, pricing_tier_features(feature)";
-const DEMO_APP_SELECT = "*, demo_app_features(feature)";
-const RESEARCH_SELECT = "*, research_tags(tag)";
+const POST_SELECT = "*, post_tags!post_tags_post_id_fkey(tag)";
+const INDUSTRY_SELECT = "*, industry_challenges!industry_challenges_industry_id_fkey(challenge), industry_solutions!industry_solutions_industry_id_fkey(solution)";
+const PRICING_TIER_SELECT = "*, pricing_tier_features!pricing_tier_features_pricing_tier_id_fkey(feature)";
+const DEMO_APP_SELECT = "*, demo_app_features!demo_app_features_demo_app_id_fkey(feature)";
+const RESEARCH_SELECT = "*, research_tags!research_tags_research_id_fkey(tag)";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSolution(row: any): Solution {

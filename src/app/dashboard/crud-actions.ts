@@ -81,6 +81,48 @@ function isAllowedTable(table: string): boolean {
   return ALLOWED_TABLES.has(table);
 }
 
+// ─── Child table relationships ─────────────────────────────────────────
+// Maps parent table + field name → child table + foreign key column + value column.
+// When a "list" field is saved, these entries tell upsertRow to:
+//   1. Strip the field from the parent row data
+//   2. Sync the values into the child table (delete old, insert new)
+const CHILD_TABLES: Record<string, Record<string, {
+  childTable: string;
+  fkColumn: string;
+  valueColumn: string;
+}>> = {
+  case_studies: {
+    results: { childTable: "case_study_results", fkColumn: "case_study_id", valueColumn: "result" },
+    technologies: { childTable: "case_study_technologies", fkColumn: "case_study_id", valueColumn: "technology" },
+  },
+  solutions: {
+    features: { childTable: "solution_features", fkColumn: "solution_id", valueColumn: "feature" },
+    technologies: { childTable: "solution_technologies", fkColumn: "solution_id", valueColumn: "technology" },
+    services: { childTable: "solution_services", fkColumn: "solution_id", valueColumn: "service_name" },
+    process_steps: { childTable: "solution_process_steps", fkColumn: "solution_id", valueColumn: "step" },
+  },
+  posts: {
+    tags: { childTable: "post_tags", fkColumn: "post_id", valueColumn: "tag" },
+  },
+  industries: {
+    challenges: { childTable: "industry_challenges", fkColumn: "industry_id", valueColumn: "challenge" },
+    solutions: { childTable: "industry_solutions", fkColumn: "industry_id", valueColumn: "solution" },
+  },
+  pricing_tiers: {
+    features: { childTable: "pricing_tier_features", fkColumn: "pricing_tier_id", valueColumn: "feature" },
+  },
+  demo_apps: {
+    features: { childTable: "demo_app_features", fkColumn: "demo_app_id", valueColumn: "feature" },
+  },
+  research: {
+    tags: { childTable: "research_tags", fkColumn: "research_id", valueColumn: "tag" },
+  },
+};
+
+// Fields that are "list" type but are NOT child tables — they're real array columns
+// or text columns on the parent. These should be saved directly to the parent.
+// (Currently none — all list fields map to child tables.)
+
 // ─── Server actions ────────────────────────────────────────────────────
 export async function upsertRow(
   table: string,
@@ -92,15 +134,72 @@ export async function upsertRow(
 
   const supabase = await createClient();
 
+  // Separate child table data from parent table data.
+  // Child table fields (type "list" with a mapping in CHILD_TABLES) are
+  // stripped from the parent row and synced into their child tables after
+  // the parent row is saved.
+  const childMap = CHILD_TABLES[table] ?? {};
+  const parentData: Record<string, unknown> = {};
+  const childData: Record<string, string[]> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    if (childMap[key]) {
+      // This is a child table field — extract it
+      childData[key] = Array.isArray(value)
+        ? (value as string[])
+        : typeof value === "string"
+          ? value.split("\n").map((s) => s.trim()).filter(Boolean)
+          : [];
+    } else {
+      parentData[key] = value;
+    }
+  }
+
+  let parentId: string | undefined = id;
+
+  // Save parent row
   if (id) {
     const { error } = await supabase
       .from(table)
-      .update({ ...data, updated_at: new Date().toISOString() })
+      .update({ ...parentData, updated_at: new Date().toISOString() })
       .eq("id", id);
     if (error) return { error: error.message };
   } else {
-    const { error } = await supabase.from(table).insert(data);
+    const { data: inserted, error } = await supabase
+      .from(table)
+      .insert(parentData)
+      .select("id")
+      .single();
     if (error) return { error: error.message };
+    parentId = inserted?.id;
+  }
+
+  // Sync child tables
+  if (parentId && Object.keys(childData).length > 0) {
+    for (const [field, values] of Object.entries(childData)) {
+      const config = childMap[field];
+      if (!config) continue;
+
+      // Delete existing child rows
+      const { error: delError } = await supabase
+        .from(config.childTable)
+        .delete()
+        .eq(config.fkColumn, parentId);
+      if (delError) return { error: delError.message };
+
+      // Insert new child rows
+      if (values.length > 0) {
+        const rows = values.map((v, i) => ({
+          [config.fkColumn]: parentId,
+          [config.valueColumn]: v,
+          sort_order: i,
+        }));
+        const { error: insertError } = await supabase
+          .from(config.childTable)
+          .insert(rows);
+        if (insertError) return { error: insertError.message };
+      }
+    }
   }
 
   revalidatePath("/dashboard");
