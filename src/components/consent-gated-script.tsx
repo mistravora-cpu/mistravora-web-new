@@ -26,15 +26,23 @@ const subscribe = () => () => {};
 type ConsentGatedScriptProps = {
   category: "analytics" | "marketing";
   id: string;
-  strategy?: "afterInteractive" | "lazyOnload";
   src?: string;
   children?: React.ReactNode;
 };
 
+/**
+ * Consent-gated script renderer.
+ *
+ * For external scripts (with `src`): uses next/script which handles
+ * async loading and deduplication.
+ *
+ * For inline scripts: uses a plain <script> tag with dangerouslySetInnerHTML
+ * to avoid next/script's internal appendChild handling which causes
+ * "Unexpected identifier" errors during React streaming.
+ */
 export function ConsentGatedScript({
   category,
   id,
-  strategy = "afterInteractive",
   src,
   children,
 }: ConsentGatedScriptProps) {
@@ -43,13 +51,18 @@ export function ConsentGatedScript({
 
   if (!allowed) return null;
 
+  // External script — use next/script for async loading
   if (src) {
-    return <Script src={src} id={id} strategy={strategy} />;
+    return <Script src={src} id={id} strategy="afterInteractive" />;
   }
 
+  // Inline script — use dangerouslySetInnerHTML to avoid next/script
+  // appendChild issues during React streaming
+  const content = typeof children === "string" ? children : "";
   return (
-    <Script id={id} strategy={strategy}>
-      {children}
-    </Script>
+    <script
+      id={id}
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
   );
 }
