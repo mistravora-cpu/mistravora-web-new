@@ -40,9 +40,14 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: r2Hostname
-      ? [{ protocol: "https", hostname: r2Hostname }]
-      : [],
+    remotePatterns: [
+      // Cloudflare R2 — primary media storage
+      ...(r2Hostname ? [{ protocol: "https" as const, hostname: r2Hostname }] : []),
+      // External client logos/cover images that may be referenced in DB
+      { protocol: "https", hostname: "shopmateapp.com" },
+      { protocol: "https", hostname: "cdn.simpleicons.org" },
+      { protocol: "https", hostname: "api.iconify.design" },
+    ],
     formats: ["image/avif", "image/webp"],
   },
   poweredByHeader: false,

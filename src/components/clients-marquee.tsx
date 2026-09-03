@@ -1,15 +1,32 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ExternalLink, Play } from "lucide-react";
-import { getTrustedCompanies } from "@/lib/services";
+import { getTrustedCompanies, getCaseStudies } from "@/lib/services";
 import { clients as fallbackClients } from "@/lib/social-proof";
 
 export async function ClientsMarquee() {
-  const dbCompanies = await getTrustedCompanies(true);
+  const [dbCompanies, caseStudies] = await Promise.all([
+    getTrustedCompanies(true),
+    getCaseStudies(true),
+  ]);
+
+  // Build a map of client name → cover image from case studies
+  const caseStudyLogos = new Map<string, string>();
+  for (const cs of caseStudies) {
+    if (cs.cover_image && cs.client) {
+      // Only set if not already set (first match wins)
+      if (!caseStudyLogos.has(cs.client)) {
+        caseStudyLogos.set(cs.client, cs.cover_image);
+      }
+    }
+  }
+
   const companies = dbCompanies
     .filter((c) => c.published)
     .map((c) => ({
       name: c.name,
-      logo: c.logo,
+      // Use trusted_companies logo, or fall back to case study cover image
+      logo: c.logo || caseStudyLogos.get(c.name) || null,
       category: c.category,
       demo_url: c.demo_url,
       website_url: c.website_url,
@@ -61,15 +78,15 @@ export async function ClientsMarquee() {
                 className="group flex items-center gap-2.5 rounded-full border-2 border-primary/20 bg-card px-5 py-2.5 transition-colors hover:border-primary/40"
               >
                 {client.logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={client.logo}
-                    alt={`${client.name} logo`}
-                    loading="lazy"
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted">
+                    <Image
+                      src={client.logo}
+                      alt={`${client.name} official logo`}
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  </span>
                 ) : (
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
                     {client.name
@@ -113,11 +130,9 @@ export async function ClientsMarquee() {
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 {client.logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
+                  <Image
                     src={client.logo}
-                    alt={`${client.name} logo`}
-                    loading="lazy"
+                    alt={`${client.name} official logo`}
                     width={40}
                     height={40}
                     className="h-10 w-10 rounded-lg object-cover"
