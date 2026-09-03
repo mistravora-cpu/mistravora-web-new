@@ -85,13 +85,18 @@ export function NewsletterSignup({
         {/* Right — form */}
         <div className="flex w-full flex-col gap-3 lg:max-w-md">
           <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2.5 sm:flex-row">
+            <label htmlFor="newsletter-email" className="sr-only">
+              Email address
+            </label>
             <input
+              id="newsletter-email"
               type="email"
               required
               placeholder="you@business.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status === "loading"}
+              autoComplete="email"
               className="flex-1 rounded-xl border border-border bg-background/80 px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
             <Button type="submit" disabled={status === "loading"} className="shrink-0 ripple-click">

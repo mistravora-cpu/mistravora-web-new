@@ -12,7 +12,6 @@ export async function GtmNoscript() {
 
   return (
     <noscript>
-      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
       <iframe
         src={`https://www.googletagmanager.com/ns.html?id=${m.gtm_container_id}`}
         height="0"

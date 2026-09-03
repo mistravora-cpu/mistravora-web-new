@@ -137,7 +137,7 @@ const researchMapping = {
 
 const SOLUTION_SELECT =
   "*, solution_features(feature), solution_technologies(technology), solution_services(service_name), solution_process_steps(step), solution_pricing_packages(package_name, timeline, solution_pricing_package_features(feature))";
-const CASE_STUDY_SELECT = "*, case_study_results(result), case_study_technologies(technology)";
+const CASE_STUDY_SELECT = "*, case_study_results!case_study_results_case_study_id_fkey(result), case_study_technologies!case_study_technologies_case_study_id_fkey(technology)";
 const POST_SELECT = "*, post_tags(tag)";
 const INDUSTRY_SELECT = "*, industry_challenges(challenge), industry_solutions(solution)";
 const PRICING_TIER_SELECT = "*, pricing_tier_features(feature)";
