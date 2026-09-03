@@ -15,58 +15,14 @@ import * as React from "react";
  *
  * These errors don't affect user experience or our application —
  * they're internal measurement failures in third-party code.
- *
- * This component also patches PerformanceObserver to guard against
- * undefined entries, which prevents the root cause of many
- * web-vitals crashes.
  */
 export function ErrorGuard() {
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // ── 1. Patch PerformanceObserver to filter undefined entries ──
-    // The web-vitals library (bundled inside Clarity) crashes when
-    // PerformanceObserver callbacks receive undefined entries.
-    // This patch wraps the callback to filter them out.
-    if (typeof PerformanceObserver !== "undefined") {
-      const OrigPO = PerformanceObserver;
-      class PatchedPerformanceObserver extends OrigPO {
-        constructor(callback: PerformanceObserverCallback) {
-          const wrappedCallback: PerformanceObserverCallback = (
-            list: PerformanceObserverEntryList,
-            observer: PerformanceObserver
-          ) => {
-            // Guard: filter out any undefined/null entries
-            try {
-              const entries = list.getEntries();
-              if (!entries || entries.length === 0) return;
-              // Check for entries missing startTime (the root cause)
-              const hasValidEntries = entries.every(
-                (e) => e && typeof e.startTime === "number"
-              );
-              if (!hasValidEntries) return;
-            } catch {
-              return;
-            }
-            return callback(list, observer);
-          };
-          super(wrappedCallback);
-        }
-      }
-
-      // Preserve static methods (cast to bypass readonly)
-      (PatchedPerformanceObserver as unknown as {
-        supportedEntryTypes: typeof OrigPO.supportedEntryTypes;
-      }).supportedEntryTypes = OrigPO.supportedEntryTypes;
-
-      // Replace global PerformanceObserver
-      window.PerformanceObserver = PatchedPerformanceObserver as unknown as typeof PerformanceObserver;
-    }
-
-    // ── 2. Global error handler — suppress third-party script errors ──
+    // ── Global error handler — suppress third-party script errors ──
     const handleError = (event: ErrorEvent) => {
       const msg = event.message || "";
-      const filename = event.filename || "";
 
       // Clarity web-vitals crash
       if (msg.includes("startTime") && msg.includes("undefined")) {
@@ -75,7 +31,7 @@ export function ErrorGuard() {
       }
 
       // Clarity internal function call error
-      if (msg.includes("is not a function") && filename.includes("clarity")) {
+      if (msg.includes("is not a function") && (event.filename || "").includes("clarity")) {
         event.preventDefault();
         return;
       }
@@ -87,7 +43,7 @@ export function ErrorGuard() {
       }
     };
 
-    // ── 3. Global unhandledrejection handler ──
+    // ── Global unhandledrejection handler ──
     const handleRejection = (event: PromiseRejectionEvent) => {
       const reason = event.reason;
       if (reason instanceof TypeError) {

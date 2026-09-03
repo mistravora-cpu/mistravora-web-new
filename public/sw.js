@@ -1,4 +1,4 @@
-const CACHE = "mistravora-v3";
+const CACHE = "mistravora-v4";
 const OFFLINE = "/offline.html";
 
 // Precache only the offline fallback — everything else is cached on-demand.
