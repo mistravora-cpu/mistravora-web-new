@@ -99,17 +99,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} h-full antialiased`}
     >
-      <head>
-        {/* Preconnect to Supabase for faster client-side auth/API calls. */}
-        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
-          <>
-            <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
-            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
-          </>
-        )}
-      </head>
+      <head />
+
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {/* GTM noscript iframe — immediately after opening body tag */}
+        {/* GTM noscript iframe — immediately after opening body tag. */}
         <Suspense fallback={null}>
           <GtmNoscript />
         </Suspense>

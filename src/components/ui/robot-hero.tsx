@@ -1,15 +1,22 @@
 "use client";
 
-// Suppress the THREE.Clock deprecation warning emitted by R3F 9.7.0's
-// internal `new THREE.Clock()` call. Project code no longer uses Clock
-// directly — this filter removes the library-level noise until R3F ships
-// a stable release that uses THREE.Timer internally.
+// Suppress noisy Three.js console messages:
+// 1. THREE.Clock deprecation warning from R3F 9.7.0
+// 2. "THREE.WebGLRenderer: Context Lost." — this is a browser-level GPU
+//    event that we handle gracefully (preventDefault + R3F auto-restore).
+//    Three.js logs it as an error but it's not an actual application error.
 if (typeof window !== "undefined") {
   const origWarn = console.warn;
+  const origError = console.error;
   const clockWarning = /THREE\.Clock.*deprecated.*THREE\.Timer/;
+  const contextLost = /Context Lost/i;
   console.warn = (...args: unknown[]) => {
     if (args.length > 0 && typeof args[0] === "string" && clockWarning.test(args[0])) return;
     origWarn(...args);
+  };
+  console.error = (...args: unknown[]) => {
+    if (args.length > 0 && typeof args[0] === "string" && contextLost.test(args[0])) return;
+    origError(...args);
   };
 }
 
