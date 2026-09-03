@@ -189,7 +189,7 @@ export default async function AboutPage() {
         <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
           The journey so far
         </h2>
-        <ol className="mx-auto mt-10 flex max-w-3xl flex-col gap-0">
+        <ol className="mx-auto mt-10 flex max-w-6xl w-full flex-col gap-0">
           {timeline.map((milestone, index) => (
             <ScrollReveal key={milestone.title} animation="clip-reveal" delay={index * 120} className="relative flex gap-6 border-l-2 border-border pb-10 pl-8 last:pb-0">
               <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-primary ring-4 ring-primary/20" />
@@ -232,7 +232,7 @@ export default async function AboutPage() {
 
       {/* Team */}
       <div className="mt-20">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-6xl w-full text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Who&apos;s building Mistravora
           </h2>
@@ -341,7 +341,7 @@ export default async function AboutPage() {
 
     {/* Referral program */}
     <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
-      <ScrollReveal animation="scale-in" className="mx-auto max-w-2xl rounded-2xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-8 text-center backdrop-blur-md">
+      <ScrollReveal animation="scale-in" className="mx-auto max-w-6xl w-full rounded-2xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-8 text-center backdrop-blur-md">
         <div
           aria-hidden
           className="absolute -top-12 left-1/2 h-32 w-64 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"

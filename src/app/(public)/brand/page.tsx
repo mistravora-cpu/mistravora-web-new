@@ -59,7 +59,7 @@ const assets = [
 export default function BrandPage() {
   return (
     <div className="w-full px-4 py-16 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl w-full">
         <Breadcrumbs items={[{ label: "Brand Assets" }]} />
 
         <PageHeader

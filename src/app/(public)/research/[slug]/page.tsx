@@ -58,7 +58,7 @@ export default async function ResearchDetailPage({
           aria-hidden
           className="absolute -top-24 left-1/2 h-72 w-full max-w-xl -translate-x-1/2 animate-aurora rounded-full bg-primary/15 blur-3xl"
         />
-        <div className="relative mx-auto flex max-w-3xl flex-col gap-4 px-4 py-12 sm:px-8 sm:py-16">
+        <div className="relative mx-auto flex max-w-6xl w-full flex-col gap-4 px-4 py-12 sm:px-8 sm:py-16">
           <Breadcrumbs items={[{ label: "Research", href: "/research" }, { label: research.title }]} />
           <Link
             href="/research"
@@ -113,7 +113,7 @@ export default async function ResearchDetailPage({
       </section>
 
       {/* Body */}
-      <section className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-8">
+      <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-8">
         {research.cover_image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img

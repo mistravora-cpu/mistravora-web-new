@@ -53,7 +53,7 @@ export default async function BlogPostPage({
 
   return (
     <article className="w-full px-4 py-16 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-6xl w-full">
         <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">

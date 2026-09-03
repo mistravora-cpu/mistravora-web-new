@@ -101,7 +101,7 @@ export default async function ContactPage() {
         <ContactMap />
       </ScrollReveal>
 
-      <ScrollReveal animation="scale-in" className="mx-auto mt-16 w-full max-w-3xl">
+      <ScrollReveal animation="scale-in" className="mx-auto mt-16 w-full max-w-6xl">
         <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
           Before you ask
         </h2>
