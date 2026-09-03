@@ -472,22 +472,101 @@ async function SolutionsSection() {
 
 async function CaseStudiesTeaser() {
   const dbCaseStudies = await getCaseStudies(true);
-  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived").slice(0, 3);
+  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived").slice(0, 6);
 
   if (caseStudies.length === 0) return null;
 
   return (
-    <section className="w-full px-4 py-12 sm:px-8 lg:px-12">
-      <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-4 text-center">
+    <section data-cv="auto" className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-          Recent work
+          Powering digital success across Sri Lanka &amp; beyond
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          {caseStudies.length}+ projects delivered
+          Real products, <span className="text-gradient">real results</span>
         </h2>
         <p className="max-w-md text-sm leading-6 text-muted-foreground">
-          From Super Apps to ERP systems, POS platforms to corporate websites — see real results from real clients.
+          From e-commerce platforms to enterprise dashboards — every project we ship includes real metrics and measurable outcomes.
         </p>
+      </ScrollReveal>
+
+      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {caseStudies.map((cs, i) => {
+          const initials = (cs.client || cs.title).split(" ").map((w) => w[0]).slice(0, 2).join("");
+          return (
+            <ScrollReveal
+              key={cs.id}
+              animation={i % 3 === 0 ? "flip-in" : i % 3 === 1 ? "elastic" : "clip-reveal"}
+              delay={i * 80}
+              className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
+            >
+              <Link href={`/case-studies/${cs.slug}`} className="flex flex-1 flex-col">
+                {/* Cover image or initials avatar */}
+                {cs.cover_image ? (
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={cs.cover_image}
+                      alt={`${cs.title} — ${cs.client}`}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 border-b border-border/50 p-5">
+                    <span className="glow-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-sm font-bold text-primary ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-110">
+                      {initials}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{cs.client}</p>
+                      {cs.industry && (
+                        <p className="truncate text-xs text-foreground/60">{cs.industry}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Body */}
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                  {cs.cover_image && (
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold">{cs.client}</p>
+                      {cs.location && (
+                        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground/70">
+                          {cs.location}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <h3 className="text-base font-bold leading-tight tracking-tight">{cs.title}</h3>
+                  {cs.outcome && (
+                    <p className="text-sm leading-6 text-foreground/70">{cs.outcome}</p>
+                  )}
+                  {cs.results.length > 0 && (
+                    <ul className="flex flex-col gap-1.5">
+                      {cs.results.slice(0, 3).map((r, ri) => (
+                        <li key={ri} className="flex items-center gap-2 text-xs text-primary">
+                          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between border-t border-border/50 px-5 py-3">
+                  <span className="text-xs font-medium text-primary">View details</span>
+                  <ArrowRight aria-hidden className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            </ScrollReveal>
+          );
+        })}
+      </div>
+
+      <ScrollReveal animation="fade-up" delay={200} className="mt-8 text-center">
         <Button variant="outline" asChild className="ripple-click">
           <Link href="/case-studies">
             View all projects

@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const cs = await getCaseStudyBySlug(slug);
-  if (!cs) return { title: "Case study not found" };
+  if (!cs) return { title: "Project not found" };
 
   const url = `${site.url}/case-studies/${cs.slug}`;
   return {
@@ -57,7 +57,7 @@ export default async function CaseStudyPage({
           <Button asChild variant="ghost" size="sm" className="mb-6">
             <Link href="/case-studies">
               <ArrowLeft className="h-4 w-4" />
-              Back to case studies
+              Back to projects
             </Link>
           </Button>
 

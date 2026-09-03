@@ -41,9 +41,9 @@ export default async function CaseStudiesAdminPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold">Case Studies</h1>
+        <h1 className="text-2xl font-bold">Projects</h1>
         <p className="text-sm text-muted-foreground">
-          Client results with real, permission-backed metrics.
+          Manage client projects with real, permission-backed metrics. Upload a cover image for each project to showcase on the website.
         </p>
       </div>
       <CrudManager
