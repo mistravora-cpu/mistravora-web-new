@@ -16,7 +16,7 @@ const cspDirectives = [
   "media-src 'self'",
   "connect-src 'self' https://*.supabase.co https://mistravora.com https://www.google-analytics.com https://*.clarity.ms https://sc-static.net https://api.iconify.design",
   "frame-ancestors 'none'",
-  "frame-src 'self' https://www.google.com https://maps.google.com",
+  "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "form-action 'self'",
   "base-uri 'self'",
   "object-src 'none'",

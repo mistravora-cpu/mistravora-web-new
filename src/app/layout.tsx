@@ -11,6 +11,7 @@ import { HeaderScrollFx } from "@/components/header-scroll-fx";
 import { MarketingTags } from "@/components/marketing-tags";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
+import { GtmNoscript } from "@/components/gtm-noscript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -99,6 +100,10 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* GTM noscript iframe — immediately after opening body tag */}
+        <Suspense fallback={null}>
+          <GtmNoscript />
+        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
