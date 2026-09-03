@@ -12,6 +12,7 @@ import { MarketingTags } from "@/components/marketing-tags";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { GtmNoscript } from "@/components/gtm-noscript";
+import { ErrorGuard } from "@/components/error-guard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -102,6 +103,10 @@ export default function RootLayout({
       <head />
 
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Error guard — must run before any third-party scripts.
+            Suppresses Clarity/GTM web-vitals crashes and patches
+            PerformanceObserver against undefined entries. */}
+        <ErrorGuard />
         {/* GTM noscript iframe — immediately after opening body tag. */}
         <Suspense fallback={null}>
           <GtmNoscript />
