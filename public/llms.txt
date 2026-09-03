@@ -70,6 +70,7 @@ Mistravora designs, builds, and maintains custom software products including:
 - [Free Tools](/tools) — Cost calculator, ROI calculator, website audit
 - [Contact](/contact) — Get in touch via WhatsApp, phone, or email
 - [AI Assistant](/assistant) — Ask questions about Mistravora services
+- [Brand Assets](/brand) — Official logo, brand colors, and press kit
 
 ## Free Tools
 

@@ -148,8 +148,9 @@ export default async function AboutPage() {
 
       <div className="mt-10 flex animate-fade-in-up justify-center">
         <Image
-          src="/mistravoralogo.svg"
-          alt="Mistravora logo"
+          src="/assets/mistravora-logo.svg"
+          alt="Mistravora official company logo"
+          title="Mistravora"
           width={96}
           height={96}
           className="animate-float rounded-full"

@@ -10,8 +10,9 @@ export function SiteFooter() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <Image
-              src="/mistravoralogo.svg"
-              alt="Mistravora logo"
+              src="/assets/mistravora-logo.svg"
+              alt="Mistravora official company logo"
+              title="Mistravora"
               width={28}
               height={28}
               className="rounded-full"

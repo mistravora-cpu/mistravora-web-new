@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tools",
     "/contact",
     "/assistant",
+    "/brand",
     "/tools/cost-calculator",
     "/tools/roi-calculator",
     "/tools/website-audit",
@@ -35,6 +36,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: route === "/" ? "weekly" : "monthly",
     priority: route === "/" ? 1 : route === "/solutions" ? 0.9 : 0.7,
+    // Register the official logo image on the homepage for AI/image crawlers
+    ...(route === "/"
+      ? {
+          images: [`${site.url}/assets/mistravora-logo.svg`],
+        }
+      : {}),
   }));
 
   // Dynamic routes — published blog posts

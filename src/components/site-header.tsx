@@ -51,8 +51,9 @@ export function SiteHeader() {
           className="group flex shrink-0 items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Image
-            src="/mistravoralogo.svg"
-            alt="Mistravora logo"
+            src="/assets/mistravora-logo.svg"
+            alt="Mistravora official company logo"
+            title="Mistravora"
             width={32}
             height={32}
             className="rounded-full transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"

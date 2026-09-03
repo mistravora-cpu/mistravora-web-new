@@ -12,7 +12,11 @@ export function OrganizationJsonLd() {
         description: site.description,
         email: site.email,
         telephone: site.phone,
-        logo: `${site.url}/mistravoralogo.svg`,
+        logo: {
+          "@type": "ImageObject",
+          url: `${site.url}/assets/mistravora-logo.svg`,
+          caption: "Official Mistravora Logo",
+        },
         image: `${site.url}/android-chrome-512x512.png`,
         address: {
           "@type": "PostalAddress",
@@ -24,6 +28,12 @@ export function OrganizationJsonLd() {
           longitude: site.geo.lng,
         },
         priceRange: "$$",
+        sameAs: [
+          "https://github.com/mistravora",
+          "https://www.linkedin.com/company/mistravora",
+          "https://x.com/mistravora",
+          "https://web.facebook.com/people/Mistravora/61575779711385/",
+        ],
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "customer support",

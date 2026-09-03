@@ -54,15 +54,24 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Mistravora",
-    title: "Mistravora — Software Solutions & Digital Products",
+    title: "Mistravora | Software & Digital Solutions",
     description:
       "Mistravora builds high-performance software, web platforms, and digital products for ambitious businesses.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Mistravora Official Logo and Brand Identity",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mistravora — Software Solutions & Digital Products",
+    title: "Mistravora",
     description:
       "Mistravora builds high-performance software, web platforms, and digital products.",
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,
