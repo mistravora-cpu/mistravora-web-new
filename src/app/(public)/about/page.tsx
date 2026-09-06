@@ -210,7 +210,7 @@ export default async function AboutPage() {
             to the people who design and build your product.
           </p>
         </div>
-        <div className="mt-10 grid w-full gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto mt-10 grid w-full max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {team.map((member, i) => {
             const initials = member.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
             return (
@@ -220,22 +220,26 @@ export default async function AboutPage() {
 
                 {/* Avatar with gradient ring */}
                 <div className="relative">
-                  <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 opacity-60 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-primary/40 to-accent/30 opacity-60 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
                   {member.photo ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={member.photo}
                       alt={member.name}
-                      className="relative h-16 w-16 rounded-full object-cover ring-2 ring-background transition-transform duration-300 group-hover:scale-105"
+                      width={224}
+                      height={224}
+                      loading="lazy"
+                      decoding="async"
+                      className="relative h-44 w-44 rounded-2xl object-cover object-top ring-2 ring-background motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105 sm:h-56 sm:w-56"
                     />
                   ) : (
-                    <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-lg font-bold text-primary-foreground ring-2 ring-background transition-transform duration-300 group-hover:scale-105">
+                    <span className="relative flex h-44 w-44 items-center justify-center rounded-2xl sm:h-56 sm:w-56 bg-gradient-to-br from-primary to-primary/60 text-lg font-bold text-primary-foreground ring-2 ring-background transition-transform duration-300 group-hover:scale-105">
                       {initials}
                     </span>
                   )}
                 </div>
 
-                <h3 className="relative font-bold tracking-tight">{member.name}</h3>
+                <h3 className="relative text-xl font-bold tracking-tight">{member.name}</h3>
                 <p className="relative text-xs font-semibold uppercase tracking-wider text-primary">{member.role}</p>
                 <p className="relative text-sm leading-6 text-muted-foreground">
                   {member.bio}

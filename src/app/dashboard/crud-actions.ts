@@ -1,5 +1,6 @@
 "use server";
 
+import { normalizeResearchSlug } from "@/lib/research-slug";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { publicBusinessKeys } from "@/lib/business-profile-data";
 import { z } from "zod";
@@ -166,6 +167,12 @@ export async function upsertRow(
     } else {
       parentData[key] = value;
     }
+  }
+
+  if (table === "research" && "slug" in parentData) {
+    const slug = typeof parentData.slug === "string" ? normalizeResearchSlug(parentData.slug) : null;
+    if (!slug) return { error: "Use a research slug such as pwa-vs-native-apps (letters, numbers and hyphens)." };
+    parentData.slug = slug;
   }
 
   if (table === "contact_info") {

@@ -18,7 +18,7 @@ const columns: ColumnDef[] = [
 
 const fields: FieldDef[] = [
   { name: "title", label: "Title", required: true },
-  { name: "slug", label: "Slug", required: true, placeholder: "my-research" },
+  { name: "slug", label: "URL slug (no leading slash)", required: true, placeholder: "pwa-vs-native-apps" },
   { name: "summary", label: "Summary", type: "textarea", required: true },
   { name: "body", label: "Body (HTML)", type: "textarea" },
   { name: "category", label: "Category", placeholder: "Performance / AI / Security" },
