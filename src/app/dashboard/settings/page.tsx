@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getAdminSettings as getSettings } from "@/lib/services";
+import { PasswordForm } from "./password-form";
 import { SettingsEditor } from "./settings-editor";
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default async function SettingsAdminPage() {
           Manage the public business profile. Contact details are managed under Contact. Changes refresh cached public content.
         </p>
       </div>
+      <PasswordForm />
       <SettingsEditor groups={groups} initialData={initialData} />
     </div>
   );
