@@ -1,0 +1,40 @@
+[
+  {
+    "run": "robot-before",
+    "testedAt": "2026-09-06T12:28:30.225Z",
+    "url": "https://www.mistravora.com/",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "simulate",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "score": 98,
+    "lcpMs": 2009.045,
+    "tbtMs": 97.5,
+    "cls": 0
+  },
+  {
+    "run": "robot-slow-before",
+    "testedAt": "2026-09-06T12:29:35.300Z",
+    "url": "https://www.mistravora.com/",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "score": 92,
+    "lcpMs": 2564.224,
+    "tbtMs": 73.24000000000024,
+    "cls": 9.151866127870314e-05
+  }
+]

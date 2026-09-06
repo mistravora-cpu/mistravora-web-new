@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+import { smoothTowards } from "@/lib/animation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   AdditiveBlending,
@@ -474,10 +475,11 @@ function RobotPrototype({
     // Clamp so the robot's edges stay within the viewport width.
     const xLimit = Math.max(0, state.viewport.width / 2 - robotHalfWidth);
     const targetPosX = MathUtils.clamp(tx * xLimit * 0.6, -xLimit, xLimit);
-    bodyRef.current.position.x = MathUtils.lerp(
+    bodyRef.current.position.x = smoothTowards(
       bodyRef.current.position.x,
       targetPosX,
-      config.moveSpeed * dt,
+      config.moveSpeed,
+      dt,
     );
 
     // --- Y-axis movement ---
@@ -493,10 +495,11 @@ function RobotPrototype({
       basePosY - yRange,
       basePosY + yRange,
     );
-    bodyRef.current.position.y = MathUtils.lerp(
+    bodyRef.current.position.y = smoothTowards(
       bodyRef.current.position.y,
       targetPosY,
-      config.moveSpeed * dt,
+      config.moveSpeed,
+      dt,
     );
 
     const relativeX = tx - bodyRef.current.position.x / 2.5;
@@ -507,34 +510,39 @@ function RobotPrototype({
 
     const bodyTargetRotZ = -relativeX * 0.15;
 
-    bodyRef.current.rotation.y = MathUtils.lerp(
+    bodyRef.current.rotation.y = smoothTowards(
       bodyRef.current.rotation.y,
       bodyTargetRotY,
-      config.bodyRotSpeed * dt,
+      config.bodyRotSpeed,
+      dt,
     );
-    bodyRef.current.rotation.x = MathUtils.lerp(
+    bodyRef.current.rotation.x = smoothTowards(
       bodyRef.current.rotation.x,
       bodyTargetRotX,
-      config.bodyRotSpeed * dt,
+      config.bodyRotSpeed,
+      dt,
     );
-    bodyRef.current.rotation.z = MathUtils.lerp(
+    bodyRef.current.rotation.z = smoothTowards(
       bodyRef.current.rotation.z,
       bodyTargetRotZ,
-      config.bodyRotSpeed * dt,
+      config.bodyRotSpeed,
+      dt,
     );
 
     const headTargetRotY = relativeX * config.headLookY;
     const headTargetRotX = -ty * config.headLookX;
 
-    headRef.current.rotation.y = MathUtils.lerp(
+    headRef.current.rotation.y = smoothTowards(
       headRef.current.rotation.y,
       headTargetRotY,
-      config.headRotSpeed * dt,
+      config.headRotSpeed,
+      dt,
     );
-    headRef.current.rotation.x = MathUtils.lerp(
+    headRef.current.rotation.x = smoothTowards(
       headRef.current.rotation.x,
       headTargetRotX,
-      config.headRotSpeed * dt,
+      config.headRotSpeed,
+      dt,
     );
   });
 

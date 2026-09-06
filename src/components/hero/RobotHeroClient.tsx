@@ -82,13 +82,11 @@ export function RobotHeroClient() {
 
     const animate = () => {
       rafId = 0;
-      const previousX = currentX;
-      const previousY = currentY;
       // Smooth lerp toward cursor for fluid motion
       currentX += (targetX - currentX) * 0.12;
       currentY += (targetY - currentY) * 0.12;
       glow.style.transform = `translate(${currentX * 100}%, ${currentY * 100}%) translate(-50%, -50%)`;
-      if (currentX !== previousX || currentY !== previousY) {
+      if (Math.abs(targetX - currentX) > 0.0001 || Math.abs(targetY - currentY) > 0.0001) {
         rafId = requestAnimationFrame(animate);
       }
     };
