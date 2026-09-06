@@ -618,7 +618,7 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
 const publicResearch = unstable_cache(async (): Promise<Research[]> => {
   const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false }));
   return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
-}, ["public-research"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
+}, ["public-research-v2"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
 
 export async function getResearch(publishedOnly = false): Promise<Research[]> {
   if (publishedOnly) return publicResearch();
