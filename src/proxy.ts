@@ -7,12 +7,8 @@ export async function proxy(request: NextRequest) {
   if (!publicRoots.has(root) && !root.includes(".")) {
     return NextResponse.rewrite(new URL("/_not-found", request.url), { status: 404, headers: { "X-Robots-Tag": "noindex" } });
   }
-  if (request.nextUrl.hostname === "www.mistravora.com") {
-    const url = request.nextUrl.clone();
-    url.hostname = "mistravora.com";
-    url.protocol = "https:";
-    return NextResponse.redirect(url, 308);
-  }
+  // Vercel owns the primary-domain redirect. Redirecting hosts here can
+  // reverse its domain setting and create an apex <-> www redirect loop.
   // 1. Refresh Supabase session + enforce RBAC on /dashboard and /admin.
   const response = await updateSession(request);
 
