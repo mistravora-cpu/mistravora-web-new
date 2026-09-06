@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Globe, type LucideIcon } from "lucide-react";
@@ -11,12 +13,12 @@ import { getSolutions, getCaseStudies, getHeroSection } from "@/lib/services";
 import { site, solutions as fallbackSolutions } from "@/lib/site";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Solutions",
   description:
     "Custom web platforms, business software, e-commerce, and AI-powered features built by Mistravora.",
   alternates: { canonical: `${site.url}/solutions` },
-};
+});
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Globe);
@@ -70,7 +72,7 @@ export default async function SolutionsPage() {
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 transition-all group-hover:bg-primary/20 hover-icon-bounce">
                   <Icon aria-hidden className="h-5 w-5 text-primary" />
                 </span>
-                <h2 className="mt-4 text-lg font-semibold">{solution.title}</h2>
+                <h2 className="mt-4 text-lg font-semibold">{solution.id.startsWith("fallback-") ? solution.title : <Link href={`/solutions/${solution.slug}`}>{solution.title}</Link>}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {solution.short_description ?? solution.summary ?? solution.body ?? ""}
                 </p>
@@ -145,3 +147,5 @@ export default async function SolutionsPage() {
   );
 }
 
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

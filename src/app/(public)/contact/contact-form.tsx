@@ -1,6 +1,9 @@
 "use client";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { getAttribution } from "@/lib/attribution";
+import { trackEvent } from "@/lib/track-event";
 import { CheckCircle2 } from "lucide-react";
 import { submitInquiry, type InquiryState } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -11,11 +14,13 @@ const inputClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function ContactForm() {
+  const profile = useBusinessProfile();
   const [state, formAction, pending] = useActionState(
     submitInquiry,
     initialState
   );
 
+  useEffect(() => { if (state?.ok) trackEvent("generate_lead", { form_name: "contact" }); }, [state]);
   if (state?.ok) {
     return (
       <div
@@ -25,7 +30,7 @@ export function ContactForm() {
         <CheckCircle2 aria-hidden className="h-10 w-10 text-primary" />
         <h2 className="text-lg font-semibold">Message sent</h2>
         <p className="text-sm leading-6 text-muted-foreground">
-          Thanks for reaching out — we&apos;ll reply within one business day.
+          Thanks for reaching out. {profile.response}.
         </p>
       </div>
     );
@@ -33,7 +38,8 @@ export function ContactForm() {
 
   return (
     <form
-      action={formAction}
+      data-form-name="contact"
+      action={(data) => { data.set("attribution", getAttribution()); formAction(data); }}
       className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:p-6"
     >
       <div className="flex flex-col gap-1.5">
@@ -91,6 +97,13 @@ export function ContactForm() {
           className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </div>
+
+      <details className="rounded-lg border border-border p-4">
+        <summary className="cursor-pointer text-sm font-medium">Add project details (optional)</summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {[["company", "Company", "organization"], ["service", "Service or project type", "off"], ["budget", "Budget range (LKR)", "off"], ["timeline", "Desired timeline", "off"]].map(([name, label, autoComplete]) => <label key={name} className="flex flex-col gap-2 text-sm">{label}<input name={name} maxLength={100} autoComplete={autoComplete} className={inputClass} /></label>)}
+        </div>
+      </details>
 
       {/* Honeypot — hidden from humans, bots fill it */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">

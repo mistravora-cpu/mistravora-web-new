@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 export const alt = "Mistravora — Software Solutions & Digital Products";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -51,6 +50,8 @@ export default async function TwitterImage() {
         </div>
         <div
           style={{
+            display: "flex",
+            flexDirection: "column",
             fontSize: "56px",
             fontWeight: 800,
             lineHeight: 1.1,
@@ -58,9 +59,8 @@ export default async function TwitterImage() {
             maxWidth: "900px",
           }}
         >
-          Software Solutions
-          <br />
-          &amp; Digital Products
+          <span>Software Solutions</span>
+          <span>&amp; Digital Products</span>
         </div>
         <div
           style={{

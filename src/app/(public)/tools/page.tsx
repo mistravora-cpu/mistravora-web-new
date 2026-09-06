@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Bot, Calculator, Gauge, TrendingUp } from "lucide-react";
@@ -7,12 +9,12 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { site } from "@/lib/site";
 import { getHeroSection } from "@/lib/services";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Free Tools",
   description:
     "Free tools from Mistravora: project cost calculator, ROI calculator, and website audit — built to help you plan your next move.",
   alternates: { canonical: `${site.url}/tools` },
-};
+});
 
 const tools = [
   {
@@ -102,3 +104,5 @@ export default async function ToolsPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

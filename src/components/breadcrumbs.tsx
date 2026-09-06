@@ -1,3 +1,4 @@
+import { jsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
 
@@ -8,7 +9,7 @@ type Crumb = {
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   // Build JSON-LD BreadcrumbList structured data
-  const jsonLd = {
+  const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -33,7 +34,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
     <nav aria-label="Breadcrumb" className="mb-6">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbData) }}
       />
       <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
         <li>

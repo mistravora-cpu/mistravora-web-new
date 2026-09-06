@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { publicBusinessKeys } from "@/lib/business-profile-data";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
 // ─── Admin RBAC ────────────────────────────────────────────────────────
@@ -25,6 +27,12 @@ async function verifyAdmin() {
 // admin session can only mutate these explicitly-allowed tables.
 const ALLOWED_TABLES = new Set([
   // Parent content tables
+  "booking_slots",
+  "bookings",
+  "page_seo",
+  "email_campaigns",
+  "inquiries",
+  "newsletter_subscribers",
   "solutions",
   "case_studies",
   "posts",
@@ -91,6 +99,11 @@ const CHILD_TABLES: Record<string, Record<string, {
   fkColumn: string;
   valueColumn: string;
 }>> = {
+  services: {
+    features: { childTable: "service_features", fkColumn: "service_id", valueColumn: "feature" },
+    technologies: { childTable: "service_technologies", fkColumn: "service_id", valueColumn: "technology" },
+  },
+  knowledge_base: { tags: { childTable: "knowledge_base_tags", fkColumn: "knowledge_base_id", valueColumn: "tag" } },
   case_studies: {
     results: { childTable: "case_study_results", fkColumn: "case_study_id", valueColumn: "result" },
     technologies: { childTable: "case_study_technologies", fkColumn: "case_study_id", valueColumn: "technology" },
@@ -155,13 +168,22 @@ export async function upsertRow(
     }
   }
 
+  if (table === "contact_info") {
+    if (typeof parentData.email === "string" && !z.email().safeParse(parentData.email).success) return { error: "Provide a valid contact email." };
+    for (const key of ["phone", "whatsapp"]) {
+      if (parentData[key] && !/^[+\d\s()-]+$/.test(String(parentData[key]))) return { error: "Phone numbers may contain only digits, spaces, +, parentheses and hyphens." };
+    }
+  }
+  if (table === "bookings" && (!id || Object.keys(parentData).some(key => !["name", "email", "message", "status"].includes(key)))) return { error: "Bookings must be created through the booking form." };
+  if (table === "email_campaigns" && !["draft", "scheduled", "paused"].includes(String(parentData.status))) return { error: "Invalid campaign status" };
+  if (table === "email_campaigns" && parentData.status === "scheduled" && (!parentData.scheduled_at || !Number.isFinite(Date.parse(String(parentData.scheduled_at))))) return { error: "Provide a valid schedule before scheduling delivery." };
   let parentId: string | undefined = id;
 
   // Save parent row
   if (id) {
     const { error } = await supabase
       .from(table)
-      .update({ ...parentData, updated_at: new Date().toISOString() })
+      .update({ ...parentData, ...(table === "inquiries" ? {} : { updated_at: new Date().toISOString() }) })
       .eq("id", id);
     if (error) return { error: error.message };
   } else {
@@ -203,7 +225,7 @@ export async function upsertRow(
   }
 
   revalidatePath("/dashboard");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   revalidateTag("public-data", { expire: 0 });
   return { error: null };
 }
@@ -216,13 +238,14 @@ export async function deleteRow(table: string, id: string) {
   const { error } = await supabase.from(table).delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/dashboard");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   revalidateTag("public-data", { expire: 0 });
   return { error: null };
 }
 
 // Allowed setting keys — prevents arbitrary key injection.
 const ALLOWED_SETTING_KEYS = new Set([
+  ...publicBusinessKeys,
   // Marketing — analytics
   "gtm_container_id",
   "ga4_measurement_id",
@@ -232,7 +255,6 @@ const ALLOWED_SETTING_KEYS = new Set([
   "sentry_dsn",
   // Marketing — advertising
   "meta_pixel_id",
-  "meta_capi_token",
   "facebook_app_id",
   "google_ads_conversion_id",
   "google_ads_conversion_label",
@@ -281,7 +303,15 @@ const ALLOWED_SETTING_KEYS = new Set([
 export async function saveSettings(data: Record<string, string>) {
   if (!(await verifyAdmin())) return { error: "Unauthorized" };
 
-  // Filter to only allowed keys — reject arbitrary key injection.
+  if (Object.keys(data).some(key => !ALLOWED_SETTING_KEYS.has(key))) return { error: "Unsupported settings key. Secrets must be configured on the server." };
+  if (Object.values(data).some(value => typeof value !== "string" || value.length > 10000)) return { error: "Settings must be text of at most 10,000 characters." };
+  if (data.company_founded && !/^\d{4}-(0[1-9]|1[0-2])$/.test(data.company_founded)) return { error: "Use YYYY-MM for the founding date." };
+  if (data.site_email && !z.email().safeParse(data.site_email).success) return { error: "Provide a valid email address." };
+  // IDs are interpolated into scripts; reject executable punctuation at the write boundary.
+  for (const [key, value] of Object.entries(data)) {
+    if ((key.endsWith("_id") || key.endsWith("_label")) && value && !/^[A-Za-z0-9_./:-]+$/.test(value)) return { error: `Invalid identifier: ${key}` };
+  }
+  // Only approved public settings and supported marketing IDs may be stored.
   const filtered = Object.entries(data).filter(([key]) =>
     ALLOWED_SETTING_KEYS.has(key)
   );
@@ -297,7 +327,7 @@ export async function saveSettings(data: Record<string, string>) {
   const firstError = results.find((r) => r.error);
   if (firstError?.error) return { error: firstError.error.message };
   revalidatePath("/dashboard");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   revalidateTag("public-data", { expire: 0 });
   return { error: null };
 }

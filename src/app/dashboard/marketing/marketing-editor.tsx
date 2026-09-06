@@ -85,12 +85,6 @@ const groups: GroupDef[] = [
         placeholder: "123456789012345",
         help: "In Meta Events Manager → Data Sources → your pixel → find the Pixel ID (a long number). The full pixel code is generated automatically.",
       },
-      {
-        key: "meta_capi_token",
-        label: "Conversions API Token",
-        type: "password",
-        help: "In Meta Events Manager → Settings → Conversions API → Generate access token. This is optional — only needed for server-side event matching.",
-      },
     ],
   },
   {

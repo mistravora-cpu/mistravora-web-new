@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight, Bot, Sparkles } from "lucide-react";
@@ -24,6 +25,7 @@ const RobotHero = dynamic(
 );
 
 export function RobotHeroClient() {
+  const profile = useBusinessProfile();
   const sectionRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -46,12 +48,16 @@ export function RobotHeroClient() {
     }
 
     // Priority 2: fallback to a double-RAF + setTimeout to ensure paint.
-    const rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setTimeout(trigger, 800);
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let rafId = requestAnimationFrame(() => {
+      rafId = requestAnimationFrame(() => {
+        timeoutId = setTimeout(trigger, 800);
       });
     });
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   // Track cursor position and move the glow mask behind the text.
@@ -71,14 +77,20 @@ export function RobotHeroClient() {
       const rect = section.getBoundingClientRect();
       targetX = (e.clientX - rect.left) / rect.width;
       targetY = (e.clientY - rect.top) / rect.height;
+      if (!rafId) rafId = requestAnimationFrame(animate);
     };
 
     const animate = () => {
+      rafId = 0;
+      const previousX = currentX;
+      const previousY = currentY;
       // Smooth lerp toward cursor for fluid motion
       currentX += (targetX - currentX) * 0.12;
       currentY += (targetY - currentY) * 0.12;
       glow.style.transform = `translate(${currentX * 100}%, ${currentY * 100}%) translate(-50%, -50%)`;
-      rafId = requestAnimationFrame(animate);
+      if (currentX !== previousX || currentY !== previousY) {
+        rafId = requestAnimationFrame(animate);
+      }
     };
 
     section.addEventListener("mousemove", handleMove);
@@ -135,26 +147,23 @@ export function RobotHeroClient() {
         {/* Badge */}
         <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-4 py-1.5 text-xs font-medium text-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/30">
           <Sparkles aria-hidden className="h-3.5 w-3.5 text-primary" />
-          AI-powered software studio
+          {profile.tagline}
         </span>
 
         {/* H1 — primary SEO headline */}
         <h1 className="max-w-4xl text-3xl font-bold leading-[1.15] tracking-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)] sm:text-4xl lg:text-5xl">
-          We build{" "}
-          <span className="text-gradient">intelligent software</span> that
-          grows your business
+          {profile.headline}
         </h1>
 
         {/* Subheadline */}
         <p className="max-w-2xl text-sm leading-7 text-foreground/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7">
-          Mistravora crafts high-performance web platforms, custom dashboards,
-          and AI-driven tools for ambitious companies in Sri Lanka and worldwide.
+          {profile.intro}
         </p>
 
         {/* CTAs */}
         <div className="pointer-events-auto flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Button size="lg" asChild className="w-full sm:w-auto">
-            <Link href="/contact">
+            <Link prefetch={false} href="/contact">
               Start your project
               <ArrowRight aria-hidden className="h-4 w-4" />
             </Link>
@@ -165,7 +174,7 @@ export function RobotHeroClient() {
             asChild
             className="w-full bg-card/95 backdrop-blur-sm sm:w-auto"
           >
-            <Link href="/assistant">
+            <Link prefetch={false} href="/assistant">
               <Bot aria-hidden className="h-4 w-4" />
               Ask our AI
             </Link>
@@ -176,15 +185,15 @@ export function RobotHeroClient() {
         <div className="mt-1 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-foreground/75 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] sm:text-sm">
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            50+ projects delivered
+            {profile.availability}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            1-business-day response
+            {profile.response}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Next.js &amp; Supabase experts
+            {profile.industries}
           </span>
         </div>
       </div>

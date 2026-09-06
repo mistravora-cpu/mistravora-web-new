@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,12 +9,12 @@ import { PageHeader } from "@/components/page-header";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Brand Assets & Press Kit",
   description:
     "Official Mistravora logo, brand colors, and media assets for press, partners, and AI indexing.",
   alternates: { canonical: `${site.url}/brand` },
-};
+});
 
 const brandColors = [
   { name: "Deep Night Blue", hex: "#050A10", usage: "Primary background — dark mode base" },
@@ -63,6 +65,7 @@ export default function BrandPage() {
         <Breadcrumbs items={[{ label: "Brand Assets" }]} />
 
         <PageHeader
+          as="h1"
           title="Brand Assets & Press Kit"
           description="Official logo and brand assets for Mistravora. Download, reference, or embed these assets for press, partnerships, and directories."
         />
@@ -211,3 +214,5 @@ export default function BrandPage() {
     </div>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

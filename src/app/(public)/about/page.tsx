@@ -1,3 +1,6 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,12 +17,12 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { getHeroSection, getCoreValues, getTeamMembers } from "@/lib/services";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "About",
   description:
     "Mistravora is a Sri Lankan software company building fast, accessible, conversion-focused digital products.",
   alternates: { canonical: `${site.url}/about` },
-};
+});
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Zap);
@@ -114,29 +117,9 @@ const fallbackTeam = [
   },
 ];
 
-const timeline = [
-  {
-    year: "2025",
-    title: "The frustration",
-    description:
-      "We watched Sri Lankan businesses pay agency prices for slow, template websites that never converted. We knew it could be done better — and cheaper.",
-  },
-  {
-    year: "2025",
-    title: "First launches",
-    description:
-      "Our first builds went live: fast, honest, engineered with performance budgets. They outperformed sites that cost five times more.",
-  },
-  {
-    year: "2026",
-    title: "Mistravora today",
-    description:
-      "A full digital platform practice — websites, web apps, and AI features — engineered in Paragahadeniya, Kurunegala, serving clients everywhere.",
-  },
-] as const;
-
 export default async function AboutPage() {
-  const hero = await getHeroSection("about");
+  const [hero, profile] = await Promise.all([getHeroSection("about"), getBusinessProfile()]);
+  const timeline = [{ year: profile.founded, title: "Founded", description: `${profile.name} was founded by ${profile.founder} and co-founded by ${profile.cofounder}.` }];
   const [dbValues, dbTeam] = await Promise.all([getCoreValues(true), getTeamMembers(true)]);
   const values = dbValues.length > 0 ? dbValues : fallbackValues;
   const team = dbTeam.length > 0 ? dbTeam : fallbackTeam;
@@ -160,27 +143,13 @@ export default async function AboutPage() {
       {/* Story */}
       <ScrollReveal animation="slide-left" className="mt-16 grid w-full gap-8 lg:grid-cols-2">
         <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-          From Kurunegala to{" "}
-          <span className="gradient-text-flow">the world</span>
+          {profile.name}: <span className="gradient-text-flow">{profile.headline}</span>
         </h2>
         <div className="flex flex-col gap-4 text-sm leading-7 text-muted-foreground sm:text-base">
-          <p>
-            Mistravora started with a simple observation: businesses across Sri
-            Lanka were paying big-agency prices for websites that loaded
-            slowly, looked generic, and never turned visitors into customers.
-            The problem wasn&apos;t budget — it was how the work was done.
-          </p>
-          <p>
-            So we built a studio around a different idea: engineering-first
-            websites with strict performance budgets, honest pricing in LKR,
-            and direct access to the people actually doing the work. No account
-            managers, no telephone games, no surprise invoices.
-          </p>
-          <p>
-            Today we ship everything from marketing sites to full web platforms
-            and AI-powered features — for clients in Sri Lanka and around the
-            world. The tools on this very site? We built those too.
-          </p>
+          <p>{profile.story}</p>
+          <p>{profile.customers}</p>
+          <p>{profile.industries} {profile.coverage}</p>
+          <p>{profile.availability}. {profile.response}.</p>
         </div>
       </ScrollReveal>
 
@@ -366,3 +335,5 @@ export default async function AboutPage() {
   );
 }
 
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

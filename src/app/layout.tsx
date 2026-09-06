@@ -1,3 +1,4 @@
+import { getBusinessProfile } from "@/lib/business-profile";
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { Suspense } from "react";
@@ -11,20 +12,19 @@ import { HeaderScrollFx } from "@/components/header-scroll-fx";
 import { MarketingTags } from "@/components/marketing-tags";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
-import { GtmNoscript } from "@/components/gtm-noscript";
-import { ErrorGuard } from "@/components/error-guard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap",
+  // Avoid a late font swap moving the hero on slow connections.
+  display: "optional",
   preload: true,
   adjustFontFallback: true,
 });
 
 const siteUrl = "https://mistravora.com";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: "Mistravora — Software Solutions & Digital Products",
@@ -77,8 +77,17 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
   },
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const p = await getBusinessProfile();
+  return { ...baseMetadata, title: { default: `${p.name} — ${p.headline}`, template: `%s | ${p.name}` },
+    description: p.intro, authors: [{ name: p.name, url: p.url }], creator: p.name,
+    openGraph: { ...baseMetadata.openGraph, title: p.headline, description: p.intro, siteName: p.name },
+    twitter: { ...baseMetadata.twitter, title: p.name, description: p.intro } };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -103,14 +112,6 @@ export default function RootLayout({
       <head />
 
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {/* Error guard — must run before any third-party scripts.
-            Suppresses Clarity/GTM web-vitals crashes and patches
-            PerformanceObserver against undefined entries. */}
-        <ErrorGuard />
-        {/* GTM noscript iframe — immediately after opening body tag. */}
-        <Suspense fallback={null}>
-          <GtmNoscript />
-        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

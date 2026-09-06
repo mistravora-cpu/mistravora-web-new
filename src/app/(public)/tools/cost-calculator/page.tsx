@@ -1,14 +1,16 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { site } from "@/lib/site";
 import { CostCalculator } from "./cost-calculator";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Cost Calculator",
   description:
     "Estimate the cost of your website, e-commerce store, or web app in seconds — LKR or USD, with a WhatsApp quote hand-off.",
   alternates: { canonical: `${site.url}/tools/cost-calculator` },
-};
+});
 
 export default function CostCalculatorPage() {
   return (
@@ -24,3 +26,5 @@ export default function CostCalculatorPage() {
     </section>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

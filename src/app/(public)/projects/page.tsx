@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,12 +11,12 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { site } from "@/lib/site";
 import { getHeroSection, getCaseStudies } from "@/lib/services";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Projects",
   description:
     "Real results from Mistravora projects — measurable outcomes, not vanity screenshots.",
   alternates: { canonical: `${site.url}/projects` },
-};
+});
 
 export default async function CaseStudiesPage() {
   const [hero, caseStudies] = await Promise.all([
@@ -134,3 +136,5 @@ export default async function CaseStudiesPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

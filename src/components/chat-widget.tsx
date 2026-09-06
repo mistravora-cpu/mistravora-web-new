@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Bot, MessageCircle, Send, X } from "lucide-react";
-import { site } from "@/lib/site";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
 type Message = {
   role: "user" | "assistant";
@@ -16,6 +16,7 @@ const starterPrompts = [
 ];
 
 export function ChatWidget() {
+  const site = useBusinessProfile();
   const [open, setOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [input, setInput] = React.useState("");

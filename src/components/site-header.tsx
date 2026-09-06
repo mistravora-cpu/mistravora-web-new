@@ -96,7 +96,7 @@ export function SiteHeader() {
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ThemeToggle />
           <Button asChild size="sm" className="ripple-click shrink-0">
-            <Link href="/contact">Get in touch</Link>
+            <Link prefetch={false} href="/contact">Get in touch</Link>
           </Button>
 
           <div className="relative nav:hidden" data-mobile-menu>

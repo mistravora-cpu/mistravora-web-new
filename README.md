@@ -30,7 +30,7 @@
 
 ## Overview
 
-Mistravora is a full-stack Next.js application with a Supabase backend. The entire website is dynamic — content is managed through a custom admin dashboard and stored in a normalized PostgreSQL database with Row Level Security (RLS) on every table.
+Mistravora is a full-stack Next.js application with a Supabase backend. Public pages use cached server rendering, while content is managed through a custom admin dashboard and stored in a normalized PostgreSQL database with Row Level Security (RLS) on every table.
 
 ### Key Features
 
@@ -55,7 +55,7 @@ Mistravora is a full-stack Next.js application with a Supabase backend. The enti
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript 5 |
 | UI | React 19, Tailwind CSS 4, Lucide Icons |
-| 3D | Three.js, React Three Fiber, Drei |
+| 3D | Three.js r182, React Three Fiber |
 | Backend | Supabase (PostgreSQL, Auth, RLS, PostgREST) |
 | Validation | Zod 4 |
 | Media Storage | Cloudflare R2 (S3-compatible) |
@@ -63,6 +63,8 @@ Mistravora is a full-stack Next.js application with a Supabase backend. The enti
 | Email | Resend (optional) |
 | Theme | next-themes |
 | Deployment | Vercel |
+
+Three.js and `@types/three` are pinned to `0.182.0` while React Three Fiber 9.7 uses `THREE.Clock` internally. Three.js r183 deprecated that API; revisit the pins when Fiber migrates its clock. See [the upstream issue](https://github.com/pmndrs/react-three-fiber/issues/3741).
 
 ---
 
@@ -105,7 +107,6 @@ Mistravora-web/
 │   │   ├── chat-widget*.tsx       # Floating chat widget
 │   │   ├── clients-marquee.tsx    # Client logo marquee
 │   │   ├── faq.tsx                # FAQ accordion
-│   │   ├── floating-particles.tsx # Canvas particle effects
 │   │   ├── gradient-orbs.tsx      # Interactive gradient orbs
 │   │   ├── json-ld.tsx            # Structured data injector
 │   │   ├── newsletter-signup.tsx  # Newsletter form
@@ -528,3 +529,14 @@ vercel
 ## License
 
 Private — © Mistravora. All rights reserved.
+
+
+## Marketing platform and performance
+
+See [the 200-item coverage record](docs/marketing-coverage.md) for implemented capabilities, content requirements, and external setup. [Performance measurements](docs/performance.md) describe the exact test profiles and remaining limits.
+
+Apply migration `0039_marketing_platform.sql` to enable CRM qualification fields, booking slots/reservations, page SEO controls, email campaigns, and content revision history. The migration has been tested locally; it has not been applied to the remote project.
+
+For campaigns, configure `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TOKEN_SECRET` (32+ characters) and `CRON_SECRET` on the server. After reviewing a draft, schedule it in the dashboard. Configure your scheduler to call `GET /api/cron/campaigns` with `Authorization: Bearer <CRON_SECRET>`. Each invocation runs a bounded batch; monitor the delivery log before retrying failed or uncertain sends. No emails are sent by the test suite.
+
+Run `npm test` for regression tests and `npm run audit:content` against a running production server to audit published pages.

@@ -9,7 +9,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { site } from "@/lib/site";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
 const projectTypes = [
   {
@@ -79,6 +79,7 @@ const optionClass = (active: boolean) =>
   }`;
 
 export function PricingWizard() {
+  const site = useBusinessProfile();
   const [step, setStep] = React.useState(0);
   const [typeId, setTypeId] = React.useState<string | null>(null);
   const [selectedAddons, setSelectedAddons] = React.useState<string[]>([]);

@@ -1,0 +1,20 @@
+{
+  "project": "ghixwjdxzrovdmdzocxj",
+  "appliedAt": "2026-09-06T04:20:00.256Z",
+  "settings": 21,
+  "services": 11,
+  "heroes": 4,
+  "contactUpdated": true,
+  "founders": [
+    {
+      "name": "Husni",
+      "role": "Founder"
+    },
+    {
+      "name": "Shakeel",
+      "role": "Co-Founder"
+    }
+  ],
+  "backup": "business-before-2026-09-06T04-19-57-318Z.json",
+  "readBackVerified": true
+}

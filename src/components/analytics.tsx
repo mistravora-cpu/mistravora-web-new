@@ -1,96 +1,10 @@
 "use client";
 
 import * as React from "react";
-import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Cookie, X, Check } from "lucide-react";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
-const CONSENT_KEY = "mistravora-consent";
-const CONSENT_VERSION = 2;
-
-type ConsentChoice = {
-  version: number;
-  analytics: boolean;
-  marketing: boolean;
-  functional: boolean;
-  timestamp: string;
-};
-
-type Consent = ConsentChoice | null;
-
-function isCurrentConsent(value: unknown): value is ConsentChoice {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "version" in value &&
-    (value as ConsentChoice).version === CONSENT_VERSION
-  );
-}
-
-function loadConsent(): Consent {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(CONSENT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (isCurrentConsent(parsed)) return parsed;
-    if (raw === "accepted") {
-      return {
-        version: CONSENT_VERSION,
-        analytics: true,
-        marketing: true,
-        functional: true,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    if (raw === "declined") {
-      return {
-        version: CONSENT_VERSION,
-        analytics: false,
-        marketing: false,
-        functional: true,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-function saveConsent(choice: ConsentChoice) {
-  localStorage.setItem(CONSENT_KEY, JSON.stringify(choice));
-}
-
-/* ── Consent store (module-level, used with useSyncExternalStore) ── */
-let storedConsent: Consent = null;
-const consentListeners = new Set<() => void>();
-
-if (typeof window !== "undefined") {
-  storedConsent = loadConsent();
-}
-
-function subscribeConsent(cb: () => void) {
-  consentListeners.add(cb);
-  return () => {
-    consentListeners.delete(cb);
-  };
-}
-
-function getConsentSnapshot(): Consent {
-  return storedConsent;
-}
-
-function getConsentSSR(): Consent {
-  return null;
-}
-
-function setConsentValue(value: Consent) {
-  storedConsent = value;
-  consentListeners.forEach((l) => l());
-}
+import { CONSENT_VERSION, type ConsentChoice, isCurrentConsent, saveConsent, subscribeConsent, getConsentSnapshot, getConsentSSR, setConsentValue } from "@/lib/consent";
 
 const subscribe = () => () => {};
 
@@ -167,8 +81,18 @@ export function Analytics() {
     setShowSettings(true);
   };
 
+  React.useEffect(() => {
+    const open = () => {
+      const current = getConsentSnapshot();
+      if (current) { setAnalyticsEnabled(current.analytics); setMarketingEnabled(current.marketing); }
+      setShowSettings(true);
+    };
+    window.addEventListener("mistravora:cookie-settings", open);
+    return () => window.removeEventListener("mistravora:cookie-settings", open);
+  }, []);
+
   const hasConsent = consent !== null;
-  const analyticsAllowed = isCurrentConsent(consent) && consent.analytics;
+
 
   return (
     <>
@@ -280,31 +204,6 @@ export function Analytics() {
         </div>
       )}
 
-      {/* GA4 */}
-      {analyticsAllowed && GA_ID && (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-            strategy="afterInteractive"
-          />
-          <script
-            id="ga4-init"
-            dangerouslySetInnerHTML={{
-              __html: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA_ID}', { 'anonymize_ip': true });`,
-            }}
-          />
-        </>
-      )}
-
-      {/* Clarity */}
-      {analyticsAllowed && CLARITY_ID && (
-        <script
-          id="clarity-init"
-          dangerouslySetInnerHTML={{
-            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${CLARITY_ID}");`,
-          }}
-        />
-      )}
     </>
   );
 }

@@ -1,9 +1,10 @@
 import { MapPin, ExternalLink, Navigation } from "lucide-react";
-import { site } from "@/lib/site";
+import { getBusinessProfile } from "@/lib/business-profile";
 
-export function ContactMap() {
-  const { lat, lng } = site.geo;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+export async function ContactMap() {
+  const site = await getBusinessProfile();
+  const location = encodeURIComponent(site.address);
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location}`;
 
   return (
     <div className="hover-glow group overflow-hidden rounded-xl border border-border transition-all duration-300">
@@ -15,7 +16,7 @@ export function ContactMap() {
         />
         <iframe
           title="Mistravora location on Google Maps"
-          src={`https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`}
+          src={`https://www.google.com/maps?q=${location}&z=6&output=embed`}
           className="absolute left-0 top-0 h-[340px] w-full border-0 transition-transform duration-500 group-hover:scale-[1.02]"
           style={{ pointerEvents: "none" }}
           loading="lazy"
@@ -48,7 +49,7 @@ export function ContactMap() {
               Directions
             </a>
             <a
-              href={`https://www.google.com/maps?q=${lat},${lng}`}
+              href={`https://www.google.com/maps?q=${location}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hover-underline inline-flex items-center gap-1 text-xs font-medium text-primary"

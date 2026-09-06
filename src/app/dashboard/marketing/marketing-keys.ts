@@ -6,7 +6,6 @@ export const marketingKeys: string[] = [
   "sentry_dsn",
   "logrocket_id",
   "meta_pixel_id",
-  "meta_capi_token",
   "google_ads_conversion_id",
   "google_ads_conversion_label",
   "google_remarketing_tag_id",

@@ -1,3 +1,7 @@
+import { jsonLd, withSocialMetadata } from "@/lib/seo";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { ShareButton } from "@/components/share-button";
+import { RelatedContent } from "@/components/related-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,7 +12,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -20,7 +24,7 @@ export async function generateMetadata({
   if (!research) return { title: "Research not found" };
 
   const url = `${site.url}/research/${slug}`;
-  return {
+  return applySeoOverrides(withSocialMetadata({
     title: research.title,
     description: research.summary,
     alternates: { canonical: url },
@@ -37,7 +41,7 @@ export async function generateMetadata({
       description: research.summary,
       images: research.cover_image ? [research.cover_image] : undefined,
     },
-  };
+  }));
 }
 
 export default async function ResearchDetailPage({
@@ -51,6 +55,7 @@ export default async function ResearchDetailPage({
 
   return (
     <article className="flex flex-1 flex-col">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "Article", headline: research.title, name: research.title, description: research.summary, url: `${site.url}/research/${research.slug}`, dateModified: research.updated_at, datePublished: research.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
       {/* Header */}
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="aurora-bg absolute inset-0" />
@@ -143,6 +148,7 @@ export default async function ResearchDetailPage({
           </Button>
         </ScrollReveal>
       </section>
+      <div className="mx-auto mt-8 max-w-6xl"><ShareButton title={research.title} /><RelatedContent currentPath={`/research/${research.slug}`} title={research.title} /></div>
     </article>
   );
 }

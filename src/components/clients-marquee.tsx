@@ -82,9 +82,9 @@ export async function ClientsMarquee() {
                     <Image
                       src={client.logo}
                       alt={`${client.name} official logo`}
-                      width={36}
+                      width={32}
                       height={36}
-                      className="h-9 w-9 rounded-full object-contain"
+                      className="h-9 w-8 shrink-0 rounded-full object-contain"
                     />
                   </span>
                 ) : (

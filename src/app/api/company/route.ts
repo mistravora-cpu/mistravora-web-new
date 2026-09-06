@@ -1,60 +1,15 @@
 import { NextResponse } from "next/server";
-import { getContactInfo, getSocialMedia, getSettings } from "@/lib/services";
-import { site } from "@/lib/site";
-
+import { getBusinessProfile } from "@/lib/business-profile";
+import { getSocialMedia } from "@/lib/services";
 export const revalidate = 300;
-
-// AI agent API: /api/company
-// Returns structured company information for AI consumption.
 export async function GET() {
-  const [contactInfo, socialMedia, settings] = await Promise.all([
-    getContactInfo(),
-    getSocialMedia(true),
-    getSettings(),
-  ]);
-
-  const settingsMap = new Map(settings.map((s) => [s.key, s.value]));
-
-  return NextResponse.json({
-    name: site.name,
-    legal_name: site.name,
-    url: site.url,
-    tagline: settingsMap.get("site_tagline") ?? "Software Solutions & Digital Products",
-    description: "Mistravora is a software company in Sri Lanka building high-performance web platforms, custom dashboards, and AI-driven tools for ambitious companies worldwide.",
-    email: contactInfo?.email ?? site.email,
-    phone: contactInfo?.phone ?? site.phone,
-    whatsapp: contactInfo?.whatsapp ?? site.whatsapp,
-    address: contactInfo?.address ?? site.address,
-    geo: {
-      latitude: site.geo.lat,
-      longitude: site.geo.lng,
-    },
-    business_hours: settingsMap.get("business_hours") ?? "Mon-Fri 9:00-18:00",
-    timezone: settingsMap.get("timezone") ?? "Asia/Colombo",
-    social_profiles: socialMedia.map((s) => ({
-      platform: s.platform,
-      url: s.url,
-    })),
-    areas_served: ["Sri Lanka", "Worldwide (remote)"],
-    founded: "2019",
-    type: "Software Company",
-    services: [
-      "Web Development",
-      "Software Development",
-      "AI Development",
-      "Mobile App Development",
-      "ERP Development",
-      "POS Development",
-      "CRM Development",
-      "UI/UX Design",
-      "Digital Marketing",
-      "SEO",
-      "Cloud Solutions",
-    ],
-  }, {
-    headers: {
-      "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
-      "Content-Type": "application/json",
-    },
-  });
+  const [profile, social] = await Promise.all([getBusinessProfile(), getSocialMedia(true)]);
+  return NextResponse.json({ name: profile.name, url: profile.url, description: profile.description,
+    tagline: profile.tagline, founder: profile.founder, cofounder: profile.cofounder, founded: profile.founded,
+    type: "Digital Solutions Company", email: profile.email, phone: profile.phone, whatsapp: profile.whatsapp,
+    address: profile.address, business_hours: profile.availability, response_expectation: profile.response,
+    timezone: profile.timezone, areas_served: profile.coverage, customer_types: profile.customers,
+    industries: profile.industries, services: profile.offering.split("\n").filter(Boolean),
+    social_profiles: social.map(s => ({ platform: s.platform, url: s.url }))
+  }, { headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" } });
 }

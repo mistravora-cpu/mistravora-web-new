@@ -1,3 +1,5 @@
+import { withSocialMetadata } from "@/lib/seo";
+import { applySeoOverrides } from "@/lib/seo-overrides";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 import { Globe, type LucideIcon } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Globe);
@@ -34,7 +36,7 @@ export async function generateMetadata({
   if (!industry) return { title: "Industry not found" };
 
   const url = `${site.url}/industries/${industry.slug}`;
-  return {
+  return applySeoOverrides(withSocialMetadata({
     title: `${industry.title} — Software Solutions`,
     description: industry.summary ?? industry.description ?? undefined,
     alternates: { canonical: url },
@@ -45,7 +47,7 @@ export async function generateMetadata({
       description: industry.summary ?? industry.description ?? undefined,
       images: industry.image ? [{ url: industry.image }] : undefined,
     },
-  };
+  }));
 }
 
 export default async function IndustryPage({

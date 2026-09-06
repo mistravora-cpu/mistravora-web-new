@@ -1,6 +1,8 @@
-import { site } from "@/lib/site";
+import { jsonLd } from "@/lib/seo";
+import { getBusinessProfile } from "@/lib/business-profile";
 
-export function OrganizationJsonLd() {
+export async function OrganizationJsonLd() {
+  const site = await getBusinessProfile();
   const data = {
     "@context": "https://schema.org",
     "@graph": [
@@ -22,11 +24,10 @@ export function OrganizationJsonLd() {
           "@type": "PostalAddress",
           addressCountry: "LK",
         },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: site.geo.lat,
-          longitude: site.geo.lng,
-        },
+        foundingDate: site.founded,
+        founder: [{ "@type": "Person", name: site.founder }, { "@type": "Person", name: site.cofounder }],
+        areaServed: site.coverage,
+        knowsAbout: site.offering.split("\n").filter(Boolean),
         priceRange: "$$",
         sameAs: [
           "https://github.com/mistravora",
@@ -36,7 +37,8 @@ export function OrganizationJsonLd() {
         ],
         contactPoint: {
           "@type": "ContactPoint",
-          contactType: "customer support",
+          contactType: "enquiries",
+          description: `${site.availability}. ${site.response}.`,
           email: site.email,
           telephone: site.phone,
           availableLanguage: ["en"],
@@ -50,48 +52,18 @@ export function OrganizationJsonLd() {
         publisher: { "@id": `${site.url}/#organization` },
         potentialAction: {
           "@type": "SearchAction",
-          target: `${site.url}/blog?q={search_term_string}`,
+          target: `${site.url}/search?q={search_term_string}`,
           "query-input": "required name=search_term_string",
         },
       },
       {
         "@type": "Service",
         "@id": `${site.url}/#service`,
-        name: "Software Development & Digital Products",
+        name: site.headline,
         provider: { "@id": `${site.url}/#organization` },
-        serviceType: "Software Development",
-        areaServed: { "@type": "Country", name: "Sri Lanka" },
+        serviceType: site.offering.split("\n").filter(Boolean),
+        areaServed: site.coverage,
         url: site.url,
-      },
-      {
-        "@type": "FAQPage",
-        "@id": `${site.url}/#faq`,
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "What services does Mistravora offer?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Mistravora builds custom web platforms, business software, e-commerce solutions, and AI-powered features for businesses in Sri Lanka and worldwide.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How can I contact Mistravora?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `You can reach us at ${site.email} or ${site.phone}.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Where is Mistravora located?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Mistravora is based in Sri Lanka, serving clients locally and worldwide.",
-            },
-          },
-        ],
       },
     ],
   };
@@ -99,7 +71,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: jsonLd(data) }}
     />
   );
 }

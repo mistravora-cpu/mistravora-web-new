@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Mail, CheckCircle2, Loader2, ArrowRight, Sparkles } from "lucide-react";
+import { trackEvent } from "@/lib/track-event";
 import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "mistravora-newsletter";
@@ -17,10 +18,11 @@ export function NewsletterSignup({
 }) {
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
-  const [alreadySubscribed] = React.useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(STORAGE_KEY) !== null;
-  });
+  const alreadySubscribed = React.useSyncExternalStore(
+    () => () => {},
+    () => { try { return localStorage.getItem(STORAGE_KEY) !== null; } catch { return false; } },
+    () => false,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +38,8 @@ export function NewsletterSignup({
 
       if (!res.ok) throw new Error("Failed");
 
-      localStorage.setItem(STORAGE_KEY, "1");
+      try { localStorage.setItem(STORAGE_KEY, "1"); } catch {}
+      trackEvent("newsletter_signup");
       setStatus("success");
       setEmail("");
     } catch {

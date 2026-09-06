@@ -1,14 +1,16 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { site } from "@/lib/site";
 import { Chat } from "./chat";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "AI Assistant",
   description:
     "Chat with Mistravora's AI assistant about services, pricing, timelines, and how we build fast, conversion-focused software.",
   alternates: { canonical: `${site.url}/assistant` },
-};
+});
 
 export default function AssistantPage() {
   return (
@@ -24,3 +26,5 @@ export default function AssistantPage() {
     </section>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

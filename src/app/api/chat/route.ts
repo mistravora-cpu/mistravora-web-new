@@ -1,7 +1,9 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import type { BusinessProfile } from "@/lib/business-profile-data";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { pricingTiers, site, solutions } from "@/lib/site";
+import { pricingTiers } from "@/lib/site";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { serverEnv } from "@/lib/env";
 
@@ -15,6 +17,7 @@ const bodySchema = z.object({
 });
 
 type DbContext = {
+  profile: BusinessProfile;
   solutions: { title: string; description: string }[];
   caseStudies: { title: string; summary: string | null }[];
   posts: { title: string }[];
@@ -26,8 +29,10 @@ const pricingText = pricingTiers
   .join("\n");
 
 async function loadContext(): Promise<DbContext> {
+  const profile = await getBusinessProfile();
   const fallback: DbContext = {
-    solutions: [...solutions],
+    profile,
+    solutions: profile.offering.split("\n").filter(Boolean).map(title => ({title, description: "Built around your requirements."})),
     caseStudies: [],
     posts: [],
     jobs: [],
@@ -37,10 +42,10 @@ async function loadContext(): Promise<DbContext> {
     const supabase = await createClient();
     const [solutionsRes, caseStudiesRes, postsRes, jobsRes] =
       await Promise.all([
-        supabase.from("solutions").select("title, description").limit(12),
+        supabase.from("services").select("title, description").eq("published", true).limit(30),
         supabase
           .from("case_studies")
-          .select("title, summary")
+          .select("title, summary:outcome")
           .eq("published", true)
           .limit(6),
         supabase.from("posts").select("title").eq("published", true).limit(6),
@@ -52,6 +57,7 @@ async function loadContext(): Promise<DbContext> {
       ]);
 
     return {
+      profile,
       solutions: solutionsRes.data?.length
         ? solutionsRes.data
         : fallback.solutions,
@@ -66,6 +72,7 @@ async function loadContext(): Promise<DbContext> {
 }
 
 function localReply(message: string, ctx: DbContext): string {
+  const site = ctx.profile;
   const m = message.toLowerCase();
 
   if (/(^|\b)(hi|hello|hey|ayubowan|good morning|good evening)\b/.test(m)) {
@@ -84,7 +91,7 @@ function localReply(message: string, ctx: DbContext): string {
   }
 
   if (/(contact|email|phone|whatsapp|reach|talk|call)/.test(m)) {
-    return `You can reach us anytime:\n\n• Email: ${site.email}\n• Phone/WhatsApp: ${site.phone}\n• Contact form: /contact\n\nWe reply within one business day.`;
+    return `You can reach us anytime:\n\n• Email: ${site.email}\n• Phone/WhatsApp: ${site.phone}\n• Contact form: /contact\n\n${site.availability}. ${site.response}.`;
   }
 
   if (/(where|location|based|address|kurunegala|sri lanka)/.test(m)) {
@@ -137,7 +144,7 @@ function localReply(message: string, ctx: DbContext): string {
   return "I can help with:\n\n• Services & solutions — what we build\n• Pricing — tiers and estimates\n• Process & timelines\n• Free tools — cost calculator, ROI, website audit\n• Contact — how to reach the team\n\nWhat would you like to know?";
 }
 
-const SYSTEM_PROMPT = `You are Mistravora's AI assistant on mistravora.com. Mistravora is a Sri Lankan software company that builds high-performance websites, web platforms, e-commerce stores, business software, and AI-powered features.
+const SYSTEM_PROMPT = `You are Mistravora's AI assistant on mistravora.com. Use the approved business profile supplied below for company facts, contact details and scope.
 
 Rules you must follow:
 - Answer only questions about Mistravora's services, pricing, process, technologies, and general web/software topics.
@@ -145,7 +152,7 @@ Rules you must follow:
 - Never invent client names, case studies, or prices beyond the live data provided below.
 - When a user shows buying intent or asks for a quote, point them to WhatsApp (+94 77 330 6063), the contact page (/contact), or the cost calculator (/tools/cost-calculator).
 - If asked something unrelated to Mistravora or web/software, politely decline and redirect to how Mistravora can help.
-- Key contact info: hello@mistravora.com, +94 77 330 6063, based in Paragahadeniya, Kurunegala, Sri Lanka, working worldwide.
+- Availability for enquiries does not imply guaranteed live support. Use the stated response expectation.
 
 Live site data:
 `;
@@ -169,6 +176,7 @@ export async function POST(request: Request) {
   }
 
   const contextText = [
+    `Approved business profile: ${JSON.stringify(ctx.profile)}`,
     `Solutions: ${ctx.solutions.map((solution) => `${solution.title} — ${solution.description}`).join("; ")}`,
     ctx.caseStudies.length > 0
       ? `Case studies: ${ctx.caseStudies.map((caseStudy) => caseStudy.title).join("; ")}`

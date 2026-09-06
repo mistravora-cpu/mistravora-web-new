@@ -1,14 +1,16 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { site } from "@/lib/site";
 import { AuditForm } from "./audit-form";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "AI Website Audit",
   description:
     "Get a free performance, accessibility, and SEO score for your website in seconds — powered by Google Lighthouse.",
   alternates: { canonical: `${site.url}/tools/website-audit` },
-};
+});
 
 export default function WebsiteAuditPage() {
   return (
@@ -24,3 +26,5 @@ export default function WebsiteAuditPage() {
     </section>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

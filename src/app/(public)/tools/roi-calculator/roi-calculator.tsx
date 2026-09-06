@@ -3,12 +3,13 @@
 import * as React from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { site } from "@/lib/site";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
 const inputClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function RoiCalculator() {
+  const site = useBusinessProfile();
   const [monthlyRevenue, setMonthlyRevenue] = React.useState(500_000);
   const [lift, setLift] = React.useState(25);
   const [projectCost, setProjectCost] = React.useState(400_000);

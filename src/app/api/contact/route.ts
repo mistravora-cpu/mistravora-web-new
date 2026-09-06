@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getContactInfo, getSocialMedia } from "@/lib/services";
-import { site } from "@/lib/site";
+import { getBusinessProfile } from "@/lib/business-profile";
 
 export const revalidate = 300;
 
 // AI agent API: /api/contact
 // Returns structured contact information for AI consumption.
 export async function GET() {
+  const site = await getBusinessProfile();
   const [contactInfo, socialMedia] = await Promise.all([
     getContactInfo(),
     getSocialMedia(true),
@@ -21,10 +22,8 @@ export async function GET() {
     phone: contactInfo?.phone ?? site.phone,
     whatsapp: contactInfo?.whatsapp ?? site.whatsapp,
     address: contactInfo?.address ?? site.address,
-    geo: {
-      latitude: site.geo.lat,
-      longitude: site.geo.lng,
-    },
+    availability: site.availability,
+    response_expectation: site.response,
     social: socialMedia.map((s) => ({
       platform: s.platform,
       url: s.url,

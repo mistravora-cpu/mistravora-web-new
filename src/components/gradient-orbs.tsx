@@ -29,9 +29,13 @@ export function GradientOrbs({ className = "" }: { className?: string }) {
       const rect = container.getBoundingClientRect();
       targetX = (e.clientX - rect.left) / rect.width;
       targetY = (e.clientY - rect.top) / rect.height;
+      if (!rafId) rafId = requestAnimationFrame(animate);
     };
 
     const animate = () => {
+      rafId = 0;
+      const previousX = currentX;
+      const previousY = currentY;
       currentX += (targetX - currentX) * 0.05;
       currentY += (targetY - currentY) * 0.05;
 
@@ -45,7 +49,9 @@ export function GradientOrbs({ className = "" }: { className?: string }) {
         orb3Ref.current.style.transform = `translate(${currentX * 30 - 15}px, ${(1 - currentY) * 20}px)`;
       }
 
-      rafId = requestAnimationFrame(animate);
+      if (currentX !== previousX || currentY !== previousY) {
+        rafId = requestAnimationFrame(animate);
+      }
     };
 
     container.addEventListener("mousemove", handleMove);

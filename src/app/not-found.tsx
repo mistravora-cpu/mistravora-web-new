@@ -43,6 +43,11 @@ export default function NotFound() {
         to something useful.
       </p>
 
+      <form action="/search" className="relative flex w-full max-w-md gap-2">
+        <label className="sr-only" htmlFor="not-found-search">Search Mistravora</label>
+        <input id="not-found-search" type="search" name="q" placeholder="Search services and insights" className="w-full rounded-lg border border-border bg-card px-4 py-3" />
+        <button className="rounded-lg bg-primary px-4 text-primary-foreground">Search</button>
+      </form>
       <div className="relative flex w-full animate-fade-in-up flex-col gap-3 [animation-delay:420ms] sm:w-auto sm:flex-row">
         <Button asChild className="w-full sm:w-auto">
           <Link href="/">

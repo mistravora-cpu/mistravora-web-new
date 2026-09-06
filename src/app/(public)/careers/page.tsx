@@ -1,3 +1,6 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-header";
 import { AnimatedHero } from "@/components/animated-hero";
@@ -6,15 +9,15 @@ import { Button } from "@/components/ui/button";
 import { site } from "@/lib/site";
 import { getHeroSection } from "@/lib/services";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Careers",
   description:
     "Join Mistravora — a Sri Lankan software team building fast, accessible digital products for the world.",
   alternates: { canonical: `${site.url}/careers` },
-};
+});
 
 export default async function CareersPage() {
-  const hero = await getHeroSection("careers");
+  const [hero, site] = await Promise.all([getHeroSection("careers"), getBusinessProfile()]);
 
   return (
     <>
@@ -41,3 +44,5 @@ export default async function CareersPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

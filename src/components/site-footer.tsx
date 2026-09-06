@@ -1,10 +1,14 @@
+import { getBusinessProfile } from "@/lib/business-profile";
 import Image from "next/image";
 import Link from "next/link";
-import { mainNav, site } from "@/lib/site";
+import { getPolicies } from "@/lib/services";
+import { CookieSettingsButton } from "@/components/cookie-settings-button";
+import { mainNav } from "@/lib/site";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const [site, policies] = await Promise.all([getBusinessProfile(), getPolicies(true)]);
   return (
-    <footer className="border-t border-border bg-surface">
+    <footer className="[&_a]:inline-flex [&_a]:min-h-6 [&_a]:items-center [&_button]:min-h-11 border-t border-border bg-surface">
       <div className="grid w-full gap-10 px-4 py-12 sm:px-8 lg:grid-cols-2 lg:px-12">
         {/* Left column: Brand + Contact */}
         <div className="flex flex-col gap-4">
@@ -17,7 +21,7 @@ export function SiteFooter() {
               height={28}
               className="rounded-full"
             />
-            <span className="font-bold">Mistravora</span>
+            <span className="font-bold">{site.name}</span>
           </div>
           <p className="max-w-sm text-sm leading-6 text-muted-foreground">
             {site.description}
@@ -37,6 +41,7 @@ export function SiteFooter() {
               {site.phone}
             </a>
             <p className="text-sm text-muted-foreground">{site.address}</p>
+            <p className="text-sm text-muted-foreground">{site.availability}. {site.response}.</p>
           </div>
         </div>
 
@@ -57,6 +62,12 @@ export function SiteFooter() {
 
           <nav aria-label="Footer secondary" className="flex flex-col gap-2">
             <h2 className="text-sm font-semibold">More</h2>
+            <Link href="/services" className="text-sm hover:text-primary">Services</Link>
+            <Link href="/insights" className="text-sm hover:text-primary">Insights & resources</Link>
+            <Link href="/book" className="text-sm hover:text-primary">Book a consultation</Link>
+            <Link href="/search" className="text-sm hover:text-primary">Search</Link>
+            {policies.map(policy => <Link key={policy.slug} href={`/policies/${policy.slug}`} className="text-sm hover:text-primary">{policy.title}</Link>)}
+            <CookieSettingsButton />
             {mainNav.slice(5).map((item) => (
               <Link
                 key={item.href}
@@ -72,8 +83,8 @@ export function SiteFooter() {
 
       <div className="border-t border-border">
         <div className="flex w-full flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:px-8 lg:px-12">
-          <p>© {new Date().getFullYear()} Mistravora. All rights reserved.</p>
-          <p>Built for speed, privacy, and Sri Lankan networks.</p>
+          <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+          <p>{site.footer}</p>
         </div>
       </div>
     </footer>

@@ -1,3 +1,7 @@
+import { jsonLd, withSocialMetadata } from "@/lib/seo";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { ShareButton } from "@/components/share-button";
+import { RelatedContent } from "@/components/related-content";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +13,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -21,7 +25,7 @@ export async function generateMetadata({
   if (!cs) return { title: "Project not found" };
 
   const url = `${site.url}/projects/${cs.slug}`;
-  return {
+  return applySeoOverrides(withSocialMetadata({
     title: cs.title,
     description: cs.outcome ?? cs.problem_statement ?? undefined,
     alternates: { canonical: url },
@@ -38,7 +42,7 @@ export async function generateMetadata({
       description: cs.outcome ?? cs.problem_statement ?? undefined,
       images: cs.cover_image ? [cs.cover_image] : undefined,
     },
-  };
+  }));
 }
 
 export default async function CaseStudyPage({
@@ -52,6 +56,7 @@ export default async function CaseStudyPage({
 
   return (
     <article className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: cs.problem_statement, url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
       <div className="mx-auto max-w-6xl w-full">
         <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
@@ -181,6 +186,7 @@ export default async function CaseStudyPage({
           </Button>
         </ScrollReveal>
       </div>
+      <div className="mx-auto mt-8 max-w-6xl"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
     </article>
   );
 }

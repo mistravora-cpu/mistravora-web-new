@@ -1,3 +1,6 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -12,7 +15,7 @@ import { getHeroSection } from "@/lib/services";
 const faqs = [
   {
     q: "How fast do you reply?",
-    a: "Within one business day — usually much faster on WhatsApp. For urgent projects, call us directly.",
+    a: "Responses within 24 hours.",
   },
   {
     q: "What should I prepare before contacting you?",
@@ -24,15 +27,15 @@ const faqs = [
   },
 ] as const;
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Contact",
   description:
     "Talk to Mistravora about your next project — WhatsApp, phone, or email. Based in Sri Lanka, working worldwide.",
   alternates: { canonical: `${site.url}/contact` },
-};
+});
 
 export default async function ContactPage() {
-  const hero = await getHeroSection("contact");
+  const [hero, site] = await Promise.all([getHeroSection("contact"), getBusinessProfile()]);
   const whatsappMessage = encodeURIComponent(
     "Hi Mistravora! I'd like to discuss a project."
   );
@@ -43,7 +46,7 @@ export default async function ContactPage() {
     <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
       <PageHeader
         title="Contact"
-        description="Tell us what you're building. We usually reply within one business day."
+        description={`Tell us what you are building. ${site.response}.`}
       />
 
       <ScrollReveal animation="fade-up" className="mt-12 grid w-full gap-6 sm:grid-cols-2">
@@ -90,12 +93,13 @@ export default async function ContactPage() {
             <h2 className="font-semibold">Location</h2>
             <p className="mt-1 text-sm text-muted-foreground">{site.address}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {site.geo.lat.toFixed(6)}, {site.geo.lng.toFixed(6)}
+              {site.coverage}
             </p>
           </div>
         </div>
       </ScrollReveal>
 
+      <p className="mt-6 text-muted-foreground">{site.availability}. {site.response}.</p>
       <ScrollReveal animation="blur-in" delay={200} className="mt-12 grid w-full gap-6 lg:grid-cols-2">
         <ContactForm />
         <ContactMap />
@@ -106,10 +110,12 @@ export default async function ContactPage() {
           Before you ask
         </h2>
         <div className="scroll-reveal mt-8">
-          <Faq items={faqs} />
+          <Faq items={faqs.map((faq, index) => index === 0 ? { ...faq, a: `${site.availability}. ${site.response}.` } : faq)} />
         </div>
       </ScrollReveal>
     </section>
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

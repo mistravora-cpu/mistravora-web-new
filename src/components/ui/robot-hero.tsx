@@ -1,26 +1,6 @@
 "use client";
 
-// Suppress noisy Three.js console messages:
-// 1. THREE.Clock deprecation warning from R3F 9.7.0
-// 2. "THREE.WebGLRenderer: Context Lost." — this is a browser-level GPU
-//    event that we handle gracefully (preventDefault + R3F auto-restore).
-//    Three.js logs it as an error but it's not an actual application error.
-if (typeof window !== "undefined") {
-  const origWarn = console.warn;
-  const origError = console.error;
-  const clockWarning = /THREE\.Clock.*deprecated.*THREE\.Timer/;
-  const contextLost = /Context Lost/i;
-  console.warn = (...args: unknown[]) => {
-    if (args.length > 0 && typeof args[0] === "string" && clockWarning.test(args[0])) return;
-    origWarn(...args);
-  };
-  console.error = (...args: unknown[]) => {
-    if (args.length > 0 && typeof args[0] === "string" && contextLost.test(args[0])) return;
-    origError(...args);
-  };
-}
-
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   AdditiveBlending,
@@ -36,7 +16,6 @@ import {
   MeshStandardMaterial,
   QuadraticBezierCurve3,
   RepeatWrapping,
-  ShaderMaterial,
   Vector2,
   Vector3,
 } from "three";
@@ -81,30 +60,19 @@ function GlassCapsule({
   power: number;
   intensity: number;
 }) {
-  const materialRef = useRef<ShaderMaterial>(null);
-
   const uniforms = useMemo(
     () => ({
-      color: { value: new Color("#ffffff") },
-      power: { value: 2.5 },
-      intensity: { value: 0.6 },
+      color: { value: new Color(color) },
+      power: { value: power },
+      intensity: { value: intensity },
     }),
-    [],
+    [color, power, intensity],
   );
-
-  useFrame(() => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.color.value.set(color);
-      materialRef.current.uniforms.power.value = power;
-      materialRef.current.uniforms.intensity.value = intensity;
-    }
-  });
 
   return (
     <mesh>
       <sphereGeometry args={[0.3, 32, 32, 0, Math.PI * 2, 0, Math.PI]} />
       <shaderMaterial
-        ref={materialRef}
         uniforms={uniforms}
         vertexShader={`
           varying vec3 vNormal;
@@ -615,6 +583,15 @@ function RobotPrototype({
     });
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      textures.colorMap?.dispose();
+      textures.bumpMap?.dispose();
+      headMat.dispose();
+    };
+  }, [textures, headMat]);
+
   if (!textures.colorMap) return null;
 
   return (
@@ -718,6 +695,33 @@ function RobotPrototype({
   );
 }
 
+function SceneLifecycle() {
+  const { gl, scene, camera, setFrameloop, invalidate } = useThree();
+  useEffect(() => {
+    let disposed = false;
+    let ready = false;
+    let visible = true;
+    const update = () => {
+      const running = ready && visible && document.visibilityState !== "hidden";
+      setFrameloop(running ? "always" : "never");
+      if (running) invalidate();
+    };
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
+    observer.observe(gl.domElement);
+    document.addEventListener("visibilitychange", update);
+    // Compile shaders through KHR_parallel_shader_compile when supported,
+    // avoiding a synchronous GPU wait in the first animation frame.
+    const preparation = gl.extensions.has("KHR_parallel_shader_compile")
+      ? gl.compileAsync(scene, camera)
+      : Promise.resolve().then(() => gl.compile(scene, camera));
+    preparation.catch(error => console.error("Robot shader preparation failed", error)).finally(() => {
+      if (!disposed) { ready = true; update(); }
+    });
+    return () => { disposed = true; observer.disconnect(); document.removeEventListener("visibilitychange", update); };
+  }, [gl, scene, camera, setFrameloop, invalidate]);
+  return null;
+}
+
 export interface RobotHeroProps {
   color?: string;
   scale?: number;
@@ -738,37 +742,22 @@ export function RobotHero({
   const entorno = {
     luzAmbiente: 0.75,
     sombraOpacidad: 0.85,
-    sombraBlur: 1.7,
-  };
-
-  // Handle WebGL context loss — the browser can reclaim the GPU context
-  // at any time (tab switch, GPU driver update, too many contexts).
-  // We prevent the default (which would freeze the canvas) and let R3F
-  // restore the context automatically.
-  const handleCreated = (state: { gl: { domElement: HTMLCanvasElement } }) => {
-    const canvas = state.gl.domElement;
-    canvas.addEventListener("webglcontextlost", (e) => {
-      e.preventDefault();
-    }, { once: false });
-    canvas.addEventListener("webglcontextrestored", () => {
-      // R3F handles restoration automatically — nothing extra needed
-    }, { once: false });
   };
 
   return (
     <div className="relative w-full h-full">
       <Canvas
+        frameloop="never"
         camera={{ position: [0, 0, 4.5], fov: 42 }}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         dpr={[1, 1.5]}
         performance={{ min: 0.5 }}
-        onCreated={handleCreated}
       >
+        <SceneLifecycle />
         <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
         <hemisphereLight args={["#ffffff", "#888888", 0.3]} />
         <ResponsiveGroup scale={scale}>
-          {/* Simple shadow plane — replaces @react-three/drei ContactShadows
-              to eliminate the entire drei bundle (~200KB). */}
+          {/* Simple shadow plane. */}
           <mesh position={[0, -1.14, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             <circleGeometry args={[1.5, 32]} />
             <meshBasicMaterial

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { site } from "@/lib/site";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
 type Scores = {
   performance: number;
@@ -42,6 +42,7 @@ function ScoreDonut({ label, score }: { label: string; score: number }) {
 }
 
 export function AuditForm() {
+  const site = useBusinessProfile();
   const [url, setUrl] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);

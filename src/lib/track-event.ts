@@ -1,5 +1,7 @@
 "use client";
 
+import { getConsentSnapshot } from "@/lib/consent";
+
 type EventParams = {
   event_category?: string;
   event_label?: string;
@@ -15,7 +17,7 @@ declare global {
 }
 
 export function trackEvent(eventName: string, params: EventParams = {}) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !getConsentSnapshot()?.analytics || window.location?.pathname.startsWith("/dashboard")) return;
 
   if (window.gtag) {
     window.gtag("event", eventName, params);

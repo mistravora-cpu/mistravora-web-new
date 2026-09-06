@@ -1,3 +1,7 @@
+import { getCollection } from "@/lib/content";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { jsonLd } from "@/lib/seo";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,13 +34,12 @@ import { NewsletterSignup } from "@/components/newsletter-signup";
 import { StatsCounter } from "@/components/stats-counter";
 import { ScrollIndicator } from "@/components/scroll-indicator";
 import { GradientOrbs } from "@/components/gradient-orbs";
-import { solutions as fallbackSolutions } from "@/lib/site";
-import { getSolutions, getCaseStudies, getStatistics } from "@/lib/services";
+import { getCaseStudies, getStatistics } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
 const siteUrl = "https://mistravora.com";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Mistravora — Custom Software, Web Platforms & AI Tools",
   description:
     "Mistravora builds high-performance web apps, custom dashboards, and AI-powered tools for ambitious businesses in Sri Lanka and worldwide. Ship faster, scale smarter.",
@@ -78,7 +81,7 @@ export const metadata: Metadata = {
     "digital products Sri Lanka",
     "Mistravora",
   ],
-};
+});
 
 const fallbackIcons = [
   Globe,
@@ -177,7 +180,7 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Mistravora",
@@ -186,7 +189,7 @@ export default async function Home() {
               "Custom software, web platforms, and AI-powered tools for ambitious businesses.",
             potentialAction: {
               "@type": "SearchAction",
-              target: `${siteUrl}/solutions`,
+              target: `${siteUrl}/search?q={search_term_string}`,
               "query-input": "required name=search_term_string",
             },
           }),
@@ -398,28 +401,9 @@ async function StatsSection() {
 }
 
 async function SolutionsSection() {
-  const dbSolutions = await getSolutions(true);
-  const solutions = dbSolutions.length > 0 ? dbSolutions : fallbackSolutions.map((s, i) => ({
-    id: `fallback-${i}`,
-    title: s.title,
-    slug: s.title.toLowerCase().replace(/\s+/g, "-"),
-    summary: null,
-    body: null,
-    icon: null,
-    category: null,
-    short_description: s.description,
-    long_description: null,
-    technologies: [],
-    image: null,
-    sort_order: i,
-    features: [],
-    services: [],
-    process_steps: [],
-    pricing_packages: [],
-    published: true,
-    created_at: "",
-    updated_at: "",
-  }));
+  const services = await getCollection("services");
+  const solutions = services.map(service => ({ id: service.slug, slug: service.slug, title: service.title,
+    short_description: service.description, summary: service.description, icon: null }));
 
   return (
     <section data-cv="auto" className="relative w-full overflow-hidden px-4 pb-16 pt-4 sm:px-8 lg:px-12">
@@ -449,7 +433,7 @@ async function SolutionsSection() {
               <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
                 <Icon aria-hidden className="h-5.5 w-5.5 text-primary" />
               </span>
-              <h3 className="mt-4 font-semibold tracking-tight">{solution.title}</h3>
+              <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${solution.slug}`}>{solution.title}</Link></h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {solution.short_description ?? solution.summary ?? ""}
               </p>
@@ -461,8 +445,8 @@ async function SolutionsSection() {
 
       <ScrollReveal animation="fade-up" delay={200} className="relative mt-8 text-center">
         <Button variant="outline" asChild>
-          <Link href="/solutions">
-            Explore all solutions
+          <Link href="/services">
+            Explore all services
             <ArrowRight aria-hidden className="h-4 w-4" />
           </Link>
         </Button>
@@ -577,3 +561,5 @@ async function CaseStudiesTeaser() {
     </section>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

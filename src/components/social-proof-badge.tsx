@@ -17,11 +17,13 @@ export async function SocialProofBadge() {
           {featured.map((company) => (
             <div
               key={company.id}
-              className="flex items-center gap-2 opacity-60 transition-opacity hover:opacity-100"
+              className="flex items-center gap-2 opacity-100 transition-opacity hover:opacity-100"
             >
               {company.logo ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={company.logo}
                   alt={company.name}
                   className="h-6 w-auto object-contain"

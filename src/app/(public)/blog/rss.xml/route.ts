@@ -1,5 +1,5 @@
+import { getBusinessProfile } from "@/lib/business-profile";
 import { getPublishedPosts } from "@/lib/services";
-import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,7 @@ function escapeXml(str: string): string {
 }
 
 export async function GET() {
+  const site = await getBusinessProfile();
   const posts = await getPublishedPosts();
 
   const items = posts

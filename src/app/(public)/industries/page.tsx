@@ -1,3 +1,6 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -10,18 +13,19 @@ import { getHeroSection, getIndustries } from "@/lib/services";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 import { Globe, type LucideIcon } from "lucide-react";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Industries",
   description:
     "Industry-specific software solutions for retail, hospitality, healthcare, and more in Sri Lanka and worldwide.",
   alternates: { canonical: `${site.url}/industries` },
-};
+});
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Globe);
 }
 
 export default async function IndustriesPage() {
+  const profile = await getBusinessProfile();
   const [hero, industries] = await Promise.all([
     getHeroSection("industries"),
     getIndustries(true),
@@ -33,7 +37,7 @@ export default async function IndustriesPage() {
       <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
         <PageHeader
           title="Industries we serve"
-          description="We build software that fits how your industry actually works — not generic templates."
+          description={`${profile.industries} ${profile.coverage} The categories below are examples of sectors we serve.`}
         />
 
         {industries.length > 0 ? (
@@ -81,3 +85,5 @@ export default async function IndustriesPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

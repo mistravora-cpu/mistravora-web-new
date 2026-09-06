@@ -4,6 +4,9 @@ import { env } from "@/lib/env";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
+  // Public marketing pages do not need an authentication round trip.
+  if (pathname !== "/admin" && !pathname.startsWith("/dashboard") && !pathname.startsWith("/api")) return response;
 
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,8 +32,6 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
 
   if (!user && pathname.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();

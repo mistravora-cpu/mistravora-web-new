@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Rss } from "lucide-react";
@@ -8,7 +10,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { site } from "@/lib/site";
 import { getHeroSection, getPublishedPosts } from "@/lib/services";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Blog",
   description:
     "Insights on web performance, software, and digital growth from the Mistravora team.",
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
     canonical: `${site.url}/blog`,
     types: { "application/rss+xml": "/blog/rss.xml" },
   },
-};
+});
 
 export default async function BlogPage() {
   const [hero, posts] = await Promise.all([
@@ -90,3 +92,5 @@ export default async function BlogPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

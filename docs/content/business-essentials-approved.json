@@ -1,0 +1,233 @@
+{
+  "settings": [
+    {
+      "key": "site_intro",
+      "value": "Mobile applications, custom software, websites and end-to-end digital solutions for individuals and businesses of all sizes, across industries and markets."
+    },
+    {
+      "key": "site_name",
+      "value": "Mistravora"
+    },
+    {
+      "key": "site_description",
+      "value": "Mistravora is a digital solutions company founded in May 2025 by Husni and co-founded by Shakeel, delivering mobile applications, custom software, websites and end-to-end digital solutions for businesses of all sizes and industries. With no restriction to a single market or sector, Mistravora focuses on building practical, scalable and modern digital solutions around each client's requirements."
+    },
+    {
+      "key": "site_email",
+      "value": "info@mistravora.com"
+    },
+    {
+      "key": "site_phone",
+      "value": "+94 77 330 6063"
+    },
+    {
+      "key": "site_whatsapp",
+      "value": "94773306063"
+    },
+    {
+      "key": "site_address",
+      "value": "Sri Lanka"
+    },
+    {
+      "key": "company_founder",
+      "value": "Husni"
+    },
+    {
+      "key": "company_cofounder",
+      "value": "Shakeel"
+    },
+    {
+      "key": "company_founded",
+      "value": "2025-05"
+    },
+    {
+      "key": "service_coverage",
+      "value": "Across locations and markets, without restriction to a single geographic area."
+    },
+    {
+      "key": "customer_types",
+      "value": "Individuals, startups, small and medium businesses, growing companies and larger organizations, depending on project requirements."
+    },
+    {
+      "key": "industry_coverage",
+      "value": "Digital solutions across industries."
+    },
+    {
+      "key": "business_hours",
+      "value": "Available 24/7 for enquiries"
+    },
+    {
+      "key": "response_expectation",
+      "value": "Responses within 24 hours"
+    },
+    {
+      "key": "timezone",
+      "value": "Asia/Colombo"
+    },
+    {
+      "key": "site_headline",
+      "value": "End-to-end digital solutions"
+    },
+    {
+      "key": "site_tagline",
+      "value": "Built around your requirements"
+    },
+    {
+      "key": "company_story",
+      "value": "Founded in May 2025 by Husni and co-founded by Shakeel, Mistravora is based in Sri Lanka and serves clients across locations and markets. We build practical, scalable and modern digital solutions around each client's requirements."
+    },
+    {
+      "key": "core_offering",
+      "value": "Mobile application development\nCustom software development\nWebsites and web applications\nBusiness software and management systems\nE-commerce solutions\nAI and automation solutions\nCRM and booking solutions where applicable\nUI/UX and digital product development\nCloud/deployment and technical solutions\nSEO and website optimization\nDigital marketing and related digital services"
+    },
+    {
+      "key": "footer_text",
+      "value": "Practical digital solutions across industries and markets."
+    }
+  ],
+  "contact": {
+    "headline": "Let's discuss your requirements",
+    "description": "Available 24/7 for enquiries. Responses within 24 hours.",
+    "email": "info@mistravora.com",
+    "phone": "+94 77 330 6063",
+    "whatsapp": "94773306063",
+    "address": "Sri Lanka"
+  },
+  "heroes": [
+    {
+      "page": "home",
+      "headline": "End-to-end digital solutions",
+      "description": "Mobile applications, custom software, websites and end-to-end digital solutions for individuals and businesses of all sizes, across industries and markets.",
+      "badge": "Built around your requirements"
+    },
+    {
+      "page": "about",
+      "headline": "About Mistravora",
+      "description": "Mistravora is a digital solutions company founded in May 2025 by Husni and co-founded by Shakeel, delivering mobile applications, custom software, websites and end-to-end digital solutions for businesses of all sizes and industries. With no restriction to a single market or sector, Mistravora focuses on building practical, scalable and modern digital solutions around each client's requirements.",
+      "badge": "Founded May 2025"
+    },
+    {
+      "page": "contact",
+      "headline": "Let's discuss your requirements",
+      "description": "Available 24/7 for enquiries. Responses within 24 hours.",
+      "badge": "Get in touch"
+    },
+    {
+      "page": "industries",
+      "headline": "Digital solutions across industries",
+      "description": "Individuals, startups, small and medium businesses, growing companies and larger organizations, depending on project requirements. Across locations and markets, without restriction to a single geographic area.",
+      "badge": "Across industries"
+    }
+  ],
+  "services": [
+    {
+      "title": "Mobile application development",
+      "slug": "mobile-application-development",
+      "description": "Mobile applications built around the requirements of individuals and organizations.",
+      "body": "Mobile applications built around the requirements of individuals and organizations.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 0
+    },
+    {
+      "title": "Custom software development",
+      "slug": "custom-software-development",
+      "description": "Custom software designed around each client's requirements.",
+      "body": "Custom software designed around each client's requirements.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 1
+    },
+    {
+      "title": "Websites and web applications",
+      "slug": "websites-and-web-applications",
+      "description": "Websites and web applications for customers across business sizes, industries and markets.",
+      "body": "Websites and web applications for customers across business sizes, industries and markets.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 2
+    },
+    {
+      "title": "Business software and management systems",
+      "slug": "business-software-and-management-systems",
+      "description": "Business software and management systems shaped around organizational requirements.",
+      "body": "Business software and management systems shaped around organizational requirements.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 3
+    },
+    {
+      "title": "E-commerce solutions",
+      "slug": "e-commerce-solutions",
+      "description": "E-commerce solutions for businesses selling online.",
+      "body": "E-commerce solutions for businesses selling online.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 4
+    },
+    {
+      "title": "AI and automation solutions",
+      "slug": "ai-and-automation-solutions",
+      "description": "AI and automation solutions developed around the needs of each project.",
+      "body": "AI and automation solutions developed around the needs of each project.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 5
+    },
+    {
+      "title": "CRM and booking solutions where applicable",
+      "slug": "crm-and-booking-solutions-where-applicable",
+      "description": "CRM and booking solutions where they fit the client's requirements.",
+      "body": "CRM and booking solutions where they fit the client's requirements.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 6
+    },
+    {
+      "title": "UI/UX and digital product development",
+      "slug": "ui-ux-and-digital-product-development",
+      "description": "UI/UX and digital product development for practical, modern digital experiences.",
+      "body": "UI/UX and digital product development for practical, modern digital experiences.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 7
+    },
+    {
+      "title": "Cloud/deployment and technical solutions",
+      "slug": "cloud-deployment-and-technical-solutions",
+      "description": "Cloud, deployment and technical solutions for digital projects.",
+      "body": "Cloud, deployment and technical solutions for digital projects.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 8
+    },
+    {
+      "title": "SEO and website optimization",
+      "slug": "seo-and-website-optimization",
+      "description": "SEO and website optimization as part of Mistravora's digital services.",
+      "body": "SEO and website optimization as part of Mistravora's digital services.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 9
+    },
+    {
+      "title": "Digital marketing and related digital services",
+      "slug": "digital-marketing-and-related-digital-services",
+      "description": "Digital marketing and related digital services based on client requirements.",
+      "body": "Digital marketing and related digital services based on client requirements.",
+      "category": "Digital solutions",
+      "published": true,
+      "sort_order": 10
+    }
+  ],
+  "founders": [
+    {
+      "name": "Husni",
+      "role": "Founder"
+    },
+    {
+      "name": "Shakeel",
+      "role": "Co-Founder"
+    }
+  ]
+}

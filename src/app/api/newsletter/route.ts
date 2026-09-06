@@ -12,17 +12,17 @@ export async function POST(request: Request) {
   try {
     const { email } = await request.json();
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (typeof email !== "string" || email.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
     }
 
     const supabase = await createClient();
     const { error } = await supabase
       .from("newsletter_subscribers")
-      .upsert({ email: email.trim() }, { onConflict: "email" });
+      .insert({ email: email.trim().toLowerCase() });
 
-    if (error) {
-      console.warn("[newsletter] DB error:", error);
+    if (error && error.code !== "23505") {
+      return NextResponse.json({ error: "Unable to subscribe right now. Please try again." }, { status: 503 });
     }
 
     return NextResponse.json(

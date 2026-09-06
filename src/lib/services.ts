@@ -33,50 +33,31 @@ import type {
   ValueCard,
 } from "@/lib/types";
 
-async function safeQuery<T>(
-  query: PromiseLike<{ data: T[] | null; error: unknown }>
-): Promise<T[]> {
+// Reject failed refreshes so Next.js retains the last successful cached value.
+// Returning [] here would turn an outage into missing pages for the cache TTL.
+async function withQueryTimeout<T>(query: PromiseLike<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const { data, error } = await Promise.race([
+    return await Promise.race([
       query,
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("query timeout")), 4000),
-      ),
+      new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Database query timed out")), 8000); }),
     ]);
-    if (error) {
-      console.warn("[supabase] query returned error:", error);
-      return [];
-    }
-    return data ?? [];
-  } catch (error) {
-    console.warn("[supabase] query threw:", error);
-    return [];
-  }
+  } finally { clearTimeout(timer); }
 }
 
-async function safeQuerySingle<T>(
-  query: PromiseLike<{ data: T | null; error: { code?: string; message?: string } | unknown }>
-): Promise<T | null> {
-  try {
-    const { data, error } = await Promise.race([
-      query,
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("query timeout")), 4000),
-      ),
-    ]);
-    if (error) {
-      // PGRST116 = ".single()" returned 0 rows — expected, not a real error.
-      const code = (error as { code?: string }).code;
-      if (code !== "PGRST116") {
-        console.warn("[supabase] query returned error:", error);
-      }
-      return null;
-    }
-    return data;
-  } catch (error) {
-    console.warn("[supabase] query threw:", error);
-    return null;
+async function queryRows<T>(query: PromiseLike<{ data: T[] | null; error: unknown }>): Promise<T[]> {
+  const { data, error } = await withQueryTimeout(query);
+  if (error) throw error;
+  return data ?? [];
+}
+
+async function querySingle<T>(query: PromiseLike<{ data: T | null; error: unknown }>): Promise<T | null> {
+  const { data, error } = await withQueryTimeout(query);
+  if (error) {
+    if ((error as { code?: string }).code === "PGRST116") return null;
+    throw error;
   }
+  return data;
 }
 
 // ─── Child table mapping helpers ───────────────────────────────────────
@@ -175,7 +156,7 @@ const _getSolutions = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("solutions").select(SOLUTION_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    const rows = await safeQuery(query);
+    const rows = await queryRows(query);
     return rows.map((r) => mapSolution(r));
   },
   ["solutions"],
@@ -187,7 +168,7 @@ const _getCaseStudies = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    const rows = await safeQuery(query);
+    const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
   },
   ["projects"],
@@ -197,7 +178,7 @@ const _getCaseStudies = unstable_cache(
 const _getPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const supabase = createPublicClient();
-    const rows = await safeQuery(
+    const rows = await queryRows(
       supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false })
     );
     return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
@@ -209,8 +190,8 @@ const _getPosts = unstable_cache(
 const _getPublishedPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const supabase = createPublicClient();
-    const rows = await safeQuery(
-      supabase.from("posts").select(POST_SELECT).eq("published", true).order("published_at", { ascending: false })
+    const rows = await queryRows(
+      supabase.from("posts").select(POST_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false })
     );
     return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
   },
@@ -220,7 +201,7 @@ const _getPublishedPosts = unstable_cache(
 
 export async function getInquiries(): Promise<Inquiry[]> {
   const supabase = await createClient();
-  return safeQuery(
+  return queryRows(
     supabase.from("inquiries").select("*").order("created_at", { ascending: false })
   );
 }
@@ -230,7 +211,7 @@ const _getJobs = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("jobs").select("*").order("created_at", { ascending: false });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["jobs"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -239,7 +220,7 @@ const _getJobs = unstable_cache(
 const _getSettings = unstable_cache(
   async (): Promise<Setting[]> => {
     const supabase = createPublicClient();
-    return safeQuery(supabase.from("settings").select("*").order("key"));
+    return queryRows(supabase.from("settings").select("*").order("key"));
   },
   ["settings"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -248,7 +229,7 @@ const _getSettings = unstable_cache(
 const _getHeroSection = unstable_cache(
   async (page: string): Promise<HeroSection | null> => {
     const supabase = createPublicClient();
-    return safeQuerySingle(
+    return querySingle(
       supabase.from("hero_sections").select("*").eq("page", page).single()
     );
   },
@@ -259,7 +240,7 @@ const _getHeroSection = unstable_cache(
 const _getAllHeroSections = unstable_cache(
   async (): Promise<HeroSection[]> => {
     const supabase = createPublicClient();
-    return safeQuery(
+    return queryRows(
       supabase.from("hero_sections").select("*").order("page", { ascending: true })
     );
   },
@@ -272,7 +253,7 @@ const _getValueCards = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("value_cards").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["value-cards"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -283,7 +264,7 @@ const _getStatistics = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("statistics").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["statistics"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -294,7 +275,7 @@ const _getCoreValues = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("core_values").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["core-values"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -305,7 +286,7 @@ const _getTeamMembers = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("team_members").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["team-members"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -316,7 +297,7 @@ const _getPricingTiers = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("pricing_tiers").select(PRICING_TIER_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("active", true);
-    const rows = await safeQuery(query);
+    const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, pricingTierMapping) as unknown as PricingTier);
   },
   ["pricing-tiers"],
@@ -328,7 +309,7 @@ const _getPricingNotes = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("pricing_notes").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("active", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["pricing-notes"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -339,7 +320,7 @@ const _getPricingAddons = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("pricing_addons").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("active", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["pricing-addons"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -350,7 +331,7 @@ const _getIndustries = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("industries").select(INDUSTRY_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("archived", false);
-    const rows = await safeQuery(query);
+    const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, industryMapping) as unknown as Industry);
   },
   ["industries"],
@@ -362,7 +343,7 @@ const _getResources = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("resources").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["resources"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -373,7 +354,7 @@ const _getTrustedCompanies = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("trusted_companies").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["trusted-companies"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -384,7 +365,7 @@ const _getPolicies = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("policies").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("status", "active");
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["policies"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -393,7 +374,7 @@ const _getPolicies = unstable_cache(
 const _getContactInfo = unstable_cache(
   async (): Promise<ContactInfo | null> => {
     const supabase = createPublicClient();
-    return safeQuerySingle(
+    return querySingle(
       supabase.from("contact_info").select("*").limit(1).single()
     );
   },
@@ -406,7 +387,7 @@ const _getSocialMedia = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("social_media").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["social-media"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -420,7 +401,7 @@ const _getFaqs = unstable_cache(
       query = query.eq("page", page);
     }
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["faqs"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -431,7 +412,7 @@ const _getDemoApps = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("demo_apps").select(DEMO_APP_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    const rows = await safeQuery(query);
+    const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, demoAppMapping) as unknown as DemoApp);
   },
   ["demo-apps"],
@@ -443,7 +424,7 @@ const _getTechStack = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("tech_stack").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["tech-stack"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -454,7 +435,7 @@ const _getBenefits = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("benefits").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["benefits"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -465,7 +446,7 @@ const _getTestimonials = unstable_cache(
     const supabase = createPublicClient();
     let query = supabase.from("testimonials").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return safeQuery(query);
+    return queryRows(query);
   },
   ["testimonials"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -507,161 +488,146 @@ export function getTestimonials(publishedOnly = false) { return _getTestimonials
 
 export async function getAdminSolutions(): Promise<Solution[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("solutions").select(SOLUTION_SELECT).order("sort_order", { ascending: true }));
+  const rows = await queryRows(supabase.from("solutions").select(SOLUTION_SELECT).order("sort_order", { ascending: true }));
   return rows.map((r) => mapSolution(r));
 }
 export async function getAdminCaseStudies(): Promise<CaseStudy[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true }));
+  const rows = await queryRows(supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true }));
   return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
 }
 export async function getAdminPosts(): Promise<Post[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false }));
+  const rows = await queryRows(supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false }));
   return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
 }
 export async function getAdminJobs(): Promise<Job[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("jobs").select("*").order("created_at", { ascending: false }));
+  return queryRows(supabase.from("jobs").select("*").order("created_at", { ascending: false }));
 }
 export async function getAdminHeroSections(): Promise<HeroSection[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("hero_sections").select("*").order("page", { ascending: true }));
+  return queryRows(supabase.from("hero_sections").select("*").order("page", { ascending: true }));
 }
 export async function getAdminValueCards(): Promise<ValueCard[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("value_cards").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("value_cards").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminStatistics(): Promise<Statistic[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("statistics").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("statistics").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminCoreValues(): Promise<CoreValue[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("core_values").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("core_values").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminTeamMembers(): Promise<TeamMember[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("team_members").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("team_members").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminPricingTiers(): Promise<PricingTier[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("pricing_tiers").select(PRICING_TIER_SELECT).order("sort_order", { ascending: true }));
+  const rows = await queryRows(supabase.from("pricing_tiers").select(PRICING_TIER_SELECT).order("sort_order", { ascending: true }));
   return rows.map((r) => mapChildArrays(r, pricingTierMapping) as unknown as PricingTier);
 }
 export async function getAdminPricingNotes(): Promise<PricingNote[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("pricing_notes").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("pricing_notes").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminPricingAddons(): Promise<PricingAddon[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("pricing_addons").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("pricing_addons").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminIndustries(): Promise<Industry[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("industries").select(INDUSTRY_SELECT).order("sort_order", { ascending: true }));
+  const rows = await queryRows(supabase.from("industries").select(INDUSTRY_SELECT).order("sort_order", { ascending: true }));
   return rows.map((r) => mapChildArrays(r, industryMapping) as unknown as Industry);
 }
 export async function getAdminResources(): Promise<Resource[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("resources").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("resources").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminTrustedCompanies(): Promise<TrustedCompany[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("trusted_companies").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("trusted_companies").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminPolicies(): Promise<Policy[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("policies").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("policies").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminContactInfo(): Promise<ContactInfo | null> {
   const supabase = await createClient();
-  return safeQuerySingle(supabase.from("contact_info").select("*").limit(1).single());
+  return querySingle(supabase.from("contact_info").select("*").limit(1).single());
 }
 export async function getAdminSocialMedia(): Promise<SocialMedia[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("social_media").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("social_media").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminFaqs(page?: string): Promise<Faq[]> {
   const supabase = await createClient();
   let query = supabase.from("faqs").select("*").order("sort_order", { ascending: true });
   if (page) query = query.eq("page", page);
-  return safeQuery(query);
+  return queryRows(query);
 }
 export async function getAdminDemoApps(): Promise<DemoApp[]> {
   const supabase = await createClient();
-  const rows = await safeQuery(supabase.from("demo_apps").select(DEMO_APP_SELECT).order("sort_order", { ascending: true }));
+  const rows = await queryRows(supabase.from("demo_apps").select(DEMO_APP_SELECT).order("sort_order", { ascending: true }));
   return rows.map((r) => mapChildArrays(r, demoAppMapping) as unknown as DemoApp);
 }
 export async function getAdminTechStack(): Promise<TechStack[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("tech_stack").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("tech_stack").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminBenefits(): Promise<Benefit[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("benefits").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("benefits").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminTestimonials(): Promise<Testimonial[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("testimonials").select("*").order("sort_order", { ascending: true }));
+  return queryRows(supabase.from("testimonials").select("*").order("sort_order", { ascending: true }));
 }
 export async function getAdminSettings(): Promise<Setting[]> {
   const supabase = await createClient();
-  return safeQuery(supabase.from("settings").select("*").order("key"));
+  return queryRows(supabase.from("settings").select("*").order("key"));
 }
 
 export async function getMediaLibrary(): Promise<MediaItem[]> {
   const supabase = await createClient();
-  return safeQuery(
+  return queryRows(
     supabase.from("media_library").select("*").order("created_at", { ascending: false })
   );
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const supabase = await createClient();
-  const row = await safeQuerySingle(
-    supabase.from("posts").select(POST_SELECT).eq("slug", slug).eq("published", true).single()
-  );
-  return row ? (mapChildArrays(row, postMapping) as unknown as Post) : null;
+  return (await getPublishedPosts()).find((post) => post.slug === slug) ?? null;
 }
-
 export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null> {
-  const supabase = await createClient();
-  const row = await safeQuerySingle(
-    supabase.from("case_studies").select(CASE_STUDY_SELECT).eq("slug", slug).eq("published", true).single()
-  );
-  return row ? (mapChildArrays(row, caseStudyMapping) as unknown as CaseStudy) : null;
+  return (await getCaseStudies(true)).find((entry) => entry.slug === slug) ?? null;
 }
-
 export async function getIndustryBySlug(slug: string): Promise<Industry | null> {
-  const supabase = await createClient();
-  const row = await safeQuerySingle(
-    supabase.from("industries").select(INDUSTRY_SELECT).eq("slug", slug).eq("archived", false).single()
-  );
-  return row ? (mapChildArrays(row, industryMapping) as unknown as Industry) : null;
+  return (await getIndustries(true)).find((entry) => entry.slug === slug) ?? null;
 }
 
 export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]> {
   const supabase = await createClient();
-  return safeQuery(
+  return queryRows(
     supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false })
   );
 }
 
+const publicResearch = unstable_cache(async (): Promise<Research[]> => {
+  const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false }));
+  return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
+}, ["public-research"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
+
 export async function getResearch(publishedOnly = false): Promise<Research[]> {
+  if (publishedOnly) return publicResearch();
   const supabase = await createClient();
-  let query = supabase.from("research").select(RESEARCH_SELECT).order("published_at", { ascending: false });
-  if (publishedOnly) query = query.eq("published", true);
-  const rows = await safeQuery(query);
+  const rows = await queryRows(supabase.from("research").select(RESEARCH_SELECT).order("published_at", { ascending: false }));
   return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
 }
-
 export async function getResearchBySlug(slug: string): Promise<Research | null> {
-  const supabase = await createClient();
-  const row = await safeQuerySingle(
-    supabase.from("research").select(RESEARCH_SELECT).eq("slug", slug).eq("published", true).single()
-  );
-  return row ? (mapChildArrays(row, researchMapping) as unknown as Research) : null;
+  return (await publicResearch()).find((entry) => entry.slug === slug) ?? null;
 }
 
 const marketingKeys: (keyof MarketingSettings)[] = [
@@ -672,7 +638,6 @@ const marketingKeys: (keyof MarketingSettings)[] = [
   "sentry_dsn",
   "logrocket_id",
   "meta_pixel_id",
-  "meta_capi_token",
   "google_ads_conversion_id",
   "google_ads_conversion_label",
   "google_remarketing_tag_id",
@@ -702,7 +667,7 @@ const marketingKeys: (keyof MarketingSettings)[] = [
 const _getMarketingSettings = unstable_cache(
   async (): Promise<MarketingSettings> => {
     const supabase = createPublicClient();
-    const settings = await safeQuery(supabase.from("settings").select("*"));
+    const settings = await queryRows(supabase.from("settings").select("*"));
     const map = new Map(settings.map((s) => [s.key, s.value ?? ""]));
     const result = {} as MarketingSettings;
     for (const key of marketingKeys) {

@@ -1,3 +1,5 @@
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, type LucideIcon } from "lucide-react";
@@ -34,12 +36,12 @@ const faqs = [
   },
 ] as const;
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = withSocialMetadata({
   title: "Pricing",
   description:
     "Transparent pricing for Mistravora web platforms, business software, and custom builds — in LKR and USD.",
   alternates: { canonical: `${site.url}/pricing` },
-};
+});
 
 export default async function PricingPage() {
   const hero = await getHeroSection("pricing");
@@ -159,3 +161,5 @@ export default async function PricingPage() {
     </>
   );
 }
+
+export async function generateMetadata() { return applySeoOverrides(baseMetadata); }

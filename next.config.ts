@@ -1,4 +1,7 @@
+import redirects from "./src/data/redirects.json";
 import type { NextConfig } from "next";
+
+const isDevelopment = process.env.NODE_ENV === "development";
 
 const r2PublicUrl = process.env.R2_PUBLIC_URL;
 const r2Hostname = r2PublicUrl ? new URL(r2PublicUrl).hostname : undefined;
@@ -9,7 +12,7 @@ const r2Hostname = r2PublicUrl ? new URL(r2PublicUrl).hostname : undefined;
 // conditionally after user consent via the cookie banner.
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://mistravora.com https://www.googletagmanager.com https://www.clarity.ms https://sc-static.net",
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://mistravora.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://sc-static.net`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data:",
   "img-src 'self' data: https: blob:",
@@ -20,7 +23,7 @@ const cspDirectives = [
   "form-action 'self'",
   "base-uri 'self'",
   "object-src 'none'",
-  "upgrade-insecure-requests",
+  ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 const securityHeaders = [
@@ -39,6 +42,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async redirects() { return redirects; },
   images: {
     remotePatterns: [
       // Cloudflare R2 — primary media storage

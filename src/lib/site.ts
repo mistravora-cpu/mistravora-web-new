@@ -1,18 +1,6 @@
-export const site = {
-  name: "Mistravora",
-  url: "https://mistravora.com",
-  description:
-    "Mistravora builds high-performance software, web platforms, and digital products for ambitious businesses in Sri Lanka and worldwide.",
-  email: "hello@mistravora.com",
-  phone: "+94 77 330 6063",
-  phoneHref: "+94773306063",
-  whatsapp: "94773306063",
-  address: "Paragahadeniya, Kurunegala, Sri Lanka",
-  geo: {
-    lat: 7.421684993394642,
-    lng: 80.46674229510334,
-  },
-} as const;
+import { businessDefaults } from "./business-profile-data";
+
+export const site = businessDefaults;
 
 export const mainNav = [
   { title: "Solutions", href: "/solutions" },

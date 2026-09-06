@@ -1,4 +1,4 @@
-const CACHE = "mistravora-v4";
+const CACHE = "mistravora-v5";
 const OFFLINE = "/offline.html";
 
 // Precache only the offline fallback — everything else is cached on-demand.
@@ -22,7 +22,7 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))
+          keys.filter((key) => key.startsWith("mistravora-") && key !== CACHE).map((key) => caches.delete(key))
         )
       )
       .then(() => self.clients.claim())
@@ -77,6 +77,10 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
+
+  // RSC/prefetch/data responses must remain under Next.js cache control.
+  if (request.headers.has("RSC") || url.searchParams.has("_rsc")) return;
+  if (!url.pathname.startsWith("/_next/static/") && !["image", "font", "style", "script"].includes(request.destination)) return;
 
   // Static assets: cache-first with network fallback.
   event.respondWith(

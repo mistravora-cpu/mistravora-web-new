@@ -3,7 +3,7 @@
 import * as React from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { site } from "@/lib/site";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 
 const USD_RATE = 300;
 
@@ -34,6 +34,7 @@ const selectClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function CostCalculator() {
+  const site = useBusinessProfile();
   const [typeId, setTypeId] = React.useState<string>("website");
   const [selected, setSelected] = React.useState<string[]>(["cms"]);
   const [timelineId, setTimelineId] = React.useState<string>("standard");

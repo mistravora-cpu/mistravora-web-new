@@ -1,0 +1,194 @@
+[
+  {
+    "name": "mobile",
+    "path": "/",
+    "testedAt": "2026-09-06T00:30:32.189Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "simulate",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 95,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 2854.0926,
+    "tbtMs": 65.52314999999999,
+    "cls": 0
+  },
+  {
+    "name": "slow-mobile",
+    "path": "/",
+    "testedAt": "2026-09-06T00:30:46.374Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "simulate",
+    "throttling": {
+      "rttMs": 300,
+      "throughputKbps": 800,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 78,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 5619.986650000001,
+    "tbtMs": 50.5,
+    "cls": 0
+  },
+  {
+    "name": "slow-browser",
+    "path": "/",
+    "testedAt": "2026-09-06T00:31:00.235Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 99,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 1600.822,
+    "tbtMs": 61.53600000000051,
+    "cls": 0.00009151866127870314
+  },
+  {
+    "name": "slow-browser-2",
+    "path": "/",
+    "testedAt": "2026-09-06T00:31:27.437Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 99,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 1601.751,
+    "tbtMs": 59.97200000000021,
+    "cls": 0.00009151866127870314
+  },
+  {
+    "name": "slow-browser-3",
+    "path": "/",
+    "testedAt": "2026-09-06T00:31:54.587Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 99,
+      "accessibility": 97,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 1602.321,
+    "tbtMs": 61.100000000000364,
+    "cls": 0.00009151866127870314
+  },
+  {
+    "name": "contact-slow",
+    "path": "/contact",
+    "testedAt": "2026-09-06T00:32:21.738Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 1697.258,
+    "tbtMs": 11.335000000000036,
+    "cls": 0
+  },
+  {
+    "name": "pricing-slow",
+    "path": "/pricing",
+    "testedAt": "2026-09-06T00:32:45.354Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "devtools",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 300,
+      "downloadThroughputKbps": 800,
+      "uploadThroughputKbps": 400,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 98,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 1802.674,
+    "tbtMs": 11.610999999999876,
+    "cls": 0
+  },
+  {
+    "name": "final-mobile",
+    "path": "/",
+    "testedAt": "2026-09-06T00:35:20.155Z",
+    "lighthouseVersion": "13.4.1",
+    "throttlingMethod": "simulate",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "lcpMs": 2847.0296,
+    "tbtMs": 49.5,
+    "cls": 0
+  }
+]

@@ -901,3 +901,8 @@ section[data-cv="auto"] {
   }
 }
 
+
+/* Offscreen content is rendered on demand; motion preferences retain readable content. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}

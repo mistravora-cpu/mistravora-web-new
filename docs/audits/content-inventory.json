@@ -1,0 +1,791 @@
+{
+  "testedAt": "2026-09-06T02:18:06.468Z",
+  "scope": "Anonymous public-readable content; drafts/private records not inspected. Maximum 1000 records per table.",
+  "results": [
+    {
+      "table": "solutions",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "short_description": 0,
+        "long_description": 0,
+        "image": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "case_studies",
+      "publicRows": 7,
+      "missing": {
+        "title": 0,
+        "client": 0,
+        "industry": 0,
+        "location": 0,
+        "date": 0,
+        "problem_statement": 0,
+        "solution": 0,
+        "outcome": 0,
+        "cover_image": 6
+      },
+      "entries": [
+        {
+          "name": "Unic Motors & Services — Service Management",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "Dubai Store — Online Store",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "Assalafiya Book Shop — Bookstore Management",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "TamDrill — Drilling Services Management",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "Amaluna Resorts — Booking System",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "Wijesinghe Jewellers — Inventory & POS",
+          "missing": [
+            "cover_image"
+          ]
+        },
+        {
+          "name": "ShopMate — E-commerce Platform",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "industries",
+      "publicRows": 4,
+      "missing": {
+        "title": 0,
+        "summary": 0,
+        "description": 0,
+        "image": 4
+      },
+      "entries": [
+        {
+          "name": "Retail",
+          "missing": [
+            "image"
+          ]
+        },
+        {
+          "name": "Hospitality",
+          "missing": [
+            "image"
+          ]
+        },
+        {
+          "name": "Healthcare",
+          "missing": [
+            "image"
+          ]
+        },
+        {
+          "name": "Manufacturing",
+          "missing": [
+            "image"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "services",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "tagline": 0,
+        "description": 0,
+        "body": 0,
+        "cover_image": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "posts",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "excerpt": 0,
+        "body": 0,
+        "cover_image": 0,
+        "author": 0,
+        "category": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "glossary_terms",
+      "publicRows": 0,
+      "missing": {
+        "term": 0,
+        "definition": 0,
+        "explanation": 0,
+        "examples": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "research",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "summary": 0,
+        "body": 0,
+        "cover_image": 0,
+        "author": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "knowledge_base",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "summary": 0,
+        "body": 0,
+        "author_id": 0,
+        "cover_image": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "authors",
+      "publicRows": 0,
+      "missing": {
+        "name": 0,
+        "role": 0,
+        "bio": 0,
+        "photo": 0,
+        "expertise": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "testimonials",
+      "publicRows": 4,
+      "missing": {
+        "name": 0,
+        "role": 0,
+        "quote": 0,
+        "avatar": 4
+      },
+      "entries": [
+        {
+          "name": "Rashid",
+          "missing": [
+            "avatar"
+          ]
+        },
+        {
+          "name": "Manager",
+          "missing": [
+            "avatar"
+          ]
+        },
+        {
+          "name": "Nimal",
+          "missing": [
+            "avatar"
+          ]
+        },
+        {
+          "name": "Aisha",
+          "missing": [
+            "avatar"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "team_members",
+      "publicRows": 4,
+      "missing": {
+        "name": 0,
+        "role": 0,
+        "bio": 0,
+        "photo": 4
+      },
+      "entries": [
+        {
+          "name": "Shakeel",
+          "missing": [
+            "photo"
+          ]
+        },
+        {
+          "name": "Sarah",
+          "missing": [
+            "photo"
+          ]
+        },
+        {
+          "name": "Ahmed",
+          "missing": [
+            "photo"
+          ]
+        },
+        {
+          "name": "Fatima",
+          "missing": [
+            "photo"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "trusted_companies",
+      "publicRows": 7,
+      "missing": {
+        "name": 0,
+        "description": 0,
+        "logo": 6,
+        "website_url": 7
+      },
+      "entries": [
+        {
+          "name": "Unic Motors & Services",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "Dubai Store",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "Assalafiya Book Shop",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "TamDrill",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "Amaluna Resorts",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "Wijesinghe Jewellers",
+          "missing": [
+            "logo",
+            "website_url"
+          ]
+        },
+        {
+          "name": "ShopMate",
+          "missing": [
+            "website_url"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "jobs",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "location": 0,
+        "type": 0,
+        "description": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "core_values",
+      "publicRows": 4,
+      "missing": {
+        "title": 0,
+        "description": 0
+      },
+      "entries": [
+        {
+          "name": "Craftsmanship",
+          "missing": []
+        },
+        {
+          "name": "Performance",
+          "missing": []
+        },
+        {
+          "name": "Transparency",
+          "missing": []
+        },
+        {
+          "name": "Partnership",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "benefits",
+      "publicRows": 6,
+      "missing": {
+        "title": 0,
+        "description": 0
+      },
+      "entries": [
+        {
+          "name": "Fast by default",
+          "missing": []
+        },
+        {
+          "name": "Secure & private",
+          "missing": []
+        },
+        {
+          "name": "SEO-ready",
+          "missing": []
+        },
+        {
+          "name": "Mobile-first",
+          "missing": []
+        },
+        {
+          "name": "AI leverage",
+          "missing": []
+        },
+        {
+          "name": "Real support",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "resources",
+      "publicRows": 0,
+      "missing": {
+        "title": 0,
+        "description": 0,
+        "file_url": 0
+      },
+      "entries": []
+    },
+    {
+      "table": "statistics",
+      "publicRows": 4,
+      "missing": {
+        "value": 0,
+        "label": 0
+      },
+      "entries": [
+        {
+          "name": "Years Experience",
+          "missing": []
+        },
+        {
+          "name": "Projects Delivered",
+          "missing": []
+        },
+        {
+          "name": "Client Satisfaction",
+          "missing": []
+        },
+        {
+          "name": "System Uptime",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "value_cards",
+      "publicRows": 6,
+      "missing": {
+        "title": 0,
+        "description": 0
+      },
+      "entries": [
+        {
+          "name": "Performance-first",
+          "missing": []
+        },
+        {
+          "name": "Privacy-first",
+          "missing": []
+        },
+        {
+          "name": "Built to convert",
+          "missing": []
+        },
+        {
+          "name": "Mobile-ready",
+          "missing": []
+        },
+        {
+          "name": "SEO-optimized",
+          "missing": []
+        },
+        {
+          "name": "AI-powered",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "pricing_notes",
+      "publicRows": 6,
+      "missing": {
+        "text": 0
+      },
+      "entries": [
+        {
+          "name": "Prices are starting points and may vary based on scope and complexity.",
+          "missing": []
+        },
+        {
+          "name": "All projects include a free discovery call and written proposal.",
+          "missing": []
+        },
+        {
+          "name": "Payment is typically split into milestones.",
+          "missing": []
+        },
+        {
+          "name": "Hosting and domain costs are not included unless stated.",
+          "missing": []
+        },
+        {
+          "name": "Maintenance plans are available separately.",
+          "missing": []
+        },
+        {
+          "name": "Prices are quoted in LKR; other currencies available on request.",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "pricing_tiers",
+      "publicRows": 3,
+      "missing": {
+        "name": 0,
+        "price": 0,
+        "description": 0,
+        "tagline": 0
+      },
+      "entries": [
+        {
+          "name": "Starter",
+          "missing": []
+        },
+        {
+          "name": "Growth",
+          "missing": []
+        },
+        {
+          "name": "Custom",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "faqs",
+      "publicRows": 7,
+      "missing": {
+        "page": 0,
+        "question": 0,
+        "answer": 0
+      },
+      "entries": [
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        },
+        {
+          "name": "general",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "pricing_addons",
+      "publicRows": 5,
+      "missing": {
+        "name": 0
+      },
+      "entries": [
+        {
+          "name": "AI chat widget integration",
+          "missing": []
+        },
+        {
+          "name": "Advanced analytics dashboard",
+          "missing": []
+        },
+        {
+          "name": "Multi-language support",
+          "missing": []
+        },
+        {
+          "name": "Performance optimization audit",
+          "missing": []
+        },
+        {
+          "name": "Monthly maintenance retainer",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "contact_info",
+      "publicRows": 1,
+      "missing": {
+        "headline": 0,
+        "description": 0,
+        "address": 0,
+        "email": 0,
+        "phone": 0,
+        "whatsapp": 0
+      },
+      "entries": [
+        {
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "policies",
+      "publicRows": 4,
+      "missing": {
+        "title": 0,
+        "body": 0,
+        "version": 0
+      },
+      "entries": [
+        {
+          "name": "Privacy Policy",
+          "missing": []
+        },
+        {
+          "name": "Terms of Service",
+          "missing": []
+        },
+        {
+          "name": "Cookie Policy",
+          "missing": []
+        },
+        {
+          "name": "Refund Policy",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "tech_stack",
+      "publicRows": 24,
+      "missing": {
+        "name": 0,
+        "category": 0,
+        "logo": 0
+      },
+      "entries": [
+        {
+          "name": "React",
+          "missing": []
+        },
+        {
+          "name": "Next.js",
+          "missing": []
+        },
+        {
+          "name": "TypeScript",
+          "missing": []
+        },
+        {
+          "name": "Tailwind CSS",
+          "missing": []
+        },
+        {
+          "name": "Node.js",
+          "missing": []
+        },
+        {
+          "name": "Supabase",
+          "missing": []
+        },
+        {
+          "name": "PostgreSQL",
+          "missing": []
+        },
+        {
+          "name": "Three.js",
+          "missing": []
+        },
+        {
+          "name": "Anthropic Claude",
+          "missing": []
+        },
+        {
+          "name": "Cloudflare",
+          "missing": []
+        },
+        {
+          "name": "Vercel",
+          "missing": []
+        },
+        {
+          "name": "Framer Motion",
+          "missing": []
+        },
+        {
+          "name": "React Query",
+          "missing": []
+        },
+        {
+          "name": "Zod",
+          "missing": []
+        },
+        {
+          "name": "Drizzle ORM",
+          "missing": []
+        },
+        {
+          "name": "Stripe",
+          "missing": []
+        },
+        {
+          "name": "Resend",
+          "missing": []
+        },
+        {
+          "name": "Redis",
+          "missing": []
+        },
+        {
+          "name": "Docker",
+          "missing": []
+        },
+        {
+          "name": "GitHub Actions",
+          "missing": []
+        },
+        {
+          "name": "Sentry",
+          "missing": []
+        },
+        {
+          "name": "PostHog",
+          "missing": []
+        },
+        {
+          "name": "AWS S3",
+          "missing": []
+        },
+        {
+          "name": "OpenAI",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "hero_sections",
+      "publicRows": 9,
+      "missing": {
+        "page": 0,
+        "headline": 0,
+        "description": 0,
+        "primary_button_text": 0,
+        "primary_button_link": 0
+      },
+      "entries": [
+        {
+          "name": "about",
+          "missing": []
+        },
+        {
+          "name": "solutions",
+          "missing": []
+        },
+        {
+          "name": "home",
+          "missing": []
+        },
+        {
+          "name": "pricing",
+          "missing": []
+        },
+        {
+          "name": "projects",
+          "missing": []
+        },
+        {
+          "name": "blog",
+          "missing": []
+        },
+        {
+          "name": "careers",
+          "missing": []
+        },
+        {
+          "name": "contact",
+          "missing": []
+        },
+        {
+          "name": "tools",
+          "missing": []
+        }
+      ]
+    },
+    {
+      "table": "demo_apps",
+      "publicRows": 0,
+      "missing": {
+        "name": 0,
+        "description": 0,
+        "url": 0,
+        "image": 0
+      },
+      "entries": []
+    }
+  ]
+}

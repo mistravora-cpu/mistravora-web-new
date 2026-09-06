@@ -1,32 +1,24 @@
 import { getMarketingSettings } from "@/lib/services";
 import { ConsentGatedScript } from "@/components/consent-gated-script";
 
-/**
- * Marketing tags — all inline scripts use dangerouslySetInnerHTML
- * instead of next/script to avoid React streaming hydration issues
- * with appendChild. External scripts (with src) still use next/script.
- */
+/** Load configured marketing tags after the relevant consent choice. */
 export async function MarketingTags() {
-  const m = await getMarketingSettings();
+  const settings = await getMarketingSettings();
+  const m = { ...settings, ga4_measurement_id: settings.ga4_measurement_id || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, clarity_id: settings.clarity_id || process.env.NEXT_PUBLIC_CLARITY_ID };
 
   return (
     <>
-      {/* Google Tag Manager — loaded immediately as it's the consent platform itself */}
-      {m.gtm_container_id ? (
-        // eslint-disable-next-line @next/next/next-script-for-ga
-        <script
-          id="gtm"
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${m.gtm_container_id}');`,
-          }}
-        />
-      ) : null}
+      {/* GTM also waits for a visitor’s consent. */}
+      {m.gtm_container_id ? <ConsentGatedScript category="analytics" id="gtm">{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;d.head.appendChild(j);})(window,document,'script','dataLayer','${m.gtm_container_id}');`}</ConsentGatedScript> : null}
 
       {/* GA4 (if no GTM) — analytics category */}
       {!m.gtm_container_id && m.ga4_measurement_id ? (
-        <ConsentGatedScript category="analytics" id="ga4">
+        <>
+          <ConsentGatedScript category="analytics" id="ga4-src" src={`https://www.googletagmanager.com/gtag/js?id=${m.ga4_measurement_id}`} />
+          <ConsentGatedScript category="analytics" id="ga4">
           {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${m.ga4_measurement_id}');`}
-        </ConsentGatedScript>
+          </ConsentGatedScript>
+        </>
       ) : null}
 
       {/* Microsoft Clarity — analytics category */}
@@ -109,7 +101,7 @@ export async function MarketingTags() {
       {/* Snap Pixel — marketing category */}
       {m.snap_pixel_id ? (
         <ConsentGatedScript category="marketing" id="snap-pixel">
-          {`var e,n,o,i,t,a=[],s='snaptr';function c(e){return function(){try{return e.apply(this,arguments)}catch(t){console.error(t)}}}function r(e,n,t){e[n]=c(t)}!function(e,t,n){(e.Snaptr=e.Snaptr||function(){e.snaptr?e.snaptr.apply(e,arguments):e.queue.push(arguments)},e.snaptr=e.snaptr||e.snaptr||function(){e.queue.push(arguments)},e.queue=[])}(window);snaptr('init','${m.snap_pixel_id}');snaptr('track','PAGE_VIEW');var s=document.createElement('script');s.async=!0;s.src='https://sc-static.net/scevent.min.js';var h=document.getElementsByTagName('head')[0];h.appendChild(s)}(window);`}
+          {`(function(w,d){if(w.snaptr)return;var q=w.snaptr=function(){q.handleRequest?q.handleRequest.apply(q,arguments):q.queue.push(arguments)};q.queue=[];var s=d.createElement('script');s.async=true;s.src='https://sc-static.net/scevent.min.js';d.head.appendChild(s)})(window,document);snaptr('init','${m.snap_pixel_id}');snaptr('track','PAGE_VIEW');`}
         </ConsentGatedScript>
       ) : null}
 

@@ -1,3 +1,8 @@
+import { getBusinessProfile } from "@/lib/business-profile";
+import { jsonLd, withSocialMetadata } from "@/lib/seo";
+import { applySeoOverrides } from "@/lib/seo-overrides";
+import { ShareButton } from "@/components/share-button";
+import { RelatedContent } from "@/components/related-content";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,7 +13,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -20,7 +25,7 @@ export async function generateMetadata({
   if (!post) return { title: "Post not found" };
 
   const url = `${site.url}/blog/${post.slug}`;
-  return {
+  return applySeoOverrides(withSocialMetadata({
     title: post.title,
     description: post.excerpt ?? undefined,
     alternates: { canonical: url },
@@ -39,7 +44,7 @@ export async function generateMetadata({
       description: post.excerpt ?? undefined,
       images: post.cover_image ? [post.cover_image] : undefined,
     },
-  };
+  }));
 }
 
 export default async function BlogPostPage({
@@ -47,12 +52,14 @@ export default async function BlogPostPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const profile = await getBusinessProfile();
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   return (
     <article className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, name: post.title, description: post.excerpt, url: `${site.url}/blog/${post.slug}`, dateModified: post.updated_at, datePublished: post.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
       <div className="mx-auto max-w-6xl w-full">
         <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
         <ScrollReveal animation="fade-up">
@@ -150,13 +157,14 @@ export default async function BlogPostPage({
         <ScrollReveal animation="fade-up" delay={200} className="mt-12 rounded-xl border border-border bg-card p-6 text-center">
           <h2 className="text-lg font-semibold">Need help building something like this?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            We reply within one business day with honest advice and a clear quote.
+            {profile.response}. Tell us about your requirements.
           </p>
           <Button asChild className="mt-4">
             <Link href="/contact">Get a free quote</Link>
           </Button>
         </ScrollReveal>
       </div>
+      <div className="mx-auto mt-8 max-w-6xl"><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
     </article>
   );
 }
