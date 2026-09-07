@@ -27,6 +27,7 @@ export type Solution = {
 };
 
 export type CaseStudy = {
+  website_url?: string | null;
   id: string;
   title: string;
   slug: string;

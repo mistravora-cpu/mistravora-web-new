@@ -191,6 +191,11 @@ export async function upsertRow(
   if (table === "case_studies" && typeof parentData.published === "boolean") {
     parentData.status = parentData.published ? "active" : "draft";
   }
+  if (table === "case_studies" && "website_url" in parentData) {
+    const url = typeof parentData.website_url === "string" ? parentData.website_url.trim() : "";
+    if (url && !isPublicMediaUrl(url)) return { error: "Use a public HTTPS project URL, or leave it blank for sensitive systems." };
+    parentData.website_url = url || null;
+  }
 
   if (table === "research" && "slug" in parentData) {
     const slug = typeof parentData.slug === "string" ? normalizeResearchSlug(parentData.slug) : null;

@@ -1,3 +1,4 @@
+import { isPublicMediaUrl } from "@/lib/media-url";
 import { ArticleBody } from "@/components/article-body";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -99,6 +100,12 @@ export default async function CaseStudyPage({
               </span>
             )}
           </div>
+
+          {cs.website_url && isPublicMediaUrl(cs.website_url) && (
+            <Button asChild className="mt-6">
+              <a href={cs.website_url} target="_blank" rel="noopener noreferrer">Visit website <span className="sr-only">(opens in a new tab)</span></a>
+            </Button>
+          )}
 
           {cs.cover_image && (
             <div className="relative mt-10 h-72 w-full overflow-hidden rounded-xl border border-border bg-muted p-6 sm:h-96 lg:h-[28rem]">
