@@ -1,3 +1,4 @@
+import { ArticleBody } from "@/components/article-body";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -122,7 +123,7 @@ export default async function BlogPostPage({
 
           {post.body && (
             <div className="mt-8 max-w-none text-sm leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground">
-              {post.body}
+              <ArticleBody body={post.body} title={post.title} />
             </div>
           )}
 
