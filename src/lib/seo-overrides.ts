@@ -9,7 +9,7 @@ const settings = unstable_cache(
     const { data, error } = await createPublicClient()
       .from("page_seo")
       .select("path,title,description,canonical,noindex,og_image")
-      .abortSignal(AbortSignal.timeout(4000));
+      .abortSignal(AbortSignal.timeout(8000));
     if (error && error.code !== "PGRST205" && error.code !== "42P01")
       throw error;
     return data ?? [];
@@ -23,7 +23,7 @@ export async function applySeoOverrides(base: Metadata): Promise<Metadata> {
   if (["/", "/about", "/contact", "/industries"].includes(path)) {
     const profile = await getBusinessProfile();
     const description = path === "/contact" ? `${profile.availability}. ${profile.response}. Contact ${profile.name}: ${profile.email}.` : profile.intro;
-    base = { ...base, description, ...(path === "/" ? { title: `${profile.name} — ${profile.headline}` } : {}), openGraph: { ...base.openGraph, description, ...(path === "/" ? { title: profile.headline } : {}) }, twitter: { ...base.twitter, description, ...(path === "/" ? { title: profile.headline } : {}) } };
+    base = { ...base, description, ...(path === "/" ? { title: profile.seoTitle || `${profile.name} — ${profile.headline}` } : {}), openGraph: { ...base.openGraph, description, ...(path === "/" ? { title: profile.headline } : {}) }, twitter: { ...base.twitter, description, ...(path === "/" ? { title: profile.headline } : {}) } };
   }
   const entry = (await settings().catch(() => [])).find((e) => e.path === path);
   if (!entry) return base;

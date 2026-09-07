@@ -127,10 +127,15 @@ export default function RootLayout({
           <ScrollProgress />
           <SiteBackground />
           {children}
-          <Analytics />
+          <Suspense fallback={null}><CookieControls /></Suspense>
           <ServiceWorker />
         </ThemeProvider>
       </body>
     </html>
   );
+}
+
+async function CookieControls() {
+  const profile = await getBusinessProfile();
+  return <Analytics showBanner={profile.cookieBannerEnabled !== "false"} />;
 }

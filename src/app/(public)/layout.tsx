@@ -18,7 +18,7 @@ export default async function PublicLayout({
       <SiteHeader />
       <div id="main-content" tabIndex={-1} className="flex flex-1 flex-col">{children}</div>
       <SiteFooter />
-      <ChatWidget />
+      {profile.chatEnabled !== "false" && <ChatWidget />}
     </BusinessProfileProvider>
   );
 }

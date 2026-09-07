@@ -28,58 +28,11 @@ function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Zap);
 }
 
-const fallbackValues = [
-  {
-    id: "fallback-v1",
-    icon: "Zap",
-    title: "Performance-first",
-    description:
-      "Every build ships with strict budgets for speed, bundle size, and accessibility — because slow sites lose customers.",
-    sort_order: 1,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-v2",
-    icon: "Shield",
-    title: "Privacy-first",
-    description:
-      "Consent-aware analytics and no tracker pile-ups. Your visitors' data is treated with respect.",
-    sort_order: 2,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-v3",
-    icon: "HandHeart",
-    title: "Built to convert",
-    description:
-      "Design, copy, and tooling focused on one goal: turning visitors into conversations and customers.",
-    sort_order: 3,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-v4",
-    icon: "Lightbulb",
-    title: "Honest advice",
-    description:
-      "We recommend the simplest thing that works — not the most expensive. If you don't need it, we'll say so.",
-    sort_order: 4,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-];
-
 export default async function AboutPage() {
   const [hero, profile] = await Promise.all([getHeroSection("about"), getBusinessProfile()]);
   const timeline = [{ year: profile.founded, title: "Founded", description: `${profile.name} was founded by ${profile.founder} and co-founded by ${profile.cofounder}.` }];
   const [dbValues, dbTeam] = await Promise.all([getCoreValues(true), getTeamMembers(true)]);
-  const values = dbValues.length > 0 ? dbValues : fallbackValues;
+  const values = dbValues;
   const team = dbTeam;
 
   return (
@@ -107,7 +60,7 @@ export default async function AboutPage() {
           <p>{profile.story}</p>
           <p>{profile.customers}</p>
           <p>{profile.industries} {profile.coverage}</p>
-          <p>{profile.availability}. {profile.response}.</p>
+          <p>{profile.showHours !== "false" ? `${profile.availability}.` : ""} {profile.response}.</p>
         </div>
       </ScrollReveal>
 

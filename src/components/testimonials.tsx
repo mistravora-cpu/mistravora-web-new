@@ -81,7 +81,7 @@ export async function Testimonials() {
       <div className="mt-10 flex flex-col gap-4">
         <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div
-            className="flex w-max gap-4 will-change-transform group-hover/row:[animation-play-state:paused]"
+            className="flex w-max gap-4 will-change-transform "
             style={{ animation: "marquee-var 50s linear infinite", ["--marquee-end" as string]: loopPercent(row1Items.length) }}
           >
             {row1.map((t, i) => (
@@ -91,7 +91,7 @@ export async function Testimonials() {
         </div>
         <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div
-            className="flex w-max gap-4 will-change-transform group-hover/row:[animation-play-state:paused]"
+            className="flex w-max gap-4 will-change-transform "
             style={{ animation: "marquee-var 50s linear infinite reverse", ["--marquee-end" as string]: loopPercent(row2Items.length) }}
           >
             {row2.map((t, i) => (

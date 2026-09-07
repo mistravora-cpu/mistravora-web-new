@@ -1,7 +1,7 @@
 import { updateSession } from "@/lib/supabase/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicRoots = new Set(["", "about", "admin", "api", "assistant", "authors", "blog", "book", "brand", "careers", "contact", "dashboard", "glossary", "industries", "insights", "knowledge-base", "policies", "pricing", "projects", "research", "resources", "search", "services", "share", "solutions", "tools", "unsubscribe", "_next", "_not-found"]);
+const publicRoots = new Set(["", "about", "admin", "api", "assistant", "authors", "blog", "book", "brand", "careers", "contact", "dashboard", "demos", "glossary", "industries", "insights", "knowledge-base", "policies", "pricing", "projects", "research", "resources", "search", "services", "share", "solutions", "tools", "unsubscribe", "_next", "_not-found"]);
 export async function proxy(request: NextRequest) {
   const root = request.nextUrl.pathname.split("/")[1];
   if (!publicRoots.has(root) && !root.includes(".")) {

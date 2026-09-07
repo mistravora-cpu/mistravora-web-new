@@ -1,43 +1,20 @@
 "use client";
 
+import type { CalculatorConfig } from "@/lib/calculator-config";
 import * as React from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBusinessProfile } from "@/components/business-profile-provider";
 
-const USD_RATE = 300;
-
-const projectTypes = [
-  { id: "website", label: "Marketing website", base: 150_000 },
-  { id: "ecommerce", label: "E-commerce store", base: 350_000 },
-  { id: "webapp", label: "Web app / portal", base: 600_000 },
-  { id: "custom", label: "Custom software", base: 800_000 },
-] as const;
-
-const features = [
-  { id: "cms", label: "CMS-managed content", price: 50_000 },
-  { id: "blog", label: "Blog + SEO content system", price: 30_000 },
-  { id: "portal", label: "Client portal / dashboard", price: 150_000 },
-  { id: "ai", label: "AI assistant / AI features", price: 200_000 },
-  { id: "i18n", label: "Multilingual (Sinhala/Tamil)", price: 80_000 },
-  { id: "pwa", label: "Offline-ready PWA", price: 60_000 },
-  { id: "integrations", label: "Integrations (CRM, payments, email)", price: 100_000 },
-] as const;
-
-const timelines = [
-  { id: "standard", label: "Standard", multiplier: 1 },
-  { id: "fast", label: "Fast-track (+25%)", multiplier: 1.25 },
-  { id: "flexible", label: "Flexible (−10%)", multiplier: 0.9 },
-] as const;
-
 const selectClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-export function CostCalculator() {
+export function CostCalculator({ config }: { config: CalculatorConfig }) {
+  const { projectTypes, features, timelines, usdRate: USD_RATE } = config;
   const site = useBusinessProfile();
-  const [typeId, setTypeId] = React.useState<string>("website");
-  const [selected, setSelected] = React.useState<string[]>(["cms"]);
-  const [timelineId, setTimelineId] = React.useState<string>("standard");
+  const [typeId, setTypeId] = React.useState<string>(projectTypes[0].id);
+  const [selected, setSelected] = React.useState<string[]>([]);
+  const [timelineId, setTimelineId] = React.useState<string>(timelines[0].id);
   const [currency, setCurrency] = React.useState<"LKR" | "USD">("LKR");
 
   const type = projectTypes.find((t) => t.id === typeId) ?? projectTypes[0];

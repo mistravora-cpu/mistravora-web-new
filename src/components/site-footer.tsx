@@ -41,7 +41,7 @@ export async function SiteFooter() {
               {site.phone}
             </a>
             <p className="text-sm text-muted-foreground">{site.address}</p>
-            <p className="text-sm text-muted-foreground">{site.availability}. {site.response}.</p>
+            <p className="text-sm text-muted-foreground">{site.showHours !== "false" ? `${site.availability}.` : ""} {site.response}.</p>
           </div>
         </div>
 

@@ -22,7 +22,7 @@ const tools = [
     icon: Calculator,
     title: "Cost Calculator",
     description:
-      "Numerical estimates are under review. Discuss project scope and request a quotation.",
+      "Estimate a project range using the configured costs and selected features.",
     available: true,
   },
   {
@@ -58,6 +58,7 @@ export default async function ToolsPage() {
     <>
     <AnimatedHero hero={hero} page="tools" />
     <section className="w-full site-gutter py-16">
+      <Link href="/demos" className="mb-6 inline-block text-primary underline">Explore application demos</Link>
       <PageHeader
         title="Free Tools"
         description="Explore website checks and project-planning information."

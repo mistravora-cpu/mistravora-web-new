@@ -10,7 +10,7 @@ import { ClientsMarquee } from "@/components/clients-marquee";
 import { Testimonials } from "@/components/testimonials";
 import { SectionDivider } from "@/components/section-divider";
 import { getSolutions, getCaseStudies, getHeroSection } from "@/lib/services";
-import { site, solutions as fallbackSolutions } from "@/lib/site";
+import { site } from "@/lib/site";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 
 const baseMetadata: Metadata = withSocialMetadata({
@@ -30,33 +30,10 @@ export default async function SolutionsPage() {
     getSolutions(true),
     getCaseStudies(true),
   ]);
-  let solutions = solutionsData;
+  const solutions = solutionsData;
   const caseStudies = caseStudiesData
     .filter((cs) => cs.published && cs.status !== "archived")
     .slice(0, 3);
-  if (solutions.length === 0) {
-    solutions = fallbackSolutions.map((s, i) => ({
-      id: `fallback-${i}`,
-      title: s.title,
-      slug: s.title.toLowerCase().replace(/\s+/g, "-"),
-      summary: null,
-      body: null,
-      icon: null,
-      category: null,
-      short_description: s.description,
-      long_description: null,
-      technologies: [],
-      image: null,
-      sort_order: i,
-      features: [],
-      services: [],
-      process_steps: [],
-      pricing_packages: [],
-      published: true,
-      created_at: "",
-      updated_at: "",
-    }));
-  }
 
   return (
     <>
@@ -72,7 +49,7 @@ export default async function SolutionsPage() {
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 transition-all group-hover:bg-primary/20 hover-icon-bounce">
                   <Icon aria-hidden className="h-5 w-5 text-primary" />
                 </span>
-                <h2 className="mt-4 text-lg font-semibold">{solution.id.startsWith("fallback-") ? solution.title : <Link href={`/solutions/${solution.slug}`}>{solution.title}</Link>}</h2>
+                <h2 className="mt-4 text-lg font-semibold">{<Link href={`/solutions/${solution.slug}`}>{solution.title}</Link>}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {solution.short_description ?? solution.summary ?? solution.body ?? ""}
                 </p>

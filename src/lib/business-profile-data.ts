@@ -1,5 +1,12 @@
 /** Public, editable business facts. Defaults only cover an unavailable initial CMS read. */
 export const businessDefaults = {
+  showHours: "true",
+  newsletterEnabled: "true",
+  chatEnabled: "true",
+  cookieBannerEnabled: "true",
+  seoTitle: "",
+  latitude: "",
+  longitude: "",
   name: "Mistravora",
   url: "https://mistravora.com",
   description: "Mistravora is a digital solutions company founded in May 2025 by Husni and co-founded by Shakeel, delivering mobile applications, custom software, websites and end-to-end digital solutions for businesses of all sizes and industries. With no restriction to a single market or sector, Mistravora focuses on building practical, scalable and modern digital solutions around each client's requirements.",
@@ -26,6 +33,7 @@ export const businessDefaults = {
 };
 export type BusinessProfile = typeof businessDefaults;
 export const businessSettingFields = {
+  show_business_hours: "showHours", enable_newsletter: "newsletterEnabled", enable_chat_widget: "chatEnabled", enable_cookie_consent: "cookieBannerEnabled", site_title: "seoTitle", site_geo_lat: "latitude", site_geo_lng: "longitude",
   site_intro: "intro", site_name: "name", site_description: "description", site_email: "email", site_phone: "phone",
   site_whatsapp: "whatsapp", site_address: "address", company_founder: "founder",
   company_cofounder: "cofounder", company_founded: "founded", service_coverage: "coverage",
@@ -38,6 +46,7 @@ export function businessProfileFromRows(rows: { key: string; value: string | nul
   const profile: BusinessProfile = { ...businessDefaults };
   for (const { key, value } of rows) {
     if (!Object.hasOwn(businessSettingFields, key) || typeof value !== "string") continue;
+    if (["show_business_hours", "enable_newsletter", "enable_chat_widget", "enable_cookie_consent"].includes(key) && !["true", "false"].includes(value)) continue;
     const field = businessSettingFields[key as keyof typeof businessSettingFields];
     profile[field] = value;
   }

@@ -10,22 +10,7 @@ import { ContactMap } from "@/components/contact-map";
 import { ContactForm } from "./contact-form";
 import { Faq } from "@/components/faq";
 import { site } from "@/lib/site";
-import { getHeroSection } from "@/lib/services";
-
-const faqs = [
-  {
-    q: "How fast do you reply?",
-    a: "Responses within 24 hours.",
-  },
-  {
-    q: "What should I prepare before contacting you?",
-    a: "Nothing formal. A rough idea of what you want to achieve is enough — we'll guide you through the rest.",
-  },
-  {
-    q: "Do you work with clients outside Sri Lanka?",
-    a: "Absolutely. Everything runs remotely with regular video check-ins and a shared project board.",
-  },
-] as const;
+import { getHeroSection, getFaqs, getContactInfo, getSocialMedia } from "@/lib/services";
 
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Contact",
@@ -35,7 +20,8 @@ const baseMetadata: Metadata = withSocialMetadata({
 });
 
 export default async function ContactPage() {
-  const [hero, site] = await Promise.all([getHeroSection("contact"), getBusinessProfile()]);
+  const [hero, site, faqs, contactRows, socials] = await Promise.all([getHeroSection("contact"), getBusinessProfile(), getFaqs("contact", true), getContactInfo(), getSocialMedia(true)]);
+  const contact = contactRows;
   const whatsappMessage = encodeURIComponent(
     "Hi Mistravora! I'd like to discuss a project."
   );
@@ -99,9 +85,11 @@ export default async function ContactPage() {
         </div>
       </ScrollReveal>
 
-      <p className="mt-6 text-muted-foreground">{site.availability}. {site.response}.</p>
+      <p className="mt-6 text-muted-foreground">{site.showHours !== "false" ? `${site.availability}.` : ""} {site.response}.</p>
       <ScrollReveal animation="blur-in" delay={200} className="mt-12 grid w-full gap-6 lg:grid-cols-2">
-        <ContactForm />
+        {contact && <div className="mb-6"><h2 className="text-xl font-semibold">{contact.headline}</h2><p className="mt-2 text-muted-foreground">{contact.description}</p></div>}
+          <ContactForm />
+          <nav aria-label="Social profiles" className="mt-6 flex flex-wrap gap-4">{socials.filter(s=>/^https:\/\//.test(s.url)).map(s=><a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">{s.platform}</a>)}</nav>
         <ContactMap />
       </ScrollReveal>
 
@@ -110,7 +98,7 @@ export default async function ContactPage() {
           Before you ask
         </h2>
         <div className="scroll-reveal mt-8">
-          <Faq items={faqs.map((faq, index) => index === 0 ? { ...faq, a: `${site.availability}. ${site.response}.` } : faq)} />
+          <Faq items={faqs.map(faq => ({q:faq.question,a:faq.answer}))} />
         </div>
       </ScrollReveal>
     </section>

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { CONSENT_VERSION, saveConsent, setConsentValue, subscribeConsent, getConsentSnapshot, getConsentSSR } from "@/lib/consent";
 
-export function Analytics() {
+export function Analytics({ showBanner = true }: { showBanner?: boolean }) {
   const consent = useSyncExternalStore(subscribeConsent, getConsentSnapshot, getConsentSSR);
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [analytics, setAnalytics] = useState(false);
@@ -28,7 +28,7 @@ export function Analytics() {
   }
   const button = "rounded-lg border border-border px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-primary hover:bg-muted";
   return <>
-    {mounted && !consent && <section aria-label="Cookie choices" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card p-4 shadow-xl">
+    {showBanner && mounted && !consent && <section aria-label="Cookie choices" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card p-4 shadow-xl">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-xl"><h2 className="font-semibold">Your privacy choices</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Necessary storage supports sign-in and your preferences. Optional analytics and marketing are off until you choose. <Link href="/policies/cookie-policy" className="underline">Cookie Policy</Link></p></div>
         <div className="flex flex-wrap gap-2"><button className={button} onClick={() => choose(false, false)}>Decline all</button><button className={button} onClick={open}>Customize</button><button className={button} onClick={() => choose(true, true)}>Accept all</button></div>

@@ -1,5 +1,6 @@
 "use server";
 
+import { calculatorSchema } from "@/lib/calculator-config";
 import { normalizeResearchSlug } from "@/lib/research-slug";
 import { revalidatePath, updateTag } from "next/cache";
 import { publicBusinessKeys } from "@/lib/business-profile-data";
@@ -259,6 +260,7 @@ export async function deleteRow(table: string, id: string) {
 // Allowed setting keys — prevents arbitrary key injection.
 const ALLOWED_SETTING_KEYS = new Set([
   ...publicBusinessKeys,
+  "pricing_calculator_config",
   // Marketing — analytics
   "gtm_container_id",
   "ga4_measurement_id",
@@ -320,6 +322,16 @@ export async function saveSettings(data: Record<string, string>) {
   if (Object.values(data).some(value => typeof value !== "string" || value.length > 10000)) return { error: "Settings must be text of at most 10,000 characters." };
   if (data.company_founded && !/^\d{4}-(0[1-9]|1[0-2])$/.test(data.company_founded)) return { error: "Use YYYY-MM for the founding date." };
   if (data.site_email && !z.email().safeParse(data.site_email).success) return { error: "Provide a valid email address." };
+  for (const key of ["show_business_hours", "enable_newsletter", "enable_chat_widget", "enable_cookie_consent"]) {
+    if (data[key] !== undefined && !["true", "false"].includes(data[key])) return { error: "Feature switches must be true or false." };
+  }
+  for (const [key, limit] of [["site_geo_lat", 90], ["site_geo_lng", 180]] as const) {
+    if (data[key] && (!Number.isFinite(Number(data[key])) || Math.abs(Number(data[key])) > limit)) return {error: "Provide valid latitude and longitude coordinates."};
+  }
+  if (data.pricing_calculator_config) {
+    try { calculatorSchema.parse(JSON.parse(data.pricing_calculator_config)); }
+    catch { return { error: "Invalid calculator configuration. Provide non-empty project types and timelines, unique IDs, and nonnegative prices." }; }
+  }
   // IDs are interpolated into scripts; reject executable punctuation at the write boundary.
   for (const [key, value] of Object.entries(data)) {
     if ((key.endsWith("_id") || key.endsWith("_label")) && value && !/^[A-Za-z0-9_./:-]+$/.test(value)) return { error: `Invalid identifier: ${key}` };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useBusinessProfile } from "@/components/business-profile-provider";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
+  const profile = useBusinessProfile();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -59,7 +61,7 @@ export function SiteHeader() {
             className="rounded-full transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
           />
           <span className="text-lg font-bold tracking-tight transition-colors group-hover:text-primary">
-            Mistravora
+            {profile.name}
           </span>
         </Link>
 

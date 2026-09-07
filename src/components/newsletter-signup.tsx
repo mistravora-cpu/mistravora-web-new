@@ -1,4 +1,5 @@
 "use client";
+import { useBusinessProfile } from "@/components/business-profile-provider";
 import { FormPrivacy } from "@/components/form-privacy";
 
 import * as React from "react";
@@ -17,6 +18,7 @@ export function NewsletterSignup({
   description?: string;
   compact?: boolean;
 }) {
+  const profile = useBusinessProfile();
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
   const alreadySubscribed = React.useSyncExternalStore(
@@ -24,6 +26,8 @@ export function NewsletterSignup({
     () => { try { return localStorage.getItem(STORAGE_KEY) !== null; } catch { return false; } },
     () => false,
   );
+
+  if (profile.newsletterEnabled === "false") return null;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

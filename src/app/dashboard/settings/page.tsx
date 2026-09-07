@@ -1,3 +1,4 @@
+import { businessDefaults, businessSettingFields } from "@/lib/business-profile-data";
 import type { Metadata } from "next";
 import { getAdminSettings as getSettings } from "@/lib/services";
 import { PasswordForm } from "./password-form";
@@ -61,7 +62,7 @@ export default async function SettingsAdminPage() {
   const initialData: Record<string, string> = {};
   for (const group of groups) {
     for (const field of group.fields) {
-      initialData[field.key] = settingsMap.get(field.key) ?? "";
+      initialData[field.key] = settingsMap.get(field.key) || businessDefaults[businessSettingFields[field.key as keyof typeof businessSettingFields]] || "";
     }
   }
 

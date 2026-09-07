@@ -298,14 +298,14 @@ export function MarketingEditor({ initialData }: Props) {
           <p className="font-medium text-foreground">You only need to paste the ID — not the full code block.</p>
           <p className="mt-1">
             Each platform gives you a code snippet, but inside that snippet is an ID.
-            Extract just the ID and paste it here. The full script code is generated
-            and injected automatically into your site. Click the{" "}
+            Extract just the ID and paste it here. Search verification is active; analytics, advertising and external integrations remain paused pending privacy review. Saving an ID does not activate tracking. Click the{" "}
             <HelpCircle className="inline h-3.5 w-3.5" /> icon next to each field for
             step-by-step instructions.
           </p>
         </div>
       </div>
 
+      <p className="rounded-lg border border-border p-4 text-sm">Search-engine verification IDs are live. Analytics, advertising scripts, external chat integrations and session recording remain paused after the privacy review; saving their IDs does not activate them.</p>
       {error ? (
         <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-500">
           {error}

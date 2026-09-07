@@ -217,15 +217,6 @@ const _getJobs = unstable_cache(
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
-const _getSettings = unstable_cache(
-  async (): Promise<Setting[]> => {
-    const supabase = createPublicClient();
-    return queryRows(supabase.from("settings").select("*").order("key"));
-  },
-  ["settings-privacy-review"],
-  { revalidate: CACHE_TTL, tags: CACHE_TAGS }
-);
-
 const _getHeroSection = unstable_cache(
   async (page: string): Promise<HeroSection | null> => {
     const supabase = createPublicClient();
@@ -459,7 +450,6 @@ export function getCaseStudies(publishedOnly = false) { return _getCaseStudies(p
 export function getPosts() { return _getPosts(); }
 export function getPublishedPosts() { return _getPublishedPosts(); }
 export function getJobs(publishedOnly = false) { return _getJobs(publishedOnly); }
-export function getSettings() { return _getSettings(); }
 export function getHeroSection(page: string) { return _getHeroSection(page); }
 export function getAllHeroSections() { return _getAllHeroSections(); }
 export function getValueCards(publishedOnly = false) { return _getValueCards(publishedOnly); }

@@ -27,7 +27,6 @@ import {
   Layout,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { trackButtonClick } from "@/lib/track-event";
 
 const navGroups = [
   {
@@ -98,7 +97,6 @@ export function DashboardNav() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                onClick={() => trackButtonClick("nav_" + item.label.toLowerCase().replace(/\s+/g, "_"), "dashboard_nav")}
                 className={cn(
                   "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
                   isActive

@@ -34,7 +34,7 @@ import { NewsletterSignup } from "@/components/newsletter-signup";
 import { StatsCounter } from "@/components/stats-counter";
 import { ScrollIndicator } from "@/components/scroll-indicator";
 import { GradientOrbs } from "@/components/gradient-orbs";
-import { getCaseStudies, getStatistics } from "@/lib/services";
+import { getCaseStudies, getStatistics, getHeroSection, getValueCards } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
 const siteUrl = "https://mistravora.com";
@@ -90,27 +90,6 @@ const fallbackIcons = [
   Smartphone,
   Bot,
   HeartHandshake,
-] as const;
-
-const highlights = [
-  {
-    icon: Zap,
-    title: "Fast by default",
-    description:
-      "Strict performance budgets on every build. Speed is a feature, not an afterthought.",
-  },
-  {
-    icon: Shield,
-    title: "Privacy-first",
-    description:
-      "Consent-aware analytics, zero tracker pile-ups. Your visitors stay respected.",
-  },
-  {
-    icon: Smartphone,
-    title: "Mobile-obsessed",
-    description:
-      "Designed thumb-first for real phones on real Sri Lankan networks.",
-  },
 ] as const;
 
 const freeTools = [
@@ -174,6 +153,8 @@ const featureHighlights = [
 ] as const;
 
 export default async function Home() {
+  const [hero, cards] = await Promise.all([getHeroSection("home"), getValueCards(true)]);
+  const highlights = cards.map(card => ({...card, icon: getSolutionIcon(card.icon || "Zap")}));
   return (
     <main className="flex flex-1 flex-col">
       {/* JSON-LD structured data for rich search results */}
@@ -198,7 +179,7 @@ export default async function Home() {
 
       {/* Hero — renders immediately, no Supabase dependency.
           This is the LCP element (h1) and must not be blocked by DB queries. */}
-      <RobotHeroClient />
+      <RobotHeroClient hero={hero} />
       <ScrollIndicator />
 
       {/* Stats counter — animated numbers that count up on scroll */}

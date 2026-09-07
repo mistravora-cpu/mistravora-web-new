@@ -1,3 +1,4 @@
+import { ArticleBody } from "@/components/article-body";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -164,7 +165,11 @@ export default async function DetailPage({ params }: { params: Promise<{ section
       /* ── Non-policy detail: standard content layout ── */
       <>
         {entry.updated && <p className="mt-4 text-xs text-muted-foreground">Updated <time dateTime={entry.updated}>{entry.updated.slice(0, 10)}</time></p>}
-        <div className="mt-8 max-w-3xl whitespace-pre-wrap text-base leading-8">{entry.body}</div>
+        {entry.image && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={entry.image} alt={entry.title} loading="lazy" width={1200} height={675} className="mt-8 max-h-96 w-full rounded-xl object-contain" />
+        )}
+        {entry.body && <div className="mt-8 text-base leading-8"><ArticleBody body={entry.body} title={entry.title} /></div>}
         {!!entry.features?.length && <section className="mt-8"><h2 className="text-2xl font-semibold">What&apos;s included</h2><ul className="mt-4 list-inside list-disc space-y-2">{entry.features.map(f => <li key={f}>{f}</li>)}</ul></section>}
         {!!entry.technologies?.length && <section className="mt-8"><h2 className="text-2xl font-semibold">Technologies</h2><p className="mt-3 text-muted-foreground">{entry.technologies.join(" · ")}</p></section>}
         {entry.download && <a href={entry.download} className="mt-6 inline-block rounded-lg bg-primary px-5 py-3 text-primary-foreground" rel="noopener noreferrer" data-event="download">Download {entry.title}</a>}

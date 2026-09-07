@@ -17,4 +17,4 @@ export const getBusinessProfile = unstable_cache(async () => {
     if (contact[field] != null) rows.push({ key: `site_${field}`, value: contact[field] });
   }
   return businessProfileFromRows(rows);
-}, ["public-business-profile-v1"], { revalidate: 300, tags: ["public-data"] });
+}, ["public-business-profile-v2"], { revalidate: 300, tags: ["public-data"] });

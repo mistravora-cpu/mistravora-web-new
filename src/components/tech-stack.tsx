@@ -1,31 +1,8 @@
-import { techCategories } from "@/lib/technologies";
 import { getTechStack } from "@/lib/services";
 
 type TechItem = { name: string; icon: string };
 
-const dedupe = (arr: readonly TechItem[]): TechItem[] => {
-  const seen = new Set<string>();
-  return arr.filter((item) => {
-    const key = item.name.toLowerCase().trim();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }) as TechItem[];
-};
-
-// Flatten all categories into one deduplicated list, then split into N balanced rows
-const allTechItems = dedupe(
-  techCategories.flatMap((c) => c.items as readonly TechItem[])
-);
 const rowCount = 3;
-const perRow = Math.ceil(allTechItems.length / rowCount);
-const fallbackRows: { items: readonly TechItem[]; reverse?: boolean }[] = Array.from(
-  { length: rowCount },
-  (_, i) => ({
-    items: allTechItems.slice(i * perRow, (i + 1) * perRow),
-    reverse: i % 2 === 1,
-  })
-).filter((r) => r.items.length > 0);
 
 // Duplicate items enough times so the row always fills the screen width.
 // 2x is the minimum for seamless -50% loop. For short rows, use 4x with -25% loop.
@@ -41,7 +18,10 @@ function loopPercent(items: TechItem[]): string {
 }
 
 function TechChip({ item }: { item: TechItem }) {
-  return <><span aria-hidden className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{item.name.charAt(0)}</span><span className="text-xs font-medium">{item.name}</span></>;
+  return <>{item.icon && /^(https:\/\/|\/(?!\/))/.test(item.icon) ? (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img src={item.icon} alt="" width={24} height={24} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-6 w-6 object-contain" />
+  ) : <span aria-hidden className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{item.name.charAt(0)}</span>}<span className="text-xs font-medium">{item.name}</span></>;
 }
 
 export async function TechStack() {
@@ -65,7 +45,7 @@ export async function TechStack() {
       reverse: i % 2 === 1,
     })).filter((r) => r.items.length > 0);
   } else {
-    rows = fallbackRows as { items: TechItem[]; reverse?: boolean }[];
+    return null;
   }
 
   return (
@@ -92,7 +72,7 @@ export async function TechStack() {
               className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
             >
               <ul
-                className="flex w-max gap-3 will-change-transform group-hover/row:[animation-play-state:paused]"
+                className="flex w-max gap-3 will-change-transform "
                 style={{
                   animation: `marquee-var 40s linear infinite${row.reverse ? " reverse" : ""}`,
                   ["--marquee-end" as string]: loopPercent(row.items),
