@@ -1,6 +1,5 @@
 import { getBusinessProfile } from "@/lib/business-profile";
 import Image from "next/image";
-import { MotionPreferences } from "@/components/motion-preferences";
 import Link from "next/link";
 import { getPolicies } from "@/lib/services";
 import { CookieSettingsButton } from "@/components/cookie-settings-button";
@@ -69,7 +68,6 @@ export async function SiteFooter() {
             <Link href="/search" className="text-sm hover:text-primary">Search</Link>
             {policies.map(policy => <Link key={policy.slug} href={`/policies/${policy.slug}`} className="text-sm hover:text-primary">{policy.title}</Link>)}
             <CookieSettingsButton />
-            <MotionPreferences />
             {mainNav.slice(5).map((item) => (
               <Link
                 key={item.href}

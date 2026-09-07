@@ -712,13 +712,12 @@ function SceneLifecycle() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
       const running = ready && visible && document.visibilityState !== "hidden";
-      setFrameloop(running ? ((reducedMotion.matches || document.documentElement.classList.contains("motion-paused")) ? "demand" : "always") : "never");
+      setFrameloop(running ? (reducedMotion.matches ? "demand" : "always") : "never");
       if (running) invalidate();
     };
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
     observer.observe(gl.domElement);
     reducedMotion.addEventListener("change", update);
-    window.addEventListener("mistravora:motion", update);
     document.addEventListener("visibilitychange", update);
     // Compile shaders through KHR_parallel_shader_compile when supported,
     // avoiding a synchronous GPU wait in the first animation frame.

@@ -116,7 +116,7 @@ export default async function AboutPage() {
         <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
           The journey so far
         </h2>
-        <ol className="mx-auto mt-10 flex max-w-6xl w-full flex-col gap-0">
+        <ol className="mx-auto mt-10 flex  w-full flex-col gap-0">
           {timeline.map((milestone, index) => (
             <li key={milestone.title}><ScrollReveal animation="clip-reveal" delay={index * 120} className="relative flex gap-6 border-l-2 border-border pb-10 pl-8 last:pb-0">
               <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-primary ring-4 ring-primary/20" />
@@ -159,7 +159,7 @@ export default async function AboutPage() {
 
       {/* Team */}
       <div className="mt-20">
-        <div className="mx-auto max-w-6xl w-full text-center">
+        <div className="mx-auto  w-full text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Who&apos;s building Mistravora
           </h2>
@@ -167,7 +167,7 @@ export default async function AboutPage() {
             Meet the people behind Mistravora.
           </p>
         </div>
-        <div className="mx-auto mt-10 grid w-full max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-10 grid w-full  gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {team.map((member, i) => {
             const initials = member.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
             return (

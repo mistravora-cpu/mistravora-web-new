@@ -2,6 +2,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardShell } from "./dashboard-shell";
 
+// Dashboard pages require auth + database access — never prerender
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {

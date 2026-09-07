@@ -61,7 +61,7 @@ export default async function BlogPostPage({
   return (
     <article className="w-full site-gutter py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, name: post.title, description: post.excerpt, url: `${site.url}/blog/${post.slug}`, dateModified: post.updated_at, datePublished: post.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto max-w-6xl w-full">
+      <div className="mx-auto  w-full">
         <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -165,7 +165,7 @@ export default async function BlogPostPage({
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto mt-8 max-w-6xl"><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
+      <div className="mx-auto mt-8 "><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
     </article>
   );
 }

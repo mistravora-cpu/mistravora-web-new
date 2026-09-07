@@ -61,7 +61,7 @@ const assets = [
 export default function BrandPage() {
   return (
     <div className="w-full site-gutter py-16">
-      <div className="mx-auto max-w-6xl w-full">
+      <div className="mx-auto  w-full">
         <Breadcrumbs items={[{ label: "Brand Assets" }]} />
 
         <PageHeader

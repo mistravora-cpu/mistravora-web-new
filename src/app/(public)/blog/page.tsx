@@ -54,6 +54,10 @@ export default async function BlogPage() {
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={post.cover_image}
+                  loading="lazy"
+                  decoding="async"
+                  width={800}
+                  height={450}
                   alt={post.title}
                   className="h-40 w-full rounded-lg object-cover"
                 />

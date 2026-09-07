@@ -61,7 +61,7 @@ export default async function IndustryPage({
 
   return (
     <div className="w-full site-gutter py-16">
-      <div className="mx-auto max-w-6xl w-full">
+      <div className="mx-auto  w-full">
         <Breadcrumbs items={[{ label: "Industries", href: "/industries" }, { label: industry.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">

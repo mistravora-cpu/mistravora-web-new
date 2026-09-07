@@ -57,7 +57,7 @@ export default async function CaseStudyPage({
   return (
     <article className="w-full site-gutter py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: cs.problem_statement, url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto max-w-6xl w-full">
+      <div className="mx-auto  w-full">
         <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -186,7 +186,7 @@ export default async function CaseStudyPage({
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto mt-8 max-w-6xl"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
+      <div className="mx-auto mt-8 "><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
     </article>
   );
 }

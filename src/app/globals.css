@@ -864,8 +864,6 @@ section[data-cv="auto"] {
 /* Keyboard focus remains visible on custom links and form controls. */
 :where(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 
-.motion-paused *, .motion-paused *::before, .motion-paused *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-
 /* Shared page gutters keep full-width sections aligned, including safe areas. */
 @utility site-gutter {
   padding-left: max(clamp(1rem, 2.5vw, 2rem), env(safe-area-inset-left));

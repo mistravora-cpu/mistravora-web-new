@@ -42,6 +42,10 @@ export default async function ResearchPage() {
                 className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
               >
                 <Link href={`/research/${item.slug}`} className="flex flex-1 flex-col">
+                  {item.cover_image && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={item.cover_image} alt={item.title} loading="lazy" decoding="async" width={800} height={450} className="aspect-video w-full rounded-t-2xl object-cover" />
+                  )}
                   {/* Header */}
                   <div className="flex items-center gap-3 border-b border-border/50 p-5">
                     <span className="glow-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-110">
