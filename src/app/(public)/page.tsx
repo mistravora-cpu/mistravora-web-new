@@ -105,8 +105,7 @@ export default async function Home() {
         }}
       />
 
-      {/* Hero — renders immediately, no Supabase dependency.
-          This is the LCP element (h1) and must not be blocked by DB queries. */}
+      {/* Keep the CMS headline in the initial server-rendered content. */}
       <RobotHeroClient hero={hero} />
       <ScrollIndicator />
 

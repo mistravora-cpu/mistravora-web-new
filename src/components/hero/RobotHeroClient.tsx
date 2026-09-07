@@ -105,11 +105,11 @@ export function RobotHeroClient({ hero }: { hero?: HeroSection | null }) {
     <section
       ref={sectionRef}
       aria-label="Mistravora hero — custom software and digital products"
-      className="relative min-h-[560px] w-full overflow-hidden"
+      className="relative flex min-h-[max(560px,75svh)] w-full flex-col justify-end overflow-hidden"
     >
       {/* 3D robot canvas — only mounts when hero is visible to defer
           the Three.js bundle download. */}
-      <div className="absolute inset-0 z-0 h-[75vh]">
+      <div className="absolute inset-0 z-0">
         {isVisible ? (
           <RobotHero />
         ) : (
@@ -142,7 +142,7 @@ export function RobotHeroClient({ hero }: { hero?: HeroSection | null }) {
           pointer-events-none lets mouse events pass through to the canvas
           below so the robot tracks the cursor across the entire hero.
           Interactive elements re-enable pointer-events-auto. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-4 site-gutter pb-12 pt-4 text-center sm:gap-5 sm:pb-16">
+      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-4 site-gutter pb-12 pt-40 text-center sm:gap-5 sm:pb-16">
         {/* Badge */}
         <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-4 py-1.5 text-xs font-medium text-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/30">
           <Sparkles aria-hidden className="h-3.5 w-3.5 text-primary" />
