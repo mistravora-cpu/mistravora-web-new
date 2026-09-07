@@ -9,32 +9,20 @@ import { Suspense } from "react";
 import {
   ArrowRight,
   Bot,
-  Calculator,
-  Gauge,
   Globe,
   HeartHandshake,
   LayoutDashboard,
-  Shield,
   ShoppingCart,
   Smartphone,
   Sparkles,
-  TrendingUp,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TechStack } from "@/components/tech-stack";
-import { ClientsMarquee } from "@/components/clients-marquee";
-import { Testimonials } from "@/components/testimonials";
-import { SectionDivider } from "@/components/section-divider";
 import { Process } from "@/components/process";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { RobotHeroClient } from "@/components/hero/RobotHeroClient";
-import { SocialProofBadge } from "@/components/social-proof-badge";
-import { NewsletterSignup } from "@/components/newsletter-signup";
 import { StatsCounter } from "@/components/stats-counter";
 import { ScrollIndicator } from "@/components/scroll-indicator";
-import { GradientOrbs } from "@/components/gradient-orbs";
-import { getCaseStudies, getStatistics, getHeroSection, getValueCards } from "@/lib/services";
+import { getCaseStudies, getStatistics, getHeroSection } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
 const siteUrl = "https://mistravora.com";
@@ -92,69 +80,8 @@ const fallbackIcons = [
   HeartHandshake,
 ] as const;
 
-const freeTools = [
-  {
-    href: "/tools/cost-calculator",
-    icon: Calculator,
-    title: "Cost Calculator",
-    description: "Instant project estimate in LKR or USD.",
-  },
-  {
-    href: "/tools/roi-calculator",
-    icon: TrendingUp,
-    title: "ROI Calculator",
-    description: "See how fast a better site pays for itself.",
-  },
-  {
-    href: "/tools/website-audit",
-    icon: Gauge,
-    title: "Website Audit",
-    description: "Free Lighthouse scores for your current site.",
-  },
-] as const;
-
-const featureHighlights = [
-  {
-    icon: Zap,
-    title: "Lightning Fast",
-    description: "Sub-second load times. Core Web Vitals in the green on every build.",
-    gradient: "from-yellow-500/20 to-orange-500/10",
-  },
-  {
-    icon: Shield,
-    title: "Secure by Design",
-    description: "RLS on every table. CSP headers. Zero secrets in the client bundle.",
-    gradient: "from-green-500/20 to-emerald-500/10",
-  },
-  {
-    icon: Bot,
-    title: "AI-Powered",
-    description: "Chat assistants, smart search, and automation grounded in your data.",
-    gradient: "from-purple-500/20 to-indigo-500/10",
-  },
-  {
-    icon: Smartphone,
-    title: "Mobile-First",
-    description: "Touch-first layouts that work flawlessly on every screen size.",
-    gradient: "from-blue-500/20 to-cyan-500/10",
-  },
-  {
-    icon: Globe,
-    title: "SEO-Optimized",
-    description: "Structured data, semantic HTML, and clean URLs that search engines love.",
-    gradient: "from-pink-500/20 to-rose-500/10",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Partnership Mindset",
-    description: "We act like an extension of your team, not an outside vendor.",
-    gradient: "from-teal-500/20 to-cyan-500/10",
-  },
-] as const;
-
 export default async function Home() {
-  const [hero, cards] = await Promise.all([getHeroSection("home"), getValueCards(true)]);
-  const highlights = cards.map(card => ({...card, icon: getSolutionIcon(card.icon || "Zap")}));
+  const hero = await getHeroSection("home");
   return (
     <main className="flex flex-1 flex-col">
       {/* JSON-LD structured data for rich search results */}
@@ -193,120 +120,15 @@ export default async function Home() {
         <SolutionsSection />
       </Suspense>
 
-      <ClientsMarquee />
-
-      {/* Feature highlights grid — 6 cards with gradient icons */}
-      <section data-cv="auto" className="relative w-full overflow-hidden site-gutter section-py">
-        <GradientOrbs />
-        <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
-          <p className="eyebrow">
-            Why Mistravora
-          </p>
-          <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Engineered for <span className="text-gradient">performance</span>, built for <span className="text-gradient">growth</span>
-          </h2>
-          <p className="max-w-md text-sm leading-6 text-muted-foreground">
-            Every project is crafted with the same obsessive attention to detail —
-            from the database schema to the final pixel.
-          </p>
-        </ScrollReveal>
-
-        <div className="relative mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featureHighlights.map((feature, i) => (
-            <ScrollReveal
-              key={feature.title}
-              animation="fade-up"
-              delay={i * 80}
-              className="group interactive-card hover:-translate-y-0.5 relative overflow-hidden p-6"
-            >
-              <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
-                <feature.icon aria-hidden className="h-5 w-5 text-primary" />
-              </span>
-              <h3 className="mt-4 font-semibold tracking-tight">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {feature.description}
-              </p>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
       <Process />
-
-      <SectionDivider className="text-surface" />
-      <TechStack />
-      <SectionDivider flip className="text-surface" />
-
-      {/* Highlights */}
-      <section data-cv="auto" className="relative border-y border-border bg-surface overflow-hidden">
-        <div aria-hidden className="aurora-bg absolute inset-0 opacity-40" />
-        <div className="relative grid w-full gap-6 site-gutter section-py sm:grid-cols-3">
-          {highlights.map((highlight, i) => (
-            <ScrollReveal key={highlight.title} animation="fade-up" delay={i * 100} className="surface-card p-7 flex flex-col gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10">
-                <highlight.icon aria-hidden className="h-5 w-5 text-primary" />
-              </span>
-              <h2 className="text-lg font-semibold tracking-tight">{highlight.title}</h2>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {highlight.description}
-              </p>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* Free tools */}
-      <section data-cv="auto" className="w-full site-gutter section-py">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="eyebrow">
-            Free tools
-          </p>
-          <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Plan your project in minutes
-          </h2>
-        </div>
-
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {freeTools.map((tool, i) => (
-            <ScrollReveal key={tool.href} animation="fade-up" delay={i * 100} className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-3 p-7">
-              <Link href={tool.href} className="flex flex-1 flex-col gap-3">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
-                  <tool.icon aria-hidden className="h-5 w-5 text-primary" />
-                </span>
-                <h3 className="font-semibold tracking-tight">{tool.title}</h3>
-                <p className="flex-1 text-sm leading-6 text-muted-foreground">
-                  {tool.description}
-                </p>
-                <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
-                  Open tool
-                  <ArrowRight
-                    aria-hidden
-                    className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-                  />
-                </span>
-              </Link>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      <SectionDivider className="text-surface" />
-      <Testimonials />
-      <SectionDivider flip className="text-surface" />
 
       {/* Case Studies teaser — streams in via Suspense */}
       <Suspense fallback={null}>
         <CaseStudiesTeaser />
       </Suspense>
 
-      {/* Social proof */}
-      <section className="w-full site-gutter py-8">
-        <SocialProofBadge />
-      </section>
-
       {/* CTA band */}
-      <section data-cv="auto" className="w-full site-gutter pb-20">
+      <section data-cv="auto" className="w-full site-gutter pb-24">
         <ScrollReveal animation="fade-up" className="surface-card relative overflow-hidden rounded-2xl p-8 text-center sm:p-14">
           <div
             aria-hidden
@@ -325,14 +147,14 @@ export default async function Home() {
               day with honest advice and a clear quote.
             </p>
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <Button size="lg" asChild className="ripple-click w-full sm:w-auto">
+              <Button size="lg" asChild className="w-full sm:w-auto">
                 <Link href="/contact">Get a free quote</Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 asChild
-                className="ripple-click w-full sm:w-auto"
+                className="w-full sm:w-auto"
               >
                 <Link href="/assistant">
                   <Bot aria-hidden className="h-4 w-4" />
@@ -341,13 +163,6 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-        </ScrollReveal>
-      </section>
-
-      {/* Newsletter */}
-      <section data-cv="auto" className="w-full site-gutter pb-20">
-        <ScrollReveal animation="fade-up">
-          <NewsletterSignup />
         </ScrollReveal>
       </section>
     </main>
@@ -385,7 +200,6 @@ async function SolutionsSection() {
 
   return (
     <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-20 pt-8">
-      <GradientOrbs />
       <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
         <p className="eyebrow">
           What we build
@@ -435,7 +249,7 @@ async function SolutionsSection() {
 
 async function CaseStudiesTeaser() {
   const dbCaseStudies = await getCaseStudies(true);
-  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived").slice(0, 6);
+  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived").slice(0, 3);
 
   if (caseStudies.length === 0) return null;
 
