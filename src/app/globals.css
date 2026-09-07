@@ -1023,3 +1023,18 @@ h1, h2, h3, h4 {
   background: var(--surface);
 }
 
+
+/* Two equal tracks make one seamless row; the copy is hidden from assistive tools. */
+.company-marquee-track {
+  animation: marquee 45s linear infinite;
+}
+
+.company-marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .company-marquee { overflow-x: auto; }
+  .company-marquee-track { animation: none; }
+  .company-marquee-copy { display: none; }
+}

@@ -3,7 +3,6 @@ import { applySeoOverrides } from "@/lib/seo-overrides";
 import { jsonLd } from "@/lib/seo";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import {
@@ -23,7 +22,7 @@ import { RobotHeroClient } from "@/components/hero/RobotHeroClient";
 import { StatsCounter } from "@/components/stats-counter";
 import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ClientsMarquee } from "@/components/clients-marquee";
-import { getCaseStudies, getStatistics, getHeroSection } from "@/lib/services";
+import { getStatistics, getHeroSection } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
 const siteUrl = "https://mistravora.com";
@@ -126,11 +125,6 @@ export default async function Home() {
       </Suspense>
 
       <Process />
-
-      {/* Case Studies — all completed projects */}
-      <Suspense fallback={null}>
-        <CaseStudiesTeaser />
-      </Suspense>
 
       {/* CTA band */}
       <section data-cv="auto" className="w-full site-gutter pb-24">
@@ -244,113 +238,6 @@ async function SolutionsSection() {
         <Button variant="outline" asChild>
           <Link href="/services">
             Explore all services
-            <ArrowRight aria-hidden className="h-4 w-4" />
-          </Link>
-        </Button>
-      </ScrollReveal>
-    </section>
-  );
-}
-
-async function CaseStudiesTeaser() {
-  const dbCaseStudies = await getCaseStudies(true);
-  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived");
-
-  if (caseStudies.length === 0) return null;
-
-  return (
-    <section data-cv="auto" className="w-full site-gutter section-py">
-      <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
-        <p className="eyebrow">
-          Powering digital success across Sri Lanka &amp; beyond
-        </p>
-        <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          Real products, <span className="text-gradient">real results</span>
-        </h2>
-        <p className="max-w-md text-sm leading-6 text-muted-foreground">
-          From e-commerce platforms to enterprise dashboards — every project we ship includes real metrics and measurable outcomes.
-        </p>
-      </ScrollReveal>
-
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {caseStudies.map((cs, i) => {
-          const initials = (cs.client || cs.title).split(" ").map((w) => w[0]).slice(0, 2).join("");
-          return (
-            <ScrollReveal
-              key={cs.id}
-              animation="fade-up"
-              delay={i * 70}
-              className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-0 overflow-hidden"
-            >
-              <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col">
-                {/* Cover image or initials avatar */}
-                {cs.cover_image ? (
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted p-4">
-                    <Image
-                      src={cs.cover_image}
-                      alt={`${cs.title} — ${cs.client}`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-contain transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3 border-b border-border p-5">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
-                      {initials}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{cs.client}</p>
-                      {cs.industry && (
-                        <p className="truncate text-xs text-muted-foreground">{cs.industry}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Body */}
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                  {cs.cover_image && (
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-semibold">{cs.client}</p>
-                      {cs.location && (
-                        <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                          {cs.location}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <h3 className="text-base font-semibold leading-tight tracking-tight">{cs.title}</h3>
-                  {cs.outcome && (
-                    <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>
-                  )}
-                  {cs.results.length > 0 && (
-                    <ul className="flex flex-col gap-1.5">
-                      {cs.results.slice(0, 3).map((r, ri) => (
-                        <li key={ri} className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
-                          {r}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between border-t border-border px-5 py-3.5">
-                  <span className="text-xs font-medium text-primary">View details</span>
-                  <ArrowRight aria-hidden className="h-4 w-4 text-primary transition-transform group-hover:translate-x-0.5" />
-                </div>
-              </Link>
-            </ScrollReveal>
-          );
-        })}
-      </div>
-
-      <ScrollReveal animation="fade-up" delay={200} className="mt-10 text-center">
-        <Button variant="outline" asChild className="ripple-click">
-          <Link href="/projects">
-            View all projects
             <ArrowRight aria-hidden className="h-4 w-4" />
           </Link>
         </Button>
