@@ -22,6 +22,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { RobotHeroClient } from "@/components/hero/RobotHeroClient";
 import { StatsCounter } from "@/components/stats-counter";
 import { ScrollIndicator } from "@/components/scroll-indicator";
+import { ClientsMarquee } from "@/components/clients-marquee";
 import { getCaseStudies, getStatistics, getHeroSection } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
@@ -120,9 +121,14 @@ export default async function Home() {
         <SolutionsSection />
       </Suspense>
 
+      {/* Clients — trusted companies we've worked with */}
+      <Suspense fallback={null}>
+        <ClientsMarquee />
+      </Suspense>
+
       <Process />
 
-      {/* Case Studies teaser — streams in via Suspense */}
+      {/* Case Studies — all completed projects */}
       <Suspense fallback={null}>
         <CaseStudiesTeaser />
       </Suspense>
@@ -249,7 +255,7 @@ async function SolutionsSection() {
 
 async function CaseStudiesTeaser() {
   const dbCaseStudies = await getCaseStudies(true);
-  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived").slice(0, 3);
+  const caseStudies = dbCaseStudies.filter((cs) => cs.published && cs.status !== "archived");
 
   if (caseStudies.length === 0) return null;
 

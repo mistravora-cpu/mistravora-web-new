@@ -709,9 +709,10 @@ function SceneLifecycle() {
     let disposed = false;
     let ready = false;
     let visible = true;
+    let contextLost = false;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
-      const running = ready && visible && document.visibilityState !== "hidden";
+      const running = ready && visible && document.visibilityState !== "hidden" && !contextLost;
       setFrameloop(running ? (reducedMotion.matches ? "demand" : "always") : "never");
       if (running) invalidate();
     };
@@ -719,6 +720,28 @@ function SceneLifecycle() {
     observer.observe(gl.domElement);
     reducedMotion.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
+
+    // Handle WebGL context loss — the browser can reclaim the GPU context
+    // at any time (e.g. GPU driver crash, too many contexts, tab backgrounding).
+    // Without this, the robot freezes silently and logs "Context Lost".
+    const handleContextLost = (e: Event) => {
+      e.preventDefault(); // allow restoration
+      contextLost = true;
+      update();
+    };
+    const handleContextRestored = () => {
+      contextLost = false;
+      ready = false; // re-compile shaders on the new context
+      const preparation = gl.extensions.has("KHR_parallel_shader_compile")
+        ? gl.compileAsync(scene, camera)
+        : Promise.resolve().then(() => gl.compile(scene, camera));
+      preparation.catch(error => console.error("Robot shader re-compile failed", error)).finally(() => {
+        if (!disposed) { ready = true; update(); }
+      });
+    };
+    gl.domElement.addEventListener("webglcontextlost", handleContextLost);
+    gl.domElement.addEventListener("webglcontextrestored", handleContextRestored);
+
     // Compile shaders through KHR_parallel_shader_compile when supported,
     // avoiding a synchronous GPU wait in the first animation frame.
     const preparation = gl.extensions.has("KHR_parallel_shader_compile")
@@ -727,7 +750,14 @@ function SceneLifecycle() {
     preparation.catch(error => console.error("Robot shader preparation failed", error)).finally(() => {
       if (!disposed) { ready = true; update(); }
     });
-    return () => { window.removeEventListener("mistravora:motion", update); reducedMotion.removeEventListener("change", update); disposed = true; observer.disconnect(); document.removeEventListener("visibilitychange", update); };
+    return () => {
+      reducedMotion.removeEventListener("change", update);
+      document.removeEventListener("visibilitychange", update);
+      gl.domElement.removeEventListener("webglcontextlost", handleContextLost);
+      gl.domElement.removeEventListener("webglcontextrestored", handleContextRestored);
+      disposed = true;
+      observer.disconnect();
+    };
   }, [gl, scene, camera, setFrameloop, invalidate]);
   return null;
 }

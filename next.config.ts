@@ -106,6 +106,8 @@ const nextConfig: NextConfig = {
   // The dynamic import in RobotHeroClient isolates Three.js into a
   // separate async chunk. Turbopack handles chunk splitting automatically.
   turbopack: {},
+  // Allow HMR from localhost variants used by the dev preview.
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
 };
 
 export default nextConfig;
