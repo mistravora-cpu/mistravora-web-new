@@ -15,7 +15,7 @@ const baseMetadata: Metadata = withSocialMetadata({
 
 export default function AssistantPage() {
   return (
-    <section className="flex w-full flex-1 flex-col px-4 py-16 sm:px-8 lg:px-12">
+    <section className="flex w-full flex-1 flex-col site-gutter py-16">
       <PageHeader
         as="h1"
         title="AI Assistant"

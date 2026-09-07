@@ -44,7 +44,7 @@ export function SiteHeader() {
         scrolled && "scrolled"
       )}
     >
-      <div className="flex h-16 w-full items-center gap-4 px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="flex h-16 w-full items-center gap-4 site-gutter">
         {/* Logo — left */}
         <Link
           href="/"
@@ -95,7 +95,7 @@ export function SiteHeader() {
         {/* Right side actions */}
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ThemeToggle />
-          <Button asChild size="sm" className="ripple-click shrink-0">
+          <Button asChild size="sm" className="ripple-click hidden shrink-0 sm:inline-flex">
             <Link prefetch={false} href="/contact">Get in touch</Link>
           </Button>
 

@@ -26,7 +26,7 @@ export default async function ResearchPage() {
   return (
     <>
       <AnimatedHero hero={hero} page="research" />
-      <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <section className="w-full site-gutter py-16">
         <PageHeader
           title="Research & Analysis"
           description="Original research on web performance, AI tools, and software engineering — backed by data, not opinions."

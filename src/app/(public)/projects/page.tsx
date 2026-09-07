@@ -28,7 +28,7 @@ export default async function CaseStudiesPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="projects" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <PageHeader
         title="Our Projects"
         description="Every project we ship includes real metrics: speed gains, conversion lifts, and business outcomes."

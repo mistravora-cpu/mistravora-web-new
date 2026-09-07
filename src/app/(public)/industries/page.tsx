@@ -34,7 +34,7 @@ export default async function IndustriesPage() {
   return (
     <>
       <AnimatedHero hero={hero} page="industries" />
-      <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <section className="w-full site-gutter py-16">
         <PageHeader
           title="Industries we serve"
           description={`${profile.industries} ${profile.coverage} The categories below are examples of sectors we serve.`}

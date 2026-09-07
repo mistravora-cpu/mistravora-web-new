@@ -57,7 +57,7 @@ export default async function ToolsPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="tools" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <PageHeader
         title="Free Tools"
         description="Explore website checks and project-planning information."

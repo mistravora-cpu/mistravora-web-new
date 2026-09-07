@@ -14,7 +14,7 @@ const baseMetadata: Metadata = withSocialMetadata({
 
 export default function WebsiteAuditPage() {
   return (
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <PageHeader
         as="h1"
         title="AI Website Audit"

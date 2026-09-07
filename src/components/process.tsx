@@ -30,7 +30,7 @@ const steps = [
 
 export function Process() {
   return (
-    <section className="relative w-full overflow-hidden px-4 py-16 sm:px-8 lg:px-12">
+    <section className="relative w-full overflow-hidden site-gutter py-16">
       {/* Subtle background grid */}
       <div aria-hidden className="bg-grid absolute inset-0 opacity-[0.03]" />
 

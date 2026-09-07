@@ -69,7 +69,7 @@ export async function TechStack() {
   }
 
   return (
-    <section className="w-full overflow-hidden bg-surface px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full overflow-hidden bg-surface site-gutter py-16">
       <div className="flex flex-col items-center gap-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           Technology options

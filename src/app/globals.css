@@ -849,34 +849,6 @@ h3 {
 
 /* === Performance optimizations === */
 
-/* GPU acceleration for animated elements */
-.animate-float,
-.animate-aurora,
-.animate-marquee,
-.animate-marquee-reverse,
-.animate-glow-pulse,
-.animate-gradient,
-.animate-gradient-shift,
-.animate-gradient-mesh,
-.animate-pulse-soft,
-.animate-bounce-soft,
-.animate-orbit,
-.animate-wave,
-.animate-drift-up,
-.animate-magnetic-pull,
-.animate-border-flow,
-.animate-scroll-down,
-.text-shimmer,
-.gradient-text-flow {
-  will-change: transform, opacity;
-}
-
-/* Marquee containers — hint browser to optimize scrolling */
-[class*="animate-marquee"] {
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
 /* Content visibility for offscreen sections — skip rendering until needed */
 section[data-cv="auto"] {
   content-visibility: auto;
@@ -889,25 +861,28 @@ section[data-cv="auto"] {
   contain: layout style paint;
 }
 
-/* Reduce motion for accessibility + performance */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-
-/* Offscreen content is rendered on demand; motion preferences retain readable content. */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
-}
-
 /* Keyboard focus remains visible on custom links and form controls. */
 :where(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 
 .motion-paused *, .motion-paused *::before, .motion-paused *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+
+/* Shared page gutters keep full-width sections aligned, including safe areas. */
+@utility site-gutter {
+  padding-left: max(clamp(1rem, 2.5vw, 2rem), env(safe-area-inset-left));
+  padding-right: max(clamp(1rem, 2.5vw, 2rem), env(safe-area-inset-right));
+}
+
+#main-content {
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#main-content :where(.grid, .flex) > * {
+  min-width: 0;
+}
+
+#main-content :where(pre, table) {
+  max-width: 100%;
+  overflow-x: auto;
+}

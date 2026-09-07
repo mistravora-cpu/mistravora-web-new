@@ -78,7 +78,7 @@ export function StatsCounter({ stats }: { stats?: Stat[] }) {
         <div className="absolute right-[-5%] bottom-[10%] h-52 w-52 animate-float rounded-full bg-accent/10 blur-3xl" style={{ animationDelay: "2s" }} />
       </div>
 
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-8 lg:px-12">
+      <div className="relative mx-auto max-w-5xl site-gutter">
         <ScrollReveal animation="fade-up" className="mb-10 flex flex-col items-center gap-2 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             By the numbers

@@ -40,7 +40,7 @@ export async function ClientsMarquee() {
   const row = [...clients, ...clients];
 
   return (
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12" data-cv="auto">
+    <section className="w-full site-gutter py-16" data-cv="auto">
       {/* Heading — stronger digital marketing copy */}
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">

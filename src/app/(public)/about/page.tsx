@@ -85,7 +85,7 @@ export default async function AboutPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="about" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
 
       <div className="mt-10 flex animate-fade-in-up justify-center">
         <Image

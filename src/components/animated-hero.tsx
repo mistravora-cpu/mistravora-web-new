@@ -118,7 +118,7 @@ export function AnimatedHero({
         style={{ animationDelay: "-2.5s", animationDuration: "7s" }}
       />
 
-      <div className="relative flex w-full flex-col items-center gap-5 px-4 pb-12 pt-10 text-center sm:gap-6 sm:px-8 sm:pb-16 sm:pt-12 lg:px-12">
+      <div className="relative flex w-full flex-col items-center gap-5 site-gutter pb-12 pt-10 text-center sm:gap-6 sm:pb-16 sm:pt-12">
         {/* Page icon with glow */}
         <div className={`relative flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-card shadow-sm animate-float sm:h-14 sm:w-14 ${theme.accent}`}>
           <ThemeIcon aria-hidden className="h-6 w-6 sm:h-7 sm:w-7" />

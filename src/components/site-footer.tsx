@@ -10,7 +10,7 @@ export async function SiteFooter() {
   const [site, policies] = await Promise.all([getBusinessProfile(), getPolicies(true)]);
   return (
     <footer className="[&_a]:inline-flex [&_a]:min-h-6 [&_a]:items-center [&_button]:min-h-11 border-t border-border bg-surface">
-      <div className="grid w-full gap-10 px-4 py-12 sm:px-8 lg:grid-cols-2 lg:px-12">
+      <div className="grid w-full gap-10 site-gutter py-12 lg:grid-cols-2">
         {/* Left column: Brand + Contact */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
@@ -84,7 +84,7 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="flex w-full flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:px-8 lg:px-12">
+        <div className="flex w-full flex-col items-center justify-between gap-2 site-gutter py-4 text-xs text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
           <p>{site.footer}</p>
         </div>

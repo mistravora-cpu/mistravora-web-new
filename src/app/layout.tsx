@@ -8,7 +8,6 @@ import { OrganizationJsonLd } from "@/components/json-ld";
 import { Analytics } from "@/components/analytics-lazy";
 import { ServiceWorker } from "@/components/service-worker";
 import { SiteBackground } from "@/components/site-background";
-import { HeaderScrollFx } from "@/components/header-scroll-fx";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
 
@@ -127,7 +126,6 @@ export default function RootLayout({
           {/* Optional tracking paused pending provider and consent review. */}
           <ScrollProgress />
           <SiteBackground />
-          <HeaderScrollFx />
           {children}
           <Analytics />
           <ServiceWorker />

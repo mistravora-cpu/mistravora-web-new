@@ -215,7 +215,7 @@ export default async function Home() {
       <ClientsMarquee />
 
       {/* Feature highlights grid — 6 cards with gradient icons */}
-      <section data-cv="auto" className="relative w-full overflow-hidden px-4 py-16 sm:px-8 lg:px-12">
+      <section data-cv="auto" className="relative w-full overflow-hidden site-gutter py-16">
         <GradientOrbs />
         <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -260,7 +260,7 @@ export default async function Home() {
       {/* Highlights */}
       <section data-cv="auto" className="relative border-y border-border bg-surface overflow-hidden">
         <div aria-hidden className="aurora-bg absolute inset-0 opacity-50" />
-        <div className="relative grid w-full gap-8 px-4 py-16 sm:grid-cols-3 sm:px-8 lg:px-12">
+        <div className="relative grid w-full gap-8 site-gutter py-16 sm:grid-cols-3">
           {highlights.map((highlight, i) => (
             <ScrollReveal key={highlight.title} animation={i === 0 ? "clip-reveal" : i === 1 ? "elastic" : "flip-in"} delay={i * 120} className="glass-card hover-lift rounded-2xl p-6 flex flex-col gap-3">
               <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10">
@@ -276,7 +276,7 @@ export default async function Home() {
       </section>
 
       {/* Free tools */}
-      <section data-cv="auto" className="w-full px-4 py-16 sm:px-8 lg:px-12">
+      <section data-cv="auto" className="w-full site-gutter py-16">
         <div className="flex flex-col items-center gap-3 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Free tools
@@ -320,12 +320,12 @@ export default async function Home() {
       </Suspense>
 
       {/* Social proof */}
-      <section className="w-full px-4 py-8 sm:px-8 lg:px-12">
+      <section className="w-full site-gutter py-8">
         <SocialProofBadge />
       </section>
 
       {/* CTA band */}
-      <section data-cv="auto" className="w-full px-4 pb-20 sm:px-8 lg:px-12">
+      <section data-cv="auto" className="w-full site-gutter pb-20">
         <ScrollReveal animation="scale-in" className="gradient-border-card relative overflow-hidden rounded-3xl p-8 text-center sm:p-14">
           <div
             aria-hidden
@@ -368,7 +368,7 @@ export default async function Home() {
       </section>
 
       {/* Newsletter */}
-      <section data-cv="auto" className="w-full px-4 pb-20 sm:px-8 lg:px-12">
+      <section data-cv="auto" className="w-full site-gutter pb-20">
         <ScrollReveal animation="fade-up">
           <NewsletterSignup />
         </ScrollReveal>
@@ -407,7 +407,7 @@ async function SolutionsSection() {
     short_description: service.description, summary: service.description, icon: null }));
 
   return (
-    <section data-cv="auto" className="relative w-full overflow-hidden px-4 pb-16 pt-4 sm:px-8 lg:px-12">
+    <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-16 pt-4">
       <GradientOrbs />
       <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -463,7 +463,7 @@ async function CaseStudiesTeaser() {
   if (caseStudies.length === 0) return null;
 
   return (
-    <section data-cv="auto" className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section data-cv="auto" className="w-full site-gutter py-16">
       <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           Powering digital success across Sri Lanka &amp; beyond

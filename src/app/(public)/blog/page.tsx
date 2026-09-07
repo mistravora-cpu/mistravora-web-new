@@ -29,7 +29,7 @@ export default async function BlogPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="blog" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <div className="flex items-center justify-center gap-3">
         <PageHeader
           title="Blog"

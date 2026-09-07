@@ -22,7 +22,7 @@ export default async function CareersPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="careers" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <PageHeader
         title="Careers"
         description="We hire people who care about craft: performance, accessibility, and honest work."

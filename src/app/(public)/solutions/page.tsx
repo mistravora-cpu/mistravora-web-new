@@ -61,7 +61,7 @@ export default async function SolutionsPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="solutions" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {solutions.map((solution, i) => {

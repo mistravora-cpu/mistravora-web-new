@@ -43,7 +43,7 @@ export default async function ContactPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="contact" />
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <section className="w-full site-gutter py-16">
       <PageHeader
         title="Contact"
         description={`Tell us what you are building. ${site.response}.`}

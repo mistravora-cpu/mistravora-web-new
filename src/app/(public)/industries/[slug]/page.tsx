@@ -60,7 +60,7 @@ export default async function IndustryPage({
   if (!industry) notFound();
 
   return (
-    <div className="w-full px-4 py-16 sm:px-8 lg:px-12">
+    <div className="w-full site-gutter py-16">
       <div className="mx-auto max-w-6xl w-full">
         <Breadcrumbs items={[{ label: "Industries", href: "/industries" }, { label: industry.title }]} />
         <ScrollReveal animation="fade-up">
