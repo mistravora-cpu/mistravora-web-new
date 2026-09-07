@@ -15,6 +15,7 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
+    if(name === '@/lib/team-slug') return {normalizeTeamSlug:s=>s};
     if(name === '@/lib/calculator-config') return {calculatorSchema:{parse:v=>v}};
     if(name === 'next/cache') return {updateTag: tag => calls.push(['tag', tag]), revalidatePath: (...args) => calls.push(['path', ...args]), refresh: () => {throw Error('Do not downgrade client invalidation');}};
     if(name === '@/lib/supabase/server') return {createClient: async () => db};

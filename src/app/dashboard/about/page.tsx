@@ -1,3 +1,4 @@
+import { hasExtendedTeamSchema, extendedTeamFields } from "@/lib/team-schema";
 import type { Metadata } from "next";
 import { getAdminCoreValues as getCoreValues, getAdminTeamMembers as getTeamMembers } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
@@ -56,7 +57,7 @@ const teamFields: FieldDef[] = [
 ];
 
 export default async function AboutAdminPage() {
-  const [values, team] = await Promise.all([getCoreValues(), getTeamMembers()]);
+  const [values, team, extended] = await Promise.all([getCoreValues(), getTeamMembers(), hasExtendedTeamSchema()]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -75,11 +76,12 @@ export default async function AboutAdminPage() {
         rows={values as unknown as Record<string, unknown>[]}
       />
 
+      {!extended && <p className="rounded-lg border border-border p-4 text-sm">Additional profile fields are waiting for the team database migration. Existing names, photos, biographies and publication controls remain editable.</p>}
       <CrudManager
         table="team_members"
         title="Team Members"
         columns={teamColumns}
-        fields={teamFields}
+        fields={extended ? teamFields : teamFields.filter(field => !extendedTeamFields.has(field.name))}
         rows={team as unknown as Record<string, unknown>[]}
       />
     </div>

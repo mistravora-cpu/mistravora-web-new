@@ -82,7 +82,7 @@ export function safeUrl(value: string | null): string | null {
   if (!value) return null;
   const v = value.trim();
   if (v === "") return null;
-  if (/^https?:\/\//i.test(v)) return v;
+  try { const url = new URL(v); if (["https:", "http:"].includes(url.protocol) && !url.username && !url.password) return url.href; } catch {}
   return null;
 }
 
@@ -90,7 +90,7 @@ export function safeMailto(value: string | null): string | null {
   if (!value) return null;
   const v = value.trim();
   if (v === "") return null;
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return `mailto:${v}`;
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return `mailto:${encodeURIComponent(v)}`;
   return null;
 }
 

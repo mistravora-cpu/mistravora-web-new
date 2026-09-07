@@ -1,5 +1,6 @@
 "use server";
 
+import { normalizeTeamSlug } from "@/lib/team-slug";
 import { calculatorSchema } from "@/lib/calculator-config";
 import { normalizeResearchSlug } from "@/lib/research-slug";
 import { revalidatePath, updateTag } from "next/cache";
@@ -182,6 +183,15 @@ export async function upsertRow(
     const slug = typeof parentData.slug === "string" ? normalizeResearchSlug(parentData.slug) : null;
     if (!slug) return { error: "Use a research slug such as pwa-vs-native-apps (letters, numbers and hyphens)." };
     parentData.slug = slug;
+  }
+
+  if (table === "team_members" && "slug" in parentData) {
+    if (parentData.slug === "" || parentData.slug == null) parentData.slug = null;
+    else {
+      const slug = typeof parentData.slug === "string" ? normalizeTeamSlug(parentData.slug) : null;
+      if (!slug) return { error: "Use a team slug such as shakeel-mohamed, without spaces or query parameters." };
+      parentData.slug = slug;
+    }
   }
 
   if (table === "contact_info") {

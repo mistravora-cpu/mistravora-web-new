@@ -1,3 +1,5 @@
+import { memberSlug } from "./team-slug";
+export { memberSlug } from "./team-slug";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public";
 import { unstable_cache } from "next/cache";
@@ -460,15 +462,6 @@ export function getTeamMembers(publishedOnly = false) { return _getTeamMembers(p
 // Stable URL slug for a team member. Prefers an explicit `slug` column value;
 // falls back to a name-derived slug so members created before the slug column
 // existed still resolve to a profile page.
-export function memberSlug(member: { slug: string | null; name: string }): string {
-  const explicit = member.slug?.trim();
-  if (explicit) return explicit;
-  return member.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 export async function getTeamMemberBySlug(slug: string): Promise<TeamMember | null> {
   if (!slug) return null;
   const members = await getTeamMembers(true);
