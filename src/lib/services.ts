@@ -456,6 +456,24 @@ export function getValueCards(publishedOnly = false) { return _getValueCards(pub
 export function getStatistics(publishedOnly = false) { return _getStatistics(publishedOnly); }
 export function getCoreValues(publishedOnly = false) { return _getCoreValues(publishedOnly); }
 export function getTeamMembers(publishedOnly = false) { return _getTeamMembers(publishedOnly); }
+
+// Stable URL slug for a team member. Prefers an explicit `slug` column value;
+// falls back to a name-derived slug so members created before the slug column
+// existed still resolve to a profile page.
+export function memberSlug(member: { slug: string | null; name: string }): string {
+  const explicit = member.slug?.trim();
+  if (explicit) return explicit;
+  return member.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export async function getTeamMemberBySlug(slug: string): Promise<TeamMember | null> {
+  if (!slug) return null;
+  const members = await getTeamMembers(true);
+  return members.find((m) => memberSlug(m) === slug) ?? null;
+}
 export function getPricingTiers(publishedOnly = false) { return _getPricingTiers(publishedOnly); }
 export function getPricingNotes(publishedOnly = false) { return _getPricingNotes(publishedOnly); }
 export function getPricingAddons(publishedOnly = false) { return _getPricingAddons(publishedOnly); }

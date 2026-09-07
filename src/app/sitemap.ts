@@ -8,11 +8,13 @@ import {
   getIndustries,
   getResearch,
   getPolicies,
+  getTeamMembers,
+  memberSlug,
 } from "@/lib/services";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, caseStudies, industries, research, policies, contentGroups] = await Promise.all([
-    getPublishedPosts(), getCaseStudies(true), getIndustries(true), getResearch(true), getPolicies(true),
+  const [posts, caseStudies, industries, research, policies, team, contentGroups] = await Promise.all([
+    getPublishedPosts(), getCaseStudies(true), getIndustries(true), getResearch(true), getPolicies(true), getTeamMembers(true),
     Promise.all(Object.keys(collections).filter(k => k !== "policies").map(async key => ({ key, entries: await getCollection(key as Collection) }))),
   ]);
 
@@ -99,6 +101,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     }));
 
+  // Dynamic routes — team member profiles
+  const teamEntries: MetadataRoute.Sitemap = team.map((m) => ({
+    url: `${site.url}/about/team/${memberSlug(m)}`,
+    lastModified: m.updated_at ? new Date(m.updated_at) : undefined,
+    changeFrequency: "monthly",
+    priority: 0.5,
+  }));
+
   const overrides = await getIndexablePaths();
   return [
     ...staticEntries,
@@ -107,6 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...industryEntries,
     ...researchEntries,
     ...policyEntries,
+    ...teamEntries,
     ...contentGroups.flatMap(({ key, entries }) => entries.map(e => ({ url: `${site.url}/${key}/${e.slug}`, lastModified: e.updated ? new Date(e.updated) : undefined }))),
   ].filter(entry => !overrides.some(setting => setting.path === new URL(entry.url).pathname && (setting.noindex || (setting.canonical && setting.canonical !== entry.url))));
 }

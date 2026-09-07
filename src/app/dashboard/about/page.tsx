@@ -31,6 +31,7 @@ const teamColumns: ColumnDef[] = [
 const teamFields: FieldDef[] = [
   { name: "name", label: "Name", required: true },
   { name: "role", label: "Role", required: true },
+  { name: "slug", label: "Profile URL slug", placeholder: "shakeel (leave blank to auto-generate from name)" },
   {
     name: "category",
     label: "Category",

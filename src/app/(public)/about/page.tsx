@@ -2,15 +2,13 @@ import { getBusinessProfile } from "@/lib/business-profile";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import {
   ArrowRight,
+  ArrowUpRight,
   Zap,
-  Globe,
-  Mail,
   MapPin,
   Briefcase,
   type LucideIcon,
@@ -18,16 +16,15 @@ import {
 import { AnimatedHero } from "@/components/animated-hero";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import {
-  LinkedinIcon,
-  GithubIcon,
-  InstagramIcon,
-  FacebookIcon,
-  XIcon,
-} from "@/components/brand-icons";
-import { getHeroSection, getCoreValues, getTeamMembers } from "@/lib/services";
+import { getHeroSection, getCoreValues, getTeamMembers, memberSlug } from "@/lib/services";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
-import type { TeamMember } from "@/lib/types";
+import {
+  groupTeamByCategory,
+  parseExpertise,
+  safeUrl,
+  memberInitials,
+  buildSocialLinks,
+} from "@/lib/team";
 
 const baseMetadata: Metadata = withSocialMetadata({
   title: "About",
@@ -38,120 +35,6 @@ const baseMetadata: Metadata = withSocialMetadata({
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Zap);
-}
-
-// ─── Team catalogue helpers ───────────────────────────────────────────────
-// Canonical category order + display metadata. Categories that have no
-// members are not rendered. Any unknown category value falls into a generic
-// "Team" bucket shown last so legacy/unknown rows still appear.
-type TeamCategoryMeta = {
-  key: string;
-  title: string;
-  description: string;
-};
-
-const TEAM_CATEGORIES: TeamCategoryMeta[] = [
-  { key: "senior", title: "Senior staff", description: "Leadership and senior engineers shaping Mistravora." },
-  { key: "permanent", title: "Permanent staff", description: "The core team delivering every day." },
-  { key: "advisor", title: "Advisors", description: "Trusted guides helping us steer the company." },
-  { key: "contractor", title: "Contractors", description: "Specialist partners we work with." },
-  { key: "intern", title: "Interns", description: "Rising talent growing with us." },
-];
-
-function groupTeamByCategory(members: TeamMember[]): { meta: TeamCategoryMeta; members: TeamMember[] }[] {
-  const known = new Map<string, TeamMember[]>(TEAM_CATEGORIES.map((c) => [c.key, []]));
-  const extras = new Map<string, TeamMember[]>();
-
-  for (const m of members) {
-    const key = (m.category || "").trim().toLowerCase();
-    if (key && known.has(key)) {
-      known.get(key)!.push(m);
-    } else if (key) {
-      const list = extras.get(key) ?? [];
-      list.push(m);
-      extras.set(key, list);
-    } else {
-      known.get("permanent")!.push(m);
-    }
-  }
-
-  const groups: { meta: TeamCategoryMeta; members: TeamMember[] }[] = [];
-  for (const meta of TEAM_CATEGORIES) {
-    const list = known.get(meta.key) ?? [];
-    if (list.length > 0) groups.push({ meta, members: list });
-  }
-  // Bucket any unknown categories under a generic, title-cased heading.
-  for (const [key, list] of extras) {
-    if (list.length === 0) continue;
-    const title = key.charAt(0).toUpperCase() + key.slice(1);
-    groups.push({ meta: { key, title, description: "Part of the wider Mistravora team." }, members: list });
-  }
-  return groups;
-}
-
-function parseExpertise(raw: string | null): string[] {
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, 6);
-}
-
-// Only treat values that start with http(s) as safe external links. Anything
-// else (e.g. a bare handle) is dropped rather than risk a broken or unsafe
-// navigation. Email is handled separately via mailto.
-function safeUrl(value: string | null): string | null {
-  if (!value) return null;
-  const v = value.trim();
-  if (v === "") return null;
-  if (/^https?:\/\//i.test(v)) return v;
-  return null;
-}
-
-function safeMailto(value: string | null): string | null {
-  if (!value) return null;
-  const v = value.trim();
-  if (v === "") return null;
-  // Basic email shape check.
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return `mailto:${v}`;
-  return null;
-}
-
-function memberInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
-
-type SocialLink = {
-  href: string;
-  label: string;
-  icon: ReactNode;
-  external: boolean;
-};
-
-function buildSocialLinks(member: TeamMember, companyName: string): SocialLink[] {
-  const links: SocialLink[] = [];
-  const linkedin = safeUrl(member.linkedin);
-  if (linkedin) links.push({ href: linkedin, label: `${member.name} on LinkedIn`, icon: <LinkedinIcon size={16} aria-hidden />, external: true });
-  const x = safeUrl(member.x_handle);
-  if (x) links.push({ href: x, label: `${member.name} on X`, icon: <XIcon size={14} aria-hidden />, external: true });
-  const github = safeUrl(member.github);
-  if (github) links.push({ href: github, label: `${member.name} on GitHub`, icon: <GithubIcon size={16} aria-hidden />, external: true });
-  const instagram = safeUrl(member.instagram);
-  if (instagram) links.push({ href: instagram, label: `${member.name} on Instagram`, icon: <InstagramIcon size={16} aria-hidden />, external: true });
-  const facebook = safeUrl(member.facebook);
-  if (facebook) links.push({ href: facebook, label: `${member.name} on Facebook`, icon: <FacebookIcon size={16} aria-hidden />, external: true });
-  const website = safeUrl(member.website);
-  if (website) links.push({ href: website, label: `${member.name} personal website`, icon: <Globe aria-hidden className="h-4 w-4" />, external: true });
-  const mailto = safeMailto(member.email);
-  if (mailto) links.push({ href: mailto, label: `Email ${member.name} at ${companyName}`, icon: <Mail aria-hidden className="h-4 w-4" />, external: false });
-  return links;
 }
 
 export default async function AboutPage() {
@@ -273,68 +156,75 @@ export default async function AboutPage() {
                     </p>
                   </ScrollReveal>
 
-                  <div className="mt-8 grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="mt-8 grid w-full gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
                     {group.members.map((member, i) => {
                       const initials = memberInitials(member.name);
                       const expertise = parseExpertise(member.expertise);
                       const socials = buildSocialLinks(member, profile.name);
                       const photo = safeUrl(member.photo);
+                      const profileHref = `/about/team/${memberSlug(member)}`;
                       return (
                         <ScrollReveal
                           key={member.id}
                           animation="fade-up"
                           delay={Math.min(groupDelayBase + i * 90, 600)}
-                          className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
+                          className="group relative flex h-full flex-col"
                         >
-                          <figure>
-                            <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                              {photo ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img
-                                  src={photo}
-                                  alt={`${member.name}, ${member.role} at ${profile.name}`}
-                                  width={640}
-                                  height={800}
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.03]"
-                                />
-                              ) : (
-                                <div className="flex h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-primary/15 via-muted to-accent/10">
-                                  <span aria-hidden className="text-7xl font-semibold tracking-tighter text-primary/70 sm:text-8xl">{initials}</span>
-                                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Portrait coming soon</span>
-                                </div>
-                              )}
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/90 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                          <figure className="relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-border/60 transition-all duration-300 group-hover:ring-2 group-hover:ring-primary/50 motion-safe:group-hover:-translate-y-1">
+                            {photo ? (
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              <img
+                                src={photo}
+                                alt={`${member.name}, ${member.role} at ${profile.name}`}
+                                width={640}
+                                height={800}
+                                loading="lazy"
+                                decoding="async"
+                                className="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.04]"
                               />
-                            </div>
-                            <figcaption className="px-5 pb-1 pt-5 sm:px-6">
-                              <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary">
+                            ) : (
+                              <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/10 via-muted/40 to-transparent">
+                                <span aria-hidden className="text-6xl font-semibold tracking-tighter text-primary/60 sm:text-7xl">{initials}</span>
+                                <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Portrait coming soon</span>
+                              </div>
+                            )}
+                          </figure>
+
+                          <div className="mt-5 flex flex-col gap-3">
+                            <div>
+                              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary">
                                 {member.role}
                               </p>
                               <h4 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
-                                {member.name}
+                                <Link
+                                  href={profileHref}
+                                  className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                                >
+                                  <span className="transition-colors group-hover:text-primary">{member.name}</span>
+                                  <ArrowUpRight
+                                    aria-hidden
+                                    className="ml-1 inline h-4 w-4 -translate-y-0.5 text-primary opacity-0 transition-all duration-300 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:opacity-100"
+                                  />
+                                </Link>
                               </h4>
-                            </figcaption>
-                          </figure>
-
-                          <div className="flex flex-col gap-3 px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                              {member.department && (
-                                <span className="inline-flex items-center gap-1.5">
-                                  <Briefcase aria-hidden className="h-3.5 w-3.5" />
-                                  {member.department}
-                                </span>
-                              )}
-                              {member.location && (
-                                <span className="inline-flex items-center gap-1.5">
-                                  <MapPin aria-hidden className="h-3.5 w-3.5" />
-                                  {member.location}
-                                </span>
-                              )}
                             </div>
+
+                            {(member.department || member.location) && (
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                {member.department && (
+                                  <span className="inline-flex items-center gap-1.5">
+                                    <Briefcase aria-hidden className="h-3.5 w-3.5" />
+                                    {member.department}
+                                  </span>
+                                )}
+                                {member.location && (
+                                  <span className="inline-flex items-center gap-1.5">
+                                    <MapPin aria-hidden className="h-3.5 w-3.5" />
+                                    {member.location}
+                                  </span>
+                                )}
+                              </div>
+                            )}
 
                             {member.bio && (
                               <p className="text-sm leading-6 text-muted-foreground">
@@ -347,7 +237,7 @@ export default async function AboutPage() {
                                 {expertise.map((skill) => (
                                   <li
                                     key={skill}
-                                    className="rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
+                                    className="rounded-full border border-border/70 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground"
                                   >
                                     {skill}
                                   </li>
@@ -355,15 +245,15 @@ export default async function AboutPage() {
                               </ul>
                             )}
 
-                            {socials.length > 0 ? (
-                              <ul className="mt-auto flex flex-wrap items-center gap-2 pt-2">
+                            {socials.length > 0 && (
+                              <ul className="relative z-10 mt-1 flex flex-wrap items-center gap-2">
                                 {socials.map((s) => (
                                   <li key={s.href}>
                                     <a
                                       href={s.href}
                                       target={s.external ? "_blank" : undefined}
                                       rel={s.external ? "noopener noreferrer" : undefined}
-                                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/60 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                                       aria-label={s.label}
                                     >
                                       {s.icon}
@@ -371,9 +261,12 @@ export default async function AboutPage() {
                                   </li>
                                 ))}
                               </ul>
-                            ) : (
-                              <div className="mt-auto h-2" aria-hidden />
                             )}
+
+                            <p className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary/80 transition-colors group-hover:text-primary">
+                              View profile
+                              <ArrowRight aria-hidden className="h-3.5 w-3.5 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5" />
+                            </p>
                           </div>
                         </ScrollReveal>
                       );

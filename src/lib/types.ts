@@ -146,6 +146,7 @@ export type TeamMember = {
   id: string;
   name: string;
   role: string;
+  slug: string | null;
   bio: string | null;
   photo: string | null;
   linkedin: string | null;
