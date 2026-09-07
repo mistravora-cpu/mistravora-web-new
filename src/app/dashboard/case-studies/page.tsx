@@ -29,7 +29,7 @@ const fields: FieldDef[] = [
   { name: "outcome", label: "Outcome", type: "textarea" },
   { name: "results", label: "Results (one per line)", type: "list", placeholder: "65% increase in online bookings" },
   { name: "technologies", label: "Technologies (one per line)", type: "list" },
-  { name: "body", label: "Body (legacy)", type: "textarea" },
+  { name: "body", label: "Project content (HTML, internal CSS, images and proof links)", type: "textarea", placeholder: '<style>.project-proof { padding: 1rem; }</style>\n<h2>Project details</h2>\n<p>Describe the work and supporting evidence.</p>\n<section class="project-proof"><h2>Proof and references</h2><ul><li><a href="https://example.com/evidence">View supporting evidence</a></li></ul></section>' },
   { name: "sort_order", label: "Display Order", type: "number" },
   { name: "published", label: "Published", type: "boolean" },
 ];

@@ -1,3 +1,4 @@
+import { ArticleBody } from "@/components/article-body";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { ShareButton } from "@/components/share-button";
@@ -157,8 +158,8 @@ export default async function CaseStudyPage({
           )}
 
           {cs.body && (
-            <div className="mt-10 max-w-3xl text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4">
-              {cs.body}
+            <div className="mt-10 w-full min-w-0 text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4">
+              <ArticleBody body={cs.body} title={`${cs.title} project details`} />
             </div>
           )}
 
