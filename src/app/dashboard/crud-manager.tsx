@@ -178,6 +178,40 @@ function ImageField({
   );
 }
 
+function ProjectScreenshot({ bodyId, onInsert, onUploading }: {
+  bodyId: string;
+  onInsert: (html: string, position: number | null) => void;
+  onUploading: (busy: boolean) => void;
+}) {
+  const [url, setUrl] = React.useState("");
+  const [caption, setCaption] = React.useState("");
+  const [error, setError] = React.useState("");
+  const position = React.useRef<number | null>(null);
+  const id = React.useId();
+  const escape = (text: string) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return (
+    <fieldset className="mt-3 flex flex-col gap-3 rounded-lg border border-border p-4" onFocusCapture={() => {
+      const body = document.getElementById(bodyId) as HTMLTextAreaElement | null;
+      if (position.current === null && body) position.current = body.selectionStart;
+    }}>
+      <legend className="px-1 text-sm font-medium">Add a proof screenshot</legend>
+      <p className="text-xs text-muted-foreground">Place the cursor in the content above, then add an image. Only publish screenshots approved for public viewing.</p>
+      <label htmlFor={`${id}-image`} className="text-xs">Screenshot upload or image link</label>
+      <ImageField id={`${id}-image`} name="screenshot" label="Screenshot" value={url} onChange={(_, value) => setUrl(String(value))} onUploading={onUploading} />
+      <label htmlFor={`${id}-caption`} className="text-xs">Description / caption</label>
+      <input id={`${id}-caption`} value={caption} onChange={event => setCaption(event.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Describe what the screenshot demonstrates" />
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      <Button type="button" variant="outline" className="w-fit" onClick={() => {
+        let valid = false;
+        try { const parsed = new URL(url.trim()); valid = parsed.protocol === "https:" && !parsed.username && !parsed.password; } catch {}
+        if (!valid || !caption.trim()) { setError("Provide an HTTPS image link or upload, and a description."); return; }
+        onInsert(`\n<figure><img src="${escape(url.trim())}" alt="${escape(caption.trim())}" loading="lazy" decoding="async"><figcaption>${escape(caption.trim())}</figcaption></figure>\n`, position.current);
+        setUrl(""); setCaption(""); setError(""); position.current = null;
+      }}>Insert screenshot into content</Button>
+    </fieldset>
+  );
+}
+
 export function CrudManager({
   table,
   title,
@@ -330,6 +364,7 @@ export function CrudManager({
                   {f.required ? " *" : ""}
                 </label>
                 {f.type === "textarea" ? (
+                  <>
                   <textarea
                     id={`${formId}-${f.name}`}
                     required={f.required}
@@ -339,6 +374,19 @@ export function CrudManager({
                     rows={4}
                     className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
+                  {table === "case_studies" && f.name === "body" && <ProjectScreenshot
+                    bodyId={`${formId}-${f.name}`}
+                    onUploading={busy => setActiveUploads(count => Math.max(0, count + (busy ? 1 : -1)))}
+                    onInsert={(html, position) => {
+                      const body = String(formData[f.name] ?? "");
+                      const index = Math.min(position ?? body.length, body.length);
+                      const before = body.slice(0, index), after = body.slice(index);
+                      const isHtml = /<[a-z][\s\S]*>/i.test(body);
+                      const textToHtml = (text: string) => text ? `<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}</p>` : "";
+                      setField(f.name, isHtml ? before + html + after : textToHtml(before) + html + textToHtml(after));
+                    }}
+                  />}
+                  </>
                 ) : f.type === "boolean" ? (
                   <button
                     id={`${formId}-${f.name}`}

@@ -710,6 +710,8 @@ function SceneLifecycle() {
     let ready = false;
     let visible = true;
     let contextLost = false;
+    let preparationId = 0;
+    let startupTimer: ReturnType<typeof setTimeout> | undefined;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
       const running = ready && visible && document.visibilityState !== "hidden" && !contextLost;
@@ -729,28 +731,41 @@ function SceneLifecycle() {
       contextLost = true;
       update();
     };
+    const prepare = () => {
+      const generation = ++preparationId;
+      clearTimeout(startupTimer);
+      ready = false;
+      update();
+      const resume = () => {
+        if (disposed || generation !== preparationId || contextLost) return;
+        clearTimeout(startupTimer);
+        ready = true;
+        update();
+      };
+      // Some drivers never settle parallel shader compilation. Let rendering
+      // finish preparation normally instead of leaving the canvas stopped forever.
+      startupTimer = setTimeout(resume, 3000);
+      Promise.resolve().then(async () => {
+        if (gl.extensions.has("KHR_parallel_shader_compile")) await gl.compileAsync(scene, camera);
+        else gl.compile(scene, camera);
+      }).then(resume, resume);
+    };
     const handleContextRestored = () => {
       contextLost = false;
-      ready = false; // re-compile shaders on the new context
-      const preparation = gl.extensions.has("KHR_parallel_shader_compile")
-        ? gl.compileAsync(scene, camera)
-        : Promise.resolve().then(() => gl.compile(scene, camera));
-      preparation.catch(error => console.error("Robot shader re-compile failed", error)).finally(() => {
-        if (!disposed) { ready = true; update(); }
-      });
+      prepare();
+    };
+    const handlePageShow = () => {
+      const rect = gl.domElement.getBoundingClientRect();
+      visible = rect.bottom > 0 && rect.top < window.innerHeight;
+      update();
     };
     gl.domElement.addEventListener("webglcontextlost", handleContextLost);
     gl.domElement.addEventListener("webglcontextrestored", handleContextRestored);
-
-    // Compile shaders through KHR_parallel_shader_compile when supported,
-    // avoiding a synchronous GPU wait in the first animation frame.
-    const preparation = gl.extensions.has("KHR_parallel_shader_compile")
-      ? gl.compileAsync(scene, camera)
-      : Promise.resolve().then(() => gl.compile(scene, camera));
-    preparation.catch(error => console.error("Robot shader preparation failed", error)).finally(() => {
-      if (!disposed) { ready = true; update(); }
-    });
+    window.addEventListener("pageshow", handlePageShow);
+    prepare();
     return () => {
+      clearTimeout(startupTimer);
+      window.removeEventListener("pageshow", handlePageShow);
       reducedMotion.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", update);
       gl.domElement.removeEventListener("webglcontextlost", handleContextLost);

@@ -15,3 +15,11 @@ test('company row uses matching published project image and preserves logo fallb
  assert.equal(companies[0].logo,'https://cdn.example/old.webp');
  assert.equal(withProjectImages(companies,[])[0].logo,companies[0].logo);
 });
+test('known public brand and legal client names share project images',()=>{
+ const result=withProjectImages([{name:'Dubai Store',logo:''},{name:'ShopMate',logo:''}], [
+  {client:'The Dubai Store',published:true,cover_image:'https://cdn.example/dubai.webp'},
+  {client:'ShopMate (Pvt) Ltd',published:true,cover_image:'https://cdn.example/shopmate.webp'},
+ ]);
+ assert.equal(result[0].logo,'https://cdn.example/dubai.webp');
+ assert.equal(result[1].logo,'https://cdn.example/shopmate.webp');
+});

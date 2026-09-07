@@ -1,6 +1,13 @@
 import type { CaseStudy, TrustedCompany } from "./types";
 
-const companyKey = (name: string) => name.trim().replace(/\s+/g, " ").toLowerCase();
+const aliases: Record<string, string> = {
+  "the dubai store": "dubai store",
+  "shopmate (pvt) ltd": "shopmate",
+};
+const companyKey = (name: string) => {
+  const key = name.trim().replace(/\s+/g, " ").toLowerCase();
+  return aliases[key] ?? key;
+};
 
 export function withProjectImages(companies: TrustedCompany[], projects: CaseStudy[]) {
   const images = new Map<string, string>();
