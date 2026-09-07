@@ -23,3 +23,15 @@ test('article HTML removes active embeds and tracking pixels while preserving he
  const html=safeArticleHtml('<h2>Study</h2><script>steal()</script><iframe src="https://tracker.example"></iframe><img src="https://tracker.example/pixel"><a href="javascript:alert(1)" onclick="steal()">Bad</a><a href="https://example.com">Source</a>');
  assert.ok(html.includes('<h2>Study</h2>'));assert.ok(html.includes('href="https://example.com"'));assert.ok(!/script|iframe|img|onclick|javascript:|steal/.test(html));
 });
+
+test('styled articles preserve internal CSS but remove JavaScript and external embeds', () => {
+ const {articleDocument, hasArticleStyles} = load('src/lib/article-html.ts');
+ const document = articleDocument('<style>.intro{color:red}</style><p class="intro" style="margin:1rem" onclick="alert(1)">Article</p><script>alert(1)</script><iframe src="https://example.com"></iframe>');
+ assert.ok(hasArticleStyles('<style>p{color:red}</style>'));
+ assert.equal(hasArticleStyles('<script>alert(1)</script>'), false);
+ assert.ok(document.includes('.intro{color:red}'));
+ assert.ok(document.includes('class="intro"'));
+ assert.ok(document.includes('style="margin:1rem"'));
+ assert.ok(document.includes("script-src 'none'"));
+ assert.ok(!/<script|onclick|<iframe|alert\(1\)/.test(document));
+});
