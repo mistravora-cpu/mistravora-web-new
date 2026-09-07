@@ -3,7 +3,7 @@ import { applySeoOverrides } from "@/lib/seo-overrides";
 import { ShareButton } from "@/components/share-button";
 import { RelatedContent } from "@/components/related-content";
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image from "@/components/content-image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin, Building2, CheckCircle2 } from "lucide-react";

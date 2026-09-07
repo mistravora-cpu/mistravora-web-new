@@ -1,6 +1,6 @@
 "use server";
 
-import { isR2MediaUrl } from "@/lib/media-url";
+import { isPublicMediaUrl } from "@/lib/media-url";
 
 import { normalizeTeamSlug } from "@/lib/team-slug";
 import { calculatorSchema } from "@/lib/calculator-config";
@@ -183,15 +183,13 @@ export async function upsertRow(
 
   const imageKeys = ["photo", "image", "cover_image", "logo", "screenshot", "og_image", "file_url"].filter(key => typeof parentData[key] === "string" && parentData[key]);
   for (const key of imageKeys) {
-    const value = String(parentData[key]);
-    if (isR2MediaUrl(value, process.env.R2_PUBLIC_URL || "")) continue;
-    // Retain legacy URLs when editing unrelated fields; new files must use R2.
-    if (id) {
-      const {data: existing, error} = await supabase.from(table).select(key).eq("id", id).single();
-      if (error) return {error:error.message};
-      if ((existing as unknown as Record<string,unknown>)?.[key] === value) continue;
-    }
-    return {error:`Upload ${key.replaceAll("_", " ")} to R2 or choose its media-library URL before saving.`};
+    const value = String(parentData[key]).trim();
+    if (!isPublicMediaUrl(value)) return { error: `Provide a valid HTTPS link for ${key.replaceAll("_", " ")} or upload a file.` };
+    parentData[key] = value;
+  }
+
+  if (table === "case_studies" && typeof parentData.published === "boolean") {
+    parentData.status = parentData.published ? "active" : "draft";
   }
 
   if (table === "research" && "slug" in parentData) {

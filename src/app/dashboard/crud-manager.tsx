@@ -72,7 +72,7 @@ function ImageField({
   onChange: (name: string, value: unknown) => void;
   onUploading: (busy: boolean) => void;
 }) {
-  const [mode, setMode] = React.useState<"url" | "upload">("upload");
+  const [mode, setMode] = React.useState<"url" | "upload">(value ? "url" : "upload");
   const [uploading, setUploading] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
@@ -136,7 +136,7 @@ function ImageField({
           type="url"
           value={value}
           onChange={(e) => onChange(name, e.target.value)}
-          placeholder="Paste an R2 media-library URL"
+          placeholder="https://example.com/image.webp"
           className="h-9 rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       ) : (

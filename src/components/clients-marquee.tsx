@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/content-image";
 import { ExternalLink } from "lucide-react";
 import { getTrustedCompanies } from "@/lib/services";
 

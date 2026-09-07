@@ -13,7 +13,7 @@ const columns: ColumnDef[] = [
   { name: "location", label: "Location" },
   { name: "date", label: "Date" },
   { name: "sort_order", label: "Order" },
-  { name: "status", label: "Status" },
+  { name: "published", label: "Published" },
 ];
 
 const fields: FieldDef[] = [
@@ -31,8 +31,7 @@ const fields: FieldDef[] = [
   { name: "technologies", label: "Technologies (one per line)", type: "list" },
   { name: "body", label: "Body (legacy)", type: "textarea" },
   { name: "sort_order", label: "Display Order", type: "number" },
-  { name: "status", label: "Status", type: "select", options: ["active", "draft", "archived"] },
-  { name: "published", label: "Active", type: "boolean" },
+  { name: "published", label: "Published", type: "boolean" },
 ];
 
 export default async function CaseStudiesAdminPage() {

@@ -15,7 +15,7 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
-    if(name === '@/lib/media-url') return {isR2MediaUrl:()=>false};
+    if(name === '@/lib/media-url') { const media = {exports:{}, URL}; vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/media-url.ts','utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText, media); return media.exports; }
     if(name === '@/lib/team-slug') return {normalizeTeamSlug:s=>s};
     if(name === '@/lib/calculator-config') return {calculatorSchema:{parse:v=>v}};
     if(name === 'next/cache') return {updateTag: tag => calls.push(['tag', tag]), revalidatePath: (...args) => calls.push(['path', ...args]), refresh: () => {throw Error('Do not downgrade client invalidation');}};
@@ -38,3 +38,14 @@ for (const action of ['upsertRow', 'deleteRow', 'saveSettings']) {
     }
   });
 }
+
+test('image fields accept external HTTPS links and reject executable URLs', async () => {
+  const {actions} = load();
+  for (const url of ['https://images.example.com/photo.webp?width=800', 'https://cdn.example.org/image.jpg']) {
+    const result = await actions.upsertRow('team_members', {photo:url}, 'existing');
+    assert.equal(result.error, null);
+  }
+  for (const url of ['javascript:alert(1)', 'data:image/svg+xml,unsafe', 'https://user:password@example.com/image.jpg']) {
+    assert.ok((await actions.upsertRow('team_members', {photo:url}, 'existing')).error);
+  }
+});
