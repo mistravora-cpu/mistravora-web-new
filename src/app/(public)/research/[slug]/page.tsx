@@ -56,7 +56,7 @@ export default async function ResearchDetailPage({
 
   return (
     <article className="flex flex-1 flex-col">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "Article", headline: research.title, name: research.title, description: research.summary, url: `${site.url}/research/${research.slug}`, dateModified: research.updated_at, datePublished: research.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "Article", headline: research.title, name: research.title, description: research.summary, image: research.cover_image || undefined, url: `${site.url}/research/${research.slug}`, dateModified: research.updated_at, datePublished: research.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
       {/* Header */}
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="aurora-bg absolute inset-0" />

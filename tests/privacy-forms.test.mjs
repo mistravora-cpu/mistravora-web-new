@@ -18,20 +18,17 @@ test('newsletter and booking reject submissions without affirmative form choice'
   const api=load(path);const result=await api.POST(new Request('https://example.com/api/form',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}));assert.equal(result.status,400);
  }
 });
-test('article HTML removes active embeds and tracking pixels while preserving headings and safe links',()=>{
- const {safeArticleHtml}=load('src/lib/article-html.ts');
- const html=safeArticleHtml('<h2>Study</h2><script>steal()</script><iframe src="https://tracker.example"></iframe><img src="https://tracker.example/pixel"><a href="javascript:alert(1)" onclick="steal()">Bad</a><a href="https://example.com">Source</a>');
- assert.ok(html.includes('<h2>Study</h2>'));assert.ok(html.includes('href="https://example.com"'));assert.ok(!/script|iframe|img|onclick|javascript:|steal/.test(html));
+test('article HTML removes scripts and embeds while preserving safe images and content',()=>{
+ const {renderArticleHtml}=load('src/lib/article-html.ts');
+ const {html,css}=renderArticleHtml('<style>body{color:red}.intro{color:blue;background:url(https://tracker.example)} @import "https://tracker.example/x.css";</style><h1>Study</h1><script>steal()</script><iframe src="https://tracker.example"></iframe><img src="https://example.com/photo.jpg" alt="Diagram"><img src="javascript:alert(1)"><a href="javascript:alert(1)" onclick="steal()">Bad</a>');
+ assert.ok(html.includes('<h2>Study</h2>'));assert.ok(html.includes('alt="Diagram"'));assert.ok(html.includes('loading="lazy"'));
+ assert.ok(!/<script|<iframe|onclick|javascript:|steal/.test(html));
+ assert.ok(css.includes('[data-article-content]'));assert.ok(!/url|@import|tracker/.test(css));
 });
-
-test('styled articles preserve internal CSS but remove JavaScript and external embeds', () => {
- const {articleDocument, hasArticleStyles} = load('src/lib/article-html.ts');
- const document = articleDocument('<style>.intro{color:red}</style><p class="intro" style="margin:1rem" onclick="alert(1)">Article</p><script>alert(1)</script><iframe src="https://example.com"></iframe>');
- assert.ok(hasArticleStyles('<style>p{color:red}</style>'));
- assert.equal(hasArticleStyles('<script>alert(1)</script>'), false);
- assert.ok(document.includes('.intro{color:red}'));
- assert.ok(document.includes('class="intro"'));
- assert.ok(document.includes('style="margin:1rem"'));
- assert.ok(document.includes("script-src 'none'"));
- assert.ok(!/<script|onclick|<iframe|alert\(1\)/.test(document));
+test('article styles stay scoped and malformed CSS does not break publication',()=>{
+ const {renderArticleHtml}=load('src/lib/article-html.ts');
+ const {html,css}=renderArticleHtml('<style>h2,p{color:red}@media(max-width:600px){.intro{padding:1rem}}</style><p class="intro" style="position:fixed;color:blue">Text</p>');
+ assert.ok(css.includes('[data-article-content] h2'));assert.ok(css.includes('[data-article-content] p'));
+ assert.ok(html.includes('color:blue'));assert.ok(!html.includes('fixed'));
+ assert.ok(renderArticleHtml('<style>p{</style><p>Still readable</p>').html.includes('Still readable'));
 });

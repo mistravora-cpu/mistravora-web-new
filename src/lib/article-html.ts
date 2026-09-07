@@ -1,34 +1,77 @@
 import sanitizeHtml from "sanitize-html";
+import postcss from "postcss";
+import selectorParser from "postcss-selector-parser";
 
-/** Editorial HTML cannot load scripts, frames, tracking pixels or active forms. */
-export function safeArticleHtml(body: string) {
-  return sanitizeHtml(body, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.filter(tag => !["img", "iframe", "form"].includes(tag)),
-    allowedAttributes: { a: ["href", "title"], th: ["scope", "colspan", "rowspan"], td: ["colspan", "rowspan"] },
-    allowedSchemes: ["https", "http", "mailto"],
-    allowProtocolRelative: false,
+const scope = "[data-article-content]";
+function cleanCss(css: string, scoped: boolean) {
+  try {
+    const root = postcss.parse(css);
+    root.walkAtRules(rule => { if (!scoped || !["media", "supports"].includes(rule.name.toLowerCase())) rule.remove(); });
+    root.walkDecls(decl => {
+      if (/url\s*\(|expression\s*\(|javascript:|\\|[<>]/i.test(decl.value) || /^(position|z-index|behavior|-moz-binding|animation.*)$/i.test(decl.prop)) decl.remove();
+    });
+    if (scoped) root.walkRules(rule => {
+      // Nested selector rules require a separate compiler; omit them safely.
+      if (rule.parent?.type === "rule") { rule.remove(); return; }
+      try {
+        rule.selector = selectorParser(selectors => {
+          selectors.each(selector => {
+            selector.walk(node => {
+              if ((node.type === "tag" && /^(html|body)$/i.test(node.value)) || (node.type === "pseudo" && node.value === ":root")) {
+                node.replaceWith(selectorParser.attribute({ attribute: "data-article-content", value: undefined, raws: {} }));
+              }
+            });
+            if (!selector.toString().startsWith(scope)) {
+              selector.prepend(selectorParser.combinator({ value: " " }));
+              selector.prepend(selectorParser.attribute({ attribute: "data-article-content", value: undefined, raws: {} }));
+            }
+          });
+        }).processSync(rule.selector);
+      } catch { rule.remove(); }
+    });
+    return root.toString().replace(/</g, "\\3c ");
+  } catch { return ""; }
+}
+
+function safeImage(src: string) {
+  return /^\/(?!\/)/.test(src) || /^https:\/\//i.test(src);
+}
+
+/** Server-rendered article markup; no scripts, embeds, forms or global CSS. */
+export function renderArticleHtml(body: string) {
+  const styles: string[] = [];
+  const withoutStyles = body.replace(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi, (_, css: string) => {
+    styles.push(cleanCss(css, true));
+    return "";
   });
-}
-
-export function hasArticleStyles(body: string) {
-  return /<style\b|\sstyle\s*=/i.test(body);
-}
-
-/** Internal CSS stays inside a fully sandboxed, script-free document. */
-export function articleDocument(body: string) {
-  const policy = "default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
-  const styledHtml = sanitizeHtml(body, {
-    allowedTags: [...sanitizeHtml.defaults.allowedTags, "style", "html", "head", "body"],
+  const html = sanitizeHtml(withoutStyles, {
+    allowedTags: [...sanitizeHtml.defaults.allowedTags, "img"],
     allowedAttributes: {
       "*": ["id", "class", "style", "title", "lang", "dir"],
       a: ["href", "title"],
-      th: ["scope", "colspan", "rowspan"],
-      td: ["colspan", "rowspan"],
+      img: ["src", "alt", "width", "height", "loading", "decoding", "referrerpolicy"],
+      th: ["scope", "colspan", "rowspan"], td: ["colspan", "rowspan"],
     },
     allowedSchemes: ["https", "http", "mailto"],
     allowProtocolRelative: false,
-    // Styles are allowed only in the isolated frame, under its restrictive CSP.
-    allowVulnerableTags: true,
+    transformTags: {
+      "*": (tagName, attribs) => {
+        if (attribs.style) attribs.style = cleanCss(attribs.style, false);
+        if (tagName === "img") {
+          if (!safeImage(attribs.src || "")) delete attribs.src;
+          attribs.alt ??= "";
+          attribs.loading = "lazy";
+          attribs.decoding = "async";
+          attribs.referrerpolicy = "no-referrer";
+        }
+        return { tagName: tagName === "h1" ? "h2" : tagName, attribs };
+      },
+    },
+    exclusiveFilter: frame => frame.tag === "img" && !frame.attribs.src,
   });
-  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${policy}"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width, initial-scale=1"><style>html{color-scheme:light}body{margin:0;padding:16px;font-family:system-ui,sans-serif;line-height:1.6;overflow-wrap:anywhere}*,*::before,*::after{box-sizing:border-box}img,svg,canvas,video{max-width:100%}pre{overflow-x:auto}button,input,select,textarea{font:inherit}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}</style></head><body>${styledHtml}</body></html>`;
+  return { html, css: styles.join("\n") };
+}
+
+export function safeArticleHtml(body: string) {
+  return renderArticleHtml(body).html;
 }

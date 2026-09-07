@@ -884,3 +884,9 @@ section[data-cv="auto"] {
   max-width: 100%;
   overflow-x: auto;
 }
+
+/* Article content flows with the page; only wide tables/code scroll locally. */
+[data-article-content] { width: 100%; min-width: 0; overflow-wrap: anywhere; }
+[data-article-content] img { max-width: 100%; height: auto; }
+[data-article-content] :is(pre, table) { display: block; max-width: 100%; overflow-x: auto; }
+[data-article-content] .article-container { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
