@@ -24,16 +24,32 @@ const valueFields: FieldDef[] = [
 const teamColumns: ColumnDef[] = [
   { name: "name", label: "Name" },
   { name: "role", label: "Role" },
+  { name: "category", label: "Category" },
   { name: "published", label: "Active" },
 ];
 
 const teamFields: FieldDef[] = [
   { name: "name", label: "Name", required: true },
   { name: "role", label: "Role", required: true },
+  {
+    name: "category",
+    label: "Category",
+    type: "select",
+    options: ["senior", "permanent", "intern", "advisor", "contractor"],
+    required: true,
+  },
+  { name: "department", label: "Department" },
+  { name: "location", label: "Location" },
+  { name: "expertise", label: "Expertise (comma separated)" },
   { name: "bio", label: "Bio", type: "textarea" },
   { name: "photo", label: "Profile Image", type: "image" },
-  { name: "linkedin", label: "LinkedIn Profile" },
+  { name: "linkedin", label: "LinkedIn Profile", placeholder: "https://www.linkedin.com/in/..." },
   { name: "x_handle", label: "X Profile (Twitter)", placeholder: "https://x.com/..." },
+  { name: "github", label: "GitHub Profile", placeholder: "https://github.com/..." },
+  { name: "instagram", label: "Instagram Profile", placeholder: "https://www.instagram.com/..." },
+  { name: "facebook", label: "Facebook Profile", placeholder: "https://www.facebook.com/..." },
+  { name: "website", label: "Personal Website", placeholder: "https://..." },
+  { name: "email", label: "Public Email" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];

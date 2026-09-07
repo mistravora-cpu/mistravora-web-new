@@ -150,6 +150,15 @@ export type TeamMember = {
   photo: string | null;
   linkedin: string | null;
   x_handle: string | null;
+  category: string;
+  department: string | null;
+  location: string | null;
+  expertise: string | null;
+  github: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  website: string | null;
+  email: string | null;
   sort_order: number;
   published: boolean;
   created_at: string;

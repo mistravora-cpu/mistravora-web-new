@@ -2,20 +2,32 @@ import { getBusinessProfile } from "@/lib/business-profile";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import {
   ArrowRight,
   Zap,
-  Share2,
+  Globe,
+  Mail,
+  MapPin,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 import { AnimatedHero } from "@/components/animated-hero";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import {
+  LinkedinIcon,
+  GithubIcon,
+  InstagramIcon,
+  FacebookIcon,
+  XIcon,
+} from "@/components/brand-icons";
 import { getHeroSection, getCoreValues, getTeamMembers } from "@/lib/services";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
+import type { TeamMember } from "@/lib/types";
 
 const baseMetadata: Metadata = withSocialMetadata({
   title: "About",
@@ -26,6 +38,120 @@ const baseMetadata: Metadata = withSocialMetadata({
 
 function getIcon(name: string | null): LucideIcon {
   return getMappedIcon(name, Zap);
+}
+
+// ─── Team catalogue helpers ───────────────────────────────────────────────
+// Canonical category order + display metadata. Categories that have no
+// members are not rendered. Any unknown category value falls into a generic
+// "Team" bucket shown last so legacy/unknown rows still appear.
+type TeamCategoryMeta = {
+  key: string;
+  title: string;
+  description: string;
+};
+
+const TEAM_CATEGORIES: TeamCategoryMeta[] = [
+  { key: "senior", title: "Senior staff", description: "Leadership and senior engineers shaping Mistravora." },
+  { key: "permanent", title: "Permanent staff", description: "The core team delivering every day." },
+  { key: "advisor", title: "Advisors", description: "Trusted guides helping us steer the company." },
+  { key: "contractor", title: "Contractors", description: "Specialist partners we work with." },
+  { key: "intern", title: "Interns", description: "Rising talent growing with us." },
+];
+
+function groupTeamByCategory(members: TeamMember[]): { meta: TeamCategoryMeta; members: TeamMember[] }[] {
+  const known = new Map<string, TeamMember[]>(TEAM_CATEGORIES.map((c) => [c.key, []]));
+  const extras = new Map<string, TeamMember[]>();
+
+  for (const m of members) {
+    const key = (m.category || "").trim().toLowerCase();
+    if (key && known.has(key)) {
+      known.get(key)!.push(m);
+    } else if (key) {
+      const list = extras.get(key) ?? [];
+      list.push(m);
+      extras.set(key, list);
+    } else {
+      known.get("permanent")!.push(m);
+    }
+  }
+
+  const groups: { meta: TeamCategoryMeta; members: TeamMember[] }[] = [];
+  for (const meta of TEAM_CATEGORIES) {
+    const list = known.get(meta.key) ?? [];
+    if (list.length > 0) groups.push({ meta, members: list });
+  }
+  // Bucket any unknown categories under a generic, title-cased heading.
+  for (const [key, list] of extras) {
+    if (list.length === 0) continue;
+    const title = key.charAt(0).toUpperCase() + key.slice(1);
+    groups.push({ meta: { key, title, description: "Part of the wider Mistravora team." }, members: list });
+  }
+  return groups;
+}
+
+function parseExpertise(raw: string | null): string[] {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+}
+
+// Only treat values that start with http(s) as safe external links. Anything
+// else (e.g. a bare handle) is dropped rather than risk a broken or unsafe
+// navigation. Email is handled separately via mailto.
+function safeUrl(value: string | null): string | null {
+  if (!value) return null;
+  const v = value.trim();
+  if (v === "") return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  return null;
+}
+
+function safeMailto(value: string | null): string | null {
+  if (!value) return null;
+  const v = value.trim();
+  if (v === "") return null;
+  // Basic email shape check.
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return `mailto:${v}`;
+  return null;
+}
+
+function memberInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+type SocialLink = {
+  href: string;
+  label: string;
+  icon: ReactNode;
+  external: boolean;
+};
+
+function buildSocialLinks(member: TeamMember, companyName: string): SocialLink[] {
+  const links: SocialLink[] = [];
+  const linkedin = safeUrl(member.linkedin);
+  if (linkedin) links.push({ href: linkedin, label: `${member.name} on LinkedIn`, icon: <LinkedinIcon size={16} aria-hidden />, external: true });
+  const x = safeUrl(member.x_handle);
+  if (x) links.push({ href: x, label: `${member.name} on X`, icon: <XIcon size={14} aria-hidden />, external: true });
+  const github = safeUrl(member.github);
+  if (github) links.push({ href: github, label: `${member.name} on GitHub`, icon: <GithubIcon size={16} aria-hidden />, external: true });
+  const instagram = safeUrl(member.instagram);
+  if (instagram) links.push({ href: instagram, label: `${member.name} on Instagram`, icon: <InstagramIcon size={16} aria-hidden />, external: true });
+  const facebook = safeUrl(member.facebook);
+  if (facebook) links.push({ href: facebook, label: `${member.name} on Facebook`, icon: <FacebookIcon size={16} aria-hidden />, external: true });
+  const website = safeUrl(member.website);
+  if (website) links.push({ href: website, label: `${member.name} personal website`, icon: <Globe aria-hidden className="h-4 w-4" />, external: true });
+  const mailto = safeMailto(member.email);
+  if (mailto) links.push({ href: mailto, label: `Email ${member.name} at ${companyName}`, icon: <Mail aria-hidden className="h-4 w-4" />, external: false });
+  return links;
 }
 
 export default async function AboutPage() {
@@ -112,78 +238,152 @@ export default async function AboutPage() {
 
       {/* Team */}
       <div className="mt-20">
-        <div className="mx-auto  w-full text-center">
+        <div className="mx-auto w-full text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Who&apos;s building Mistravora
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
-            Meet the people behind Mistravora.
+            Meet the people behind {profile.name}.
           </p>
         </div>
-        <div className="mx-auto mt-10 grid w-full gap-8 md:grid-cols-2">
-          {team.map((member, i) => {
-            const initials = member.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
-            return (
-              <ScrollReveal key={member.id} animation="fade-up" delay={i * 100} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card">
-                <figure>
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                    {member.photo ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
-                        src={member.photo}
-                        alt={`${member.name}, ${member.role} at ${profile.name}`}
-                        width={960}
-                        height={720}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.025]"
-                      />
-                    ) : (
-                      <div className="flex h-full flex-col items-center justify-center gap-4 bg-gradient-to-br from-primary/15 via-muted to-accent/10">
-                        <span aria-hidden className="text-8xl font-semibold tracking-tighter text-primary/70 sm:text-9xl">{initials}</span>
-                        <span className="text-sm text-muted-foreground">Portrait coming soon</span>
-                      </div>
-                    )}
-                  </div>
-                  <figcaption className="border-t border-border px-6 pb-4 pt-6 sm:px-8 sm:pt-8">
-                    <p className="mb-2 text-sm font-medium tracking-wide text-primary">{member.role}</p>
-                    <h3 className="text-3xl font-semibold tracking-tight sm:text-4xl">{member.name}</h3>
-                  </figcaption>
-                </figure>
-                {member.bio && <p className="px-6 text-base leading-7 text-muted-foreground sm:px-8">{member.bio}</p>}
 
-                {/* Social links */}
-                {(member.linkedin || member.x_handle) && (
-                  <div className="mt-auto flex items-center gap-3 px-6 pb-6 pt-5 sm:px-8 sm:pb-8">
-                    {member.linkedin && (
-                      <a
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex h-11 w-11 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                        aria-label={`${member.name} on LinkedIn`}
-                      >
-                        <Share2 aria-hidden className="h-3.5 w-3.5" />
-                      </a>
-                    )}
-                    {member.x_handle && (
-                      <a
-                        href={member.x_handle}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex h-11 w-11 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                        aria-label={`${member.name} on X`}
-                      >
-                        <span className="text-xs font-bold">X</span>
-                      </a>
-                    )}
+        {team.length === 0 ? (
+          <ScrollReveal animation="fade-up" className="mx-auto mt-10 max-w-md rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
+            <p className="text-sm text-muted-foreground">
+              Our team profiles are being updated. Please check back soon.
+            </p>
+          </ScrollReveal>
+        ) : (
+          <div className="mt-12 flex flex-col gap-16">
+            {groupTeamByCategory(team).map((group, groupIndex) => {
+              const groupDelayBase = groupIndex * 60;
+              return (
+                <section key={group.meta.key} aria-labelledby={`team-${group.meta.key}-heading`}>
+                  <ScrollReveal animation="fade-up" delay={groupDelayBase} className="flex flex-col gap-2 border-l-2 border-primary/40 pl-5 sm:flex-row sm:items-end sm:justify-between sm:pl-6">
+                    <div>
+                      <h3 id={`team-${group.meta.key}-heading`} className="text-2xl font-bold tracking-tight sm:text-3xl">
+                        {group.meta.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {group.meta.description}
+                      </p>
+                    </div>
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
+                      {group.members.length} {group.members.length === 1 ? "person" : "people"}
+                    </p>
+                  </ScrollReveal>
+
+                  <div className="mt-8 grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {group.members.map((member, i) => {
+                      const initials = memberInitials(member.name);
+                      const expertise = parseExpertise(member.expertise);
+                      const socials = buildSocialLinks(member, profile.name);
+                      const photo = safeUrl(member.photo);
+                      return (
+                        <ScrollReveal
+                          key={member.id}
+                          animation="fade-up"
+                          delay={Math.min(groupDelayBase + i * 90, 600)}
+                          className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
+                        >
+                          <figure>
+                            <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                              {photo ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                  src={photo}
+                                  alt={`${member.name}, ${member.role} at ${profile.name}`}
+                                  width={640}
+                                  height={800}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.03]"
+                                />
+                              ) : (
+                                <div className="flex h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-primary/15 via-muted to-accent/10">
+                                  <span aria-hidden className="text-7xl font-semibold tracking-tighter text-primary/70 sm:text-8xl">{initials}</span>
+                                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Portrait coming soon</span>
+                                </div>
+                              )}
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/90 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                              />
+                            </div>
+                            <figcaption className="px-5 pb-1 pt-5 sm:px-6">
+                              <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary">
+                                {member.role}
+                              </p>
+                              <h4 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
+                                {member.name}
+                              </h4>
+                            </figcaption>
+                          </figure>
+
+                          <div className="flex flex-col gap-3 px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                              {member.department && (
+                                <span className="inline-flex items-center gap-1.5">
+                                  <Briefcase aria-hidden className="h-3.5 w-3.5" />
+                                  {member.department}
+                                </span>
+                              )}
+                              {member.location && (
+                                <span className="inline-flex items-center gap-1.5">
+                                  <MapPin aria-hidden className="h-3.5 w-3.5" />
+                                  {member.location}
+                                </span>
+                              )}
+                            </div>
+
+                            {member.bio && (
+                              <p className="text-sm leading-6 text-muted-foreground">
+                                {member.bio}
+                              </p>
+                            )}
+
+                            {expertise.length > 0 && (
+                              <ul className="flex flex-wrap gap-1.5" aria-label={`${member.name} expertise`}>
+                                {expertise.map((skill) => (
+                                  <li
+                                    key={skill}
+                                    className="rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
+                                  >
+                                    {skill}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {socials.length > 0 ? (
+                              <ul className="mt-auto flex flex-wrap items-center gap-2 pt-2">
+                                {socials.map((s) => (
+                                  <li key={s.href}>
+                                    <a
+                                      href={s.href}
+                                      target={s.external ? "_blank" : undefined}
+                                      rel={s.external ? "noopener noreferrer" : undefined}
+                                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/60 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                      aria-label={s.label}
+                                    >
+                                      {s.icon}
+                                    </a>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <div className="mt-auto h-2" aria-hidden />
+                            )}
+                          </div>
+                        </ScrollReveal>
+                      );
+                    })}
                   </div>
-                )}
-                {!member.linkedin && !member.x_handle && <div className="h-6 sm:h-8" aria-hidden />}
-              </ScrollReveal>
-            );
-          })}
-        </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* CTA */}
