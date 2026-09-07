@@ -16,7 +16,8 @@ const geistSans = Geist({
   subsets: ["latin"],
   // Avoid a late font swap moving the hero on slow connections.
   display: "optional",
-  preload: true,
+  // Optional fonts may not be used on the first visit; load through CSS on demand.
+  preload: false,
   adjustFontFallback: true,
 });
 

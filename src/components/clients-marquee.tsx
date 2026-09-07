@@ -1,9 +1,11 @@
 import Image from "@/components/content-image";
 import { ExternalLink } from "lucide-react";
-import { getTrustedCompanies } from "@/lib/services";
+import { withProjectImages } from "@/lib/company-images";
+import { getTrustedCompanies, getCaseStudies } from "@/lib/services";
 
 export async function ClientsMarquee() {
-  const companies = await getTrustedCompanies(true);
+  const [companyRows, projects] = await Promise.all([getTrustedCompanies(true), getCaseStudies(true)]);
+  const companies = withProjectImages(companyRows, projects);
   const seen = new Set<string>();
   const clients = companies.filter((company) => {
     const name = company.name.trim().toLocaleLowerCase();

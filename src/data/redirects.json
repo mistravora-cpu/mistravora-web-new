@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "source": "/case-studies/:path*",
+    "destination": "/projects/:path*",
+    "permanent": true
+  }
+]
