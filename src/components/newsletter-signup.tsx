@@ -1,4 +1,5 @@
 "use client";
+import { FormPrivacy } from "@/components/form-privacy";
 
 import * as React from "react";
 import { Mail, CheckCircle2, Loader2, ArrowRight, Sparkles } from "lucide-react";
@@ -9,7 +10,7 @@ const STORAGE_KEY = "mistravora-newsletter";
 
 export function NewsletterSignup({
   title = "Get digital growth tips",
-  description = "Monthly insights on web performance, SEO, and building software that lasts. No spam — unsubscribe anytime.",
+  description = "Occasional insights on web performance, SEO, and building software that lasts. No spam — unsubscribe anytime.",
   compact = false,
 }: {
   title?: string;
@@ -24,16 +25,17 @@ export function NewsletterSignup({
     () => false,
   );
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email.trim() || status === "loading") return;
 
+    if (new FormData(e.currentTarget).get("privacyConsent") !== "yes") return;
     setStatus("loading");
     try {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), privacyConsent: "yes" }),
       });
 
       if (!res.ok) throw new Error("Failed");
@@ -87,7 +89,7 @@ export function NewsletterSignup({
 
         {/* Right — form */}
         <div className="flex w-full flex-col gap-3 lg:max-w-md">
-          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2.5 sm:flex-row">
+          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
             <label htmlFor="newsletter-email" className="sr-only">
               Email address
             </label>
@@ -112,10 +114,11 @@ export function NewsletterSignup({
                 </>
               )}
             </Button>
+            <FormPrivacy newsletter />
           </form>
 
           {status === "error" && (
-            <p className="text-xs text-red-500">
+            <p role="alert" className="text-sm text-red-700 dark:text-red-400">
               Something went wrong. Please try again or email us directly.
             </p>
           )}
@@ -131,7 +134,7 @@ export function NewsletterSignup({
             </span>
             <span className="flex items-center gap-1">
               <CheckCircle2 className="h-3 w-3 text-primary/60" />
-              Monthly only
+              Email updates
             </span>
           </div>
         </div>

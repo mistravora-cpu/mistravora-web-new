@@ -39,6 +39,8 @@ export async function submitInquiry(
     return { ok: true };
   }
 
+  if (formData.get("privacyConsent") !== "yes") return { ok: false, error: "Please confirm that we may respond to your request." };
+
   const parsed = inquirySchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -47,7 +49,7 @@ export async function submitInquiry(
     website: "",
     company: formData.get("company") ?? "", service: formData.get("service") ?? "",
     budget: formData.get("budget") ?? "", timeline: formData.get("timeline") ?? "",
-    attribution: formData.get("attribution") ?? "",
+    attribution: "",
   });
 
   if (!parsed.success) {

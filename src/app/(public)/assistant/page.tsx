@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -20,6 +21,7 @@ export default function AssistantPage() {
         title="AI Assistant"
         description="Ask anything about Mistravora — services, pricing, process, or how we'd approach your project."
       />
+      <p className="mt-6 text-sm leading-6 text-muted-foreground">Automated answers may be wrong. Do not submit sensitive personal or customer information. <Link href="/policies/privacy-policy" className="underline">Privacy Policy</Link></p>
       <div className="mt-10">
         <Chat />
       </div>

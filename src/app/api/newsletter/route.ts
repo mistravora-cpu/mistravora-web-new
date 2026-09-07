@@ -10,7 +10,8 @@ export async function POST(request: Request) {
   if (limited) return limited;
 
   try {
-    const { email } = await request.json();
+    const { email, privacyConsent } = await request.json();
+    if (privacyConsent !== "yes") return NextResponse.json({ error: "Please agree to receive email updates." }, { status: 400 });
 
     if (typeof email !== "string" || email.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });

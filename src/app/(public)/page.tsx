@@ -383,6 +383,7 @@ export default async function Home() {
 
 async function StatsSection() {
   const dbStats = await getStatistics(true);
+  if (!dbStats.length) return null;
 
   const stats = dbStats.length > 0
     ? dbStats.map((s) => {

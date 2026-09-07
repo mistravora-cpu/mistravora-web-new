@@ -3,9 +3,7 @@ import type { BusinessProfile } from "@/lib/business-profile-data";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { pricingTiers } from "@/lib/site";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
-import { serverEnv } from "@/lib/env";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -24,9 +22,7 @@ type DbContext = {
   jobs: { title: string; location: string | null; type: string | null }[];
 };
 
-const pricingText = pricingTiers
-  .map((tier) => `${tier.name}: ${tier.price} — ${tier.description}`)
-  .join("\n");
+const pricingText = "Request a written quotation from our team. No public price or delivery guarantee is confirmed.";
 
 async function loadContext(): Promise<DbContext> {
   const profile = await getBusinessProfile();
@@ -80,7 +76,7 @@ function localReply(message: string, ctx: DbContext): string {
   }
 
   if (/(price|pricing|cost|how much|quote|budget|lkr|fee)/.test(m)) {
-    return `Here's our current pricing:\n\n${pricingText}\n\nEvery project is scoped after a free consultation. Try the cost calculator at /tools/cost-calculator for an instant estimate, or message us on WhatsApp (${site.phone}).`;
+    return `Here's our current pricing:\n\n${pricingText}\n\nDiscuss your scope through /contact or message us on WhatsApp (${site.phone}).`;
   }
 
   if (/(service|solution|what do you (do|build|offer)|offer|build|develop)/.test(m)) {
@@ -122,11 +118,11 @@ function localReply(message: string, ctx: DbContext): string {
   }
 
   if (/(how long|timeline|delivery|deadline|duration)/.test(m)) {
-    return "Typical timelines: a marketing website takes 2–4 weeks, e-commerce 4–8 weeks, and custom platforms 6–12 weeks. We agree milestones before we start — and we hit them. Share your deadline via /contact.";
+    return "Delivery dates depend on the agreed scope, inputs and integrations. Request a written schedule via /contact.";
   }
 
   if (/(tool|calculator|audit|roi|free)/.test(m)) {
-    return "We have free tools at /tools:\n\n• Cost calculator — instant project estimate\n• ROI calculator — payback period for a new site\n• Website audit — free Lighthouse scores for your current site\n\nNo sign-up needed.";
+    return "We have free tools at /tools:\n\n• Cost planning — contact the team for a quotation\n• ROI planning — discuss assumptions; no returns are guaranteed\n• Website audit — free Lighthouse scores for your current site\n\nNo sign-up needed.";
   }
 
   if (/(blog|article|news|insight)/.test(m)) {
@@ -144,19 +140,6 @@ function localReply(message: string, ctx: DbContext): string {
   return "I can help with:\n\n• Services & solutions — what we build\n• Pricing — tiers and estimates\n• Process & timelines\n• Free tools — cost calculator, ROI, website audit\n• Contact — how to reach the team\n\nWhat would you like to know?";
 }
 
-const SYSTEM_PROMPT = `You are Mistravora's AI assistant on mistravora.com. Use the approved business profile supplied below for company facts, contact details and scope.
-
-Rules you must follow:
-- Answer only questions about Mistravora's services, pricing, process, technologies, and general web/software topics.
-- Keep replies concise — under 150 words.
-- Never invent client names, case studies, or prices beyond the live data provided below.
-- When a user shows buying intent or asks for a quote, point them to WhatsApp (+94 77 330 6063), the contact page (/contact), or the cost calculator (/tools/cost-calculator).
-- If asked something unrelated to Mistravora or web/software, politely decline and redirect to how Mistravora can help.
-- Availability for enquiries does not imply guaranteed live support. Use the stated response expectation.
-
-Live site data:
-`;
-
 export async function POST(request: Request) {
   const limited = checkRateLimit(request, RATE_LIMITS.chat);
   if (limited) return limited;
@@ -168,69 +151,6 @@ export async function POST(request: Request) {
 
   const ctx = await loadContext();
   const lastMessage = parsed.data.messages[parsed.data.messages.length - 1];
-  const apiKey = serverEnv.ANTHROPIC_API_KEY;
-
-  // Keyless mode — answers assembled from live Supabase content.
-  if (!apiKey) {
-    return NextResponse.json({ reply: localReply(lastMessage.content, ctx) });
-  }
-
-  const contextText = [
-    `Approved business profile: ${JSON.stringify(ctx.profile)}`,
-    `Solutions: ${ctx.solutions.map((solution) => `${solution.title} — ${solution.description}`).join("; ")}`,
-    ctx.caseStudies.length > 0
-      ? `Case studies: ${ctx.caseStudies.map((caseStudy) => caseStudy.title).join("; ")}`
-      : "",
-    ctx.posts.length > 0
-      ? `Blog posts: ${ctx.posts.map((post) => post.title).join("; ")}`
-      : "",
-    ctx.jobs.length > 0
-      ? `Open roles: ${ctx.jobs.map((job) => job.title).join("; ")}`
-      : "",
-    `Pricing:\n${pricingText}`,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5-20250929",
-        max_tokens: 600,
-        system: SYSTEM_PROMPT + contextText,
-        messages: parsed.data.messages,
-      }),
-    });
-
-    if (!response.ok) {
-      console.error(await response.text());
-      return NextResponse.json(
-        { reply: localReply(lastMessage.content, ctx) },
-        { status: 200 }
-      );
-    }
-
-    const data = (await response.json()) as {
-      content?: { type: string; text?: string }[];
-    };
-    const reply =
-      data.content
-        ?.filter((block) => block.type === "text")
-        .map((block) => block.text ?? "")
-        .join("") ?? "";
-
-    return NextResponse.json({
-      reply: reply || localReply(lastMessage.content, ctx),
-    });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ reply: localReply(lastMessage.content, ctx) });
-  }
+  // External AI delivery is paused pending provider/data-processing review.
+  return NextResponse.json({ reply: localReply(lastMessage.content, ctx) }, { headers: { "Cache-Control": "no-store" } });
 }
-

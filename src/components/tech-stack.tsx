@@ -41,32 +41,7 @@ function loopPercent(items: TechItem[]): string {
 }
 
 function TechChip({ item }: { item: TechItem }) {
-  if (!item.icon) {
-    return (
-      <>
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary transition-transform duration-300 group-hover:scale-110">
-          {item.name.charAt(0)}
-        </span>
-        <span className="text-xs font-medium transition-colors duration-300 group-hover:text-primary">{item.name}</span>
-      </>
-    );
-  }
-  return (
-    <>
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/90 p-1 transition-transform duration-300 group-hover:scale-110">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.icon}
-          alt={`${item.name} logo`}
-          loading="lazy"
-          width={16}
-          height={16}
-          className="h-4 w-4"
-        />
-      </span>
-      <span className="text-xs font-medium transition-colors duration-300 group-hover:text-primary">{item.name}</span>
-    </>
-  );
+  return <><span aria-hidden className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{item.name.charAt(0)}</span><span className="text-xs font-medium">{item.name}</span></>;
 }
 
 export async function TechStack() {
@@ -97,10 +72,10 @@ export async function TechStack() {
     <section className="w-full overflow-hidden bg-surface px-4 py-16 sm:px-8 lg:px-12">
       <div className="flex flex-col items-center gap-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-          Trusted technologies
+          Technology options
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          Built with <span className="gradient-text-flow">industry-leading</span> tools and platforms
+          Tools and platforms to discuss for your project
         </h2>
         <p className="text-xs text-muted-foreground">
           Frontend · Backend · Databases · Cloud · Mobile · AI · Design · Marketing

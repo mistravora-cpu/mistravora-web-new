@@ -1,8 +1,8 @@
 "use client";
+import { FormPrivacy } from "@/components/form-privacy";
 import { useBusinessProfile } from "@/components/business-profile-provider";
 
 import { useActionState, useEffect } from "react";
-import { getAttribution } from "@/lib/attribution";
 import { trackEvent } from "@/lib/track-event";
 import { CheckCircle2 } from "lucide-react";
 import { submitInquiry, type InquiryState } from "./actions";
@@ -39,7 +39,7 @@ export function ContactForm() {
   return (
     <form
       data-form-name="contact"
-      action={(data) => { data.set("attribution", getAttribution()); formAction(data); }}
+      action={(data) => { data.set("attribution", ""); formAction(data); }}
       className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:p-6"
     >
       <div className="flex flex-col gap-1.5">
@@ -123,6 +123,7 @@ export function ContactForm() {
         </p>
       ) : null}
 
+      <FormPrivacy />
       <Button type="submit" disabled={pending}>
         {pending ? "Sending…" : "Send message"}
       </Button>

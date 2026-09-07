@@ -22,7 +22,7 @@ const tools = [
     icon: Calculator,
     title: "Cost Calculator",
     description:
-      "Get an instant estimate range for your website, store, or web app — in LKR or USD.",
+      "Numerical estimates are under review. Discuss project scope and request a quotation.",
     available: true,
   },
   {
@@ -30,13 +30,13 @@ const tools = [
     icon: TrendingUp,
     title: "ROI Calculator",
     description:
-      "See how quickly a faster, better-converting site pays for itself.",
+      "Review the assumptions behind a business forecast. No returns are guaranteed.",
     available: true,
   },
   {
     href: "/tools/website-audit",
     icon: Gauge,
-    title: "AI Website Audit",
+    title: "Website Audit",
     description:
       "Instant Lighthouse scores for your site — performance, accessibility, best practices, and SEO.",
     available: true,
@@ -60,7 +60,7 @@ export default async function ToolsPage() {
     <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
       <PageHeader
         title="Free Tools"
-        description="Plan smarter before you spend. No sign-up needed — results are instant."
+        description="Explore website checks and project-planning information."
       />
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

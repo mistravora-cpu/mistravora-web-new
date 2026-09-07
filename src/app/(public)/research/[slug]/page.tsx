@@ -1,3 +1,4 @@
+import { safeArticleHtml } from "@/lib/article-html";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { ShareButton } from "@/components/share-button";
@@ -131,7 +132,7 @@ export default async function ResearchDetailPage({
         {research.body && (
           <div
             className="prose prose-sm max-w-none dark:prose-invert sm:prose-base prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm"
-            dangerouslySetInnerHTML={{ __html: research.body }}
+            dangerouslySetInnerHTML={{ __html: safeArticleHtml(research.body) }}
           />
         )}
 

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { serverEnv } from "@/lib/env";
 
 const bodySchema = z.object({
   url: z.string().trim().min(4).max(300),
-  email: z.string().trim().email().max(200),
+  auditConsent: z.literal(true),
 });
 
 const categories = ["performance", "accessibility", "best-practices", "seo"];
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Enter a valid URL and email." },
+      { error: "Enter a public URL and confirm sending it to Google PageSpeed." },
       { status: 400 }
     );
   }
@@ -29,7 +28,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    new URL(target);
+    const parsedUrl = new URL(target);
+    if (!["https:", "http:"].includes(parsedUrl.protocol) || parsedUrl.username || parsedUrl.password) throw new Error("Invalid public URL");
+    parsedUrl.search = ""; parsedUrl.hash = "";
+    target = parsedUrl.toString();
   } catch {
     return NextResponse.json(
       { error: "That URL doesn't look valid." },
@@ -74,18 +76,6 @@ export async function POST(request: Request) {
       bestPractices: Math.round((cats["best-practices"]?.score ?? 0) * 100),
       seo: Math.round((cats.seo?.score ?? 0) * 100),
     };
-
-    // Best-effort lead capture — failures don't block the report.
-    try {
-      const supabase = await createClient();
-      await supabase.from("inquiries").insert({
-        name: "Website audit request",
-        email: parsed.data.email,
-        message: `Audit for ${target}\nScores — performance: ${scores.performance}, accessibility: ${scores.accessibility}, best practices: ${scores.bestPractices}, SEO: ${scores.seo}`,
-      });
-    } catch (error) {
-      console.error(error);
-    }
 
     return NextResponse.json({ url: target, scores });
   } catch (error) {

@@ -171,7 +171,7 @@ export const getCollection = unstable_cache(
       ),
     }));
   },
-  ["marketing-collections"],
+  ["marketing-collections-privacy-review"],
   { revalidate: 300, tags: ["public-data"] },
 );
 

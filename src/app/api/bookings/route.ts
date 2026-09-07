@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 const booking = z.object({
+  privacyConsent: z.literal("yes"),
   slot: z.string().uuid(),
   name: z.string().trim().min(2).max(100),
   email: z.email().max(200),

@@ -9,7 +9,6 @@ import { Analytics } from "@/components/analytics-lazy";
 import { ServiceWorker } from "@/components/service-worker";
 import { SiteBackground } from "@/components/site-background";
 import { HeaderScrollFx } from "@/components/header-scroll-fx";
-import { MarketingTags } from "@/components/marketing-tags";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
 
@@ -125,11 +124,7 @@ export default function RootLayout({
             <SeoVerification />
           </Suspense>
           <OrganizationJsonLd />
-          {/* Marketing tags — stream in via Suspense. These are all
-              afterInteractive scripts and don't block paint. */}
-          <Suspense fallback={null}>
-            <MarketingTags />
-          </Suspense>
+          {/* Optional tracking paused pending provider and consent review. */}
           <ScrollProgress />
           <SiteBackground />
           <HeaderScrollFx />

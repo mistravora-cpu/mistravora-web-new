@@ -10,12 +10,6 @@ type Stat = {
   numericValue: number;
 };
 
-const fallbackStats: Stat[] = [
-  { value: "50+", label: "Projects Delivered", numericValue: 50, suffix: "+" },
-  { value: "7", label: "Years Experience", numericValue: 7 },
-  { value: "100%", label: "Client Satisfaction", numericValue: 100, suffix: "%" },
-  { value: "24/7", label: "Support Available", numericValue: 24, suffix: "/7" },
-];
 
 function AnimatedCounter({
   target,
@@ -73,7 +67,7 @@ function AnimatedCounter({
 }
 
 export function StatsCounter({ stats }: { stats?: Stat[] }) {
-  const data = stats && stats.length > 0 ? stats : fallbackStats;
+  const data = stats ?? [];
 
   return (
     <section data-cv="auto" className="relative w-full overflow-hidden border-y border-border bg-surface py-16 sm:py-20">

@@ -2,60 +2,6 @@ import { Star, Quote } from "lucide-react";
 import { getTestimonials } from "@/lib/services";
 import type { Testimonial } from "@/lib/types";
 
-const fallbackTestimonials: Testimonial[] = [
-  {
-    id: "fallback-1",
-    quote:
-      "Our new site loads instantly and enquiries doubled within a month. The team explained everything in plain language — no jargon, no surprises.",
-    name: "Business Owner",
-    role: "Retail — Colombo",
-    avatar: null,
-    rating: 5,
-    sort_order: 1,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-2",
-    quote:
-      "Mistravora rebuilt our booking flow and it just works — on every phone our customers use. Best investment we made this year.",
-    name: "Operations Manager",
-    role: "Hospitality — Kandy",
-    avatar: null,
-    rating: 5,
-    sort_order: 2,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-3",
-    quote:
-      "Fast, honest, and incredibly responsive on WhatsApp. They told us what we didn't need, which saved us real money.",
-    name: "Founder",
-    role: "Startup — Remote",
-    avatar: null,
-    rating: 5,
-    sort_order: 3,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-4",
-    quote:
-      "The admin dashboard alone saves my team hours every week. Professional work from a team that clearly cares about quality.",
-    name: "Director",
-    role: "Services — Kurunegala",
-    avatar: null,
-    rating: 5,
-    sort_order: 4,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-];
 
 function buildLoopItems<T>(items: T[]): T[] {
   if (items.length >= 6) return [...items, ...items];
@@ -112,8 +58,8 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 }
 
 export async function Testimonials() {
-  let testimonials = await getTestimonials(true);
-  if (testimonials.length === 0) testimonials = fallbackTestimonials;
+  const testimonials = await getTestimonials(true);
+  if (testimonials.length === 0) return null;
 
   const half = Math.ceil(testimonials.length / 2);
   const row1Items = testimonials.slice(0, half);

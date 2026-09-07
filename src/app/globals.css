@@ -906,3 +906,8 @@ section[data-cv="auto"] {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
+
+/* Keyboard focus remains visible on custom links and form controls. */
+:where(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+
+.motion-paused *, .motion-paused *::before, .motion-paused *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }

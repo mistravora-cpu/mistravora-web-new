@@ -1,7 +1,7 @@
 "use client";
 
 const CONSENT_KEY = "mistravora-consent";
-export const CONSENT_VERSION = 2;
+export const CONSENT_VERSION = 3;
 
 export type ConsentChoice = {
   version: number;
@@ -18,7 +18,12 @@ export function isCurrentConsent(value: unknown): value is ConsentChoice {
     typeof value === "object" &&
     value !== null &&
     "version" in value &&
-    (value as ConsentChoice).version === CONSENT_VERSION
+    (value as ConsentChoice).version === CONSENT_VERSION &&
+    typeof (value as ConsentChoice).analytics === "boolean" &&
+    typeof (value as ConsentChoice).marketing === "boolean" &&
+    Number.isFinite(Date.parse((value as ConsentChoice).timestamp)) &&
+    Date.now() - Date.parse((value as ConsentChoice).timestamp) >= 0 &&
+    Date.now() - Date.parse((value as ConsentChoice).timestamp) < 180 * 24 * 60 * 60 * 1000
   );
 }
 
@@ -27,24 +32,7 @@ function loadConsent(): Consent {
   try {
     const raw = localStorage.getItem(CONSENT_KEY);
     if (!raw) return null;
-    if (raw === "accepted") {
-      return {
-        version: CONSENT_VERSION,
-        analytics: true,
-        marketing: true,
-        functional: true,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    if (raw === "declined") {
-      return {
-        version: CONSENT_VERSION,
-        analytics: false,
-        marketing: false,
-        functional: true,
-        timestamp: new Date().toISOString(),
-      };
-    }
+    if (raw === "accepted" || raw === "declined") return null;
     const parsed: unknown = JSON.parse(raw);
     return isCurrentConsent(parsed) ? parsed : null;
   } catch {

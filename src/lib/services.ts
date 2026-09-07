@@ -159,7 +159,7 @@ const _getSolutions = unstable_cache(
     const rows = await queryRows(query);
     return rows.map((r) => mapSolution(r));
   },
-  ["solutions"],
+  ["solutions-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -171,7 +171,7 @@ const _getCaseStudies = unstable_cache(
     const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
   },
-  ["projects"],
+  ["projects-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -183,7 +183,7 @@ const _getPosts = unstable_cache(
     );
     return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
   },
-  ["posts"],
+  ["posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -195,7 +195,7 @@ const _getPublishedPosts = unstable_cache(
     );
     return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
   },
-  ["published-posts"],
+  ["published-posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -213,7 +213,7 @@ const _getJobs = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["jobs"],
+  ["jobs-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -222,7 +222,7 @@ const _getSettings = unstable_cache(
     const supabase = createPublicClient();
     return queryRows(supabase.from("settings").select("*").order("key"));
   },
-  ["settings"],
+  ["settings-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -233,7 +233,7 @@ const _getHeroSection = unstable_cache(
       supabase.from("hero_sections").select("*").eq("page", page).single()
     );
   },
-  ["hero-section"],
+  ["hero-section-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -244,7 +244,7 @@ const _getAllHeroSections = unstable_cache(
       supabase.from("hero_sections").select("*").order("page", { ascending: true })
     );
   },
-  ["all-hero-sections"],
+  ["all-hero-sections-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -255,7 +255,7 @@ const _getValueCards = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["value-cards"],
+  ["value-cards-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -266,7 +266,7 @@ const _getStatistics = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["statistics"],
+  ["statistics-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -277,7 +277,7 @@ const _getCoreValues = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["core-values"],
+  ["core-values-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -288,7 +288,7 @@ const _getTeamMembers = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["team-members"],
+  ["team-members-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -300,7 +300,7 @@ const _getPricingTiers = unstable_cache(
     const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, pricingTierMapping) as unknown as PricingTier);
   },
-  ["pricing-tiers"],
+  ["pricing-tiers-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -311,7 +311,7 @@ const _getPricingNotes = unstable_cache(
     if (publishedOnly) query = query.eq("active", true);
     return queryRows(query);
   },
-  ["pricing-notes"],
+  ["pricing-notes-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -322,7 +322,7 @@ const _getPricingAddons = unstable_cache(
     if (publishedOnly) query = query.eq("active", true);
     return queryRows(query);
   },
-  ["pricing-addons"],
+  ["pricing-addons-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -334,7 +334,7 @@ const _getIndustries = unstable_cache(
     const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, industryMapping) as unknown as Industry);
   },
-  ["industries"],
+  ["industries-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -345,7 +345,7 @@ const _getResources = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["resources"],
+  ["resources-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -356,7 +356,7 @@ const _getTrustedCompanies = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["trusted-companies"],
+  ["trusted-companies-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -367,7 +367,7 @@ const _getPolicies = unstable_cache(
     if (publishedOnly) query = query.eq("status", "active");
     return queryRows(query);
   },
-  ["policies"],
+  ["policies-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -378,7 +378,7 @@ const _getContactInfo = unstable_cache(
       supabase.from("contact_info").select("*").limit(1).single()
     );
   },
-  ["contact-info"],
+  ["contact-info-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -389,7 +389,7 @@ const _getSocialMedia = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["social-media"],
+  ["social-media-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -403,7 +403,7 @@ const _getFaqs = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["faqs"],
+  ["faqs-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -415,7 +415,7 @@ const _getDemoApps = unstable_cache(
     const rows = await queryRows(query);
     return rows.map((r) => mapChildArrays(r, demoAppMapping) as unknown as DemoApp);
   },
-  ["demo-apps"],
+  ["demo-apps-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -426,7 +426,7 @@ const _getTechStack = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["tech-stack"],
+  ["tech-stack-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -437,7 +437,7 @@ const _getBenefits = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["benefits"],
+  ["benefits-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -448,7 +448,7 @@ const _getTestimonials = unstable_cache(
     if (publishedOnly) query = query.eq("published", true);
     return queryRows(query);
   },
-  ["testimonials"],
+  ["testimonials-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -618,7 +618,7 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
 const publicResearch = unstable_cache(async (): Promise<Research[]> => {
   const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false }));
   return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
-}, ["public-research-v2"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
+}, ["reviewed-public-research-v2"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
 
 export async function getResearch(publishedOnly = false): Promise<Research[]> {
   if (publishedOnly) return publicResearch();
@@ -675,7 +675,7 @@ const _getMarketingSettings = unstable_cache(
     }
     return result;
   },
-  ["marketing-settings"],
+  ["marketing-settings-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 

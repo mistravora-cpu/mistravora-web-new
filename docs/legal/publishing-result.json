@@ -1,0 +1,19 @@
+{
+  "project": "ghixwjdxzrovdmdzocxj",
+  "policies": [
+    "privacy-policy",
+    "terms-of-service",
+    "cookie-policy",
+    "refund-policy"
+  ],
+  "withhold": [
+    "testimonials",
+    "statistics",
+    "trusted_companies",
+    "case_studies",
+    "benefits"
+  ],
+  "reason": "No substantiating evidence/permissions supplied; preserve records for review",
+  "appliedAt": "2026-09-07T06:08:17.397Z",
+  "policyReadbackVerified": true
+}

@@ -29,9 +29,9 @@ function consentStore(raw, storageBlocked = false) {
   return context.exports;
 }
 
-test("legacy consent loads before attempting JSON parsing", () => {
-  assert.equal(consentStore("accepted").getConsentSnapshot().analytics, true);
-  assert.equal(consentStore("declined").getConsentSnapshot().marketing, false);
+test("legacy consent requires a fresh explicit choice", () => {
+  assert.equal(consentStore("accepted").getConsentSnapshot(), null);
+  assert.equal(consentStore("declined").getConsentSnapshot(), null);
   assert.equal(consentStore("invalid").getConsentSnapshot(), null);
   assert.equal(consentStore('{"version":1}').getConsentSnapshot(), null);
 });
@@ -39,11 +39,11 @@ test("legacy consent loads before attempting JSON parsing", () => {
 test("consent subscribers update immediately even when storage is blocked", () => {
   const store = consentStore(null, true);
   const choice = {
-    version: 2,
+    version: 3,
     analytics: true,
     marketing: false,
     functional: true,
-    timestamp: "test",
+    timestamp: new Date().toISOString(),
   };
   let notifications = 0;
   const unsubscribe = store.subscribeConsent(() => notifications++);
@@ -88,4 +88,12 @@ test("every inline consent-gated marketing script has valid JavaScript syntax", 
   }
   visit(file);
   assert.ok(checked >= 10);
+});
+
+test("expired or malformed consent never enables optional tracking", () => {
+  const base = { version: 3, analytics: true, marketing: true, functional: true, timestamp: new Date().toISOString() };
+  assert.equal(consentStore(JSON.stringify(base)).getConsentSnapshot().analytics, true);
+  for (const change of [{analytics:"yes"}, {timestamp:"invalid"}, {timestamp:"2020-01-01T00:00:00Z"}, {version:2}]) {
+    assert.equal(consentStore(JSON.stringify({...base,...change})).getConsentSnapshot(), null);
+  }
 });

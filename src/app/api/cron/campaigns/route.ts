@@ -15,6 +15,7 @@ export async function GET(request: Request) {
     !timingSafeEqual(authorization, expected)
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (process.env.EMAIL_CAMPAIGNS_APPROVED !== "true") return NextResponse.json({ error: "Campaign delivery is paused pending audience consent and provider review." }, { status: 503 });
   if (
     !process.env.RESEND_API_KEY ||
     !process.env.EMAIL_FROM ||

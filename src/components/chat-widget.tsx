@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import * as React from "react";
 import { Bot, MessageCircle, Send, X } from "lucide-react";
 import { useBusinessProfile } from "@/components/business-profile-provider";
@@ -167,6 +168,7 @@ export function ChatWidget() {
             ) : null}
           </div>
 
+          <p className="px-4 py-2 text-xs leading-5 text-muted-foreground">Automated answers may be wrong. Do not share sensitive data. <Link href="/policies/privacy-policy" className="underline">Privacy Policy</Link></p>
           <form
             onSubmit={handleSubmit}
             className="flex items-center gap-2 border-t border-border p-2"

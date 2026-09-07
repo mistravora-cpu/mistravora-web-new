@@ -1,0 +1,123 @@
+{
+  "testedAt": "2026-09-07T06:17:53.773Z",
+  "base": "http://127.0.0.1:3301",
+  "results": [
+    {
+      "theme": "dark",
+      "path": "/",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/contact",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/about",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/pricing",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/policies/privacy-policy",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/policies/terms-of-service",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/policies/cookie-policy",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/policies/refund-policy",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/research/pwa-vs-native-apps",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/book",
+      "violations": []
+    },
+    {
+      "theme": "dark",
+      "path": "/tools/website-audit",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/contact",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/about",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/pricing",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/policies/privacy-policy",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/policies/terms-of-service",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/policies/cookie-policy",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/policies/refund-policy",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/research/pwa-vs-native-apps",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/book",
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "path": "/tools/website-audit",
+      "violations": []
+    }
+  ],
+  "thirdParty": [],
+  "errors": [],
+  "cookieDefaultsOff": true,
+  "cookieEscape": true,
+  "withdrawal": true,
+  "pauseControl": true,
+  "noPersonalDataSubmitted": true
+}

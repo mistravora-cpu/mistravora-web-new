@@ -1,30 +1,3 @@
-import { applySeoOverrides } from "@/lib/seo-overrides";
-import { withSocialMetadata } from "@/lib/seo";
-import type { Metadata } from "next";
-import { PageHeader } from "@/components/page-header";
-import { site } from "@/lib/site";
-import { RoiCalculator } from "./roi-calculator";
-
-const baseMetadata: Metadata = withSocialMetadata({
-  title: "ROI Calculator",
-  description:
-    "Calculate how quickly a faster, better-converting website pays for itself — projected gains and payback period.",
-  alternates: { canonical: `${site.url}/tools/roi-calculator` },
-});
-
-export default function RoiCalculatorPage() {
-  return (
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
-      <PageHeader
-        as="h1"
-        title="ROI Calculator"
-        description="A better website isn't a cost — it's a growth lever. See the numbers for your business."
-      />
-      <div className="mt-12">
-        <RoiCalculator />
-      </div>
-    </section>
-  );
-}
-
-export async function generateMetadata() { return applySeoOverrides(baseMetadata); }
+import Link from "next/link";
+export const metadata = { title: "Return-on-investment planning" };
+export default function PlanningPage() { return <section className="mx-auto max-w-3xl px-4 py-16"><h1 className="text-3xl font-bold">Return-on-investment planning</h1><p className="mt-6 leading-7 text-muted-foreground">This calculator is being reviewed. We are not publishing unverified prices, savings or revenue assumptions. For your project, request a quotation and discuss the assumptions behind any business forecast.</p><Link href="/contact" className="mt-6 inline-block rounded-lg bg-primary px-5 py-3 text-primary-foreground">Discuss your project</Link></section>; }

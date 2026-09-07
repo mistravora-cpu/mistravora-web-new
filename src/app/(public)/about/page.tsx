@@ -75,54 +75,12 @@ const fallbackValues = [
   },
 ];
 
-const fallbackTeam = [
-  {
-    id: "fallback-t1",
-    name: "Founder & Lead Engineer",
-    role: "Founder & Lead Engineer",
-    bio: "Architecture, performance, and delivery — and the person you'll actually talk to about your project.",
-    photo: null,
-    linkedin: null,
-    x_handle: null,
-    sort_order: 1,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-t2",
-    name: "Product Design",
-    role: "Product Design",
-    bio: "Interfaces that feel effortless — designed thumb-first for real phones, not portfolio screenshots.",
-    photo: null,
-    linkedin: null,
-    x_handle: null,
-    sort_order: 2,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-  {
-    id: "fallback-t3",
-    name: "AI & Automation",
-    role: "AI & Automation",
-    bio: "Chat assistants, smart features, and workflows that quietly save your team hours every week.",
-    photo: null,
-    linkedin: null,
-    x_handle: null,
-    sort_order: 3,
-    published: true,
-    created_at: "",
-    updated_at: "",
-  },
-];
-
 export default async function AboutPage() {
   const [hero, profile] = await Promise.all([getHeroSection("about"), getBusinessProfile()]);
   const timeline = [{ year: profile.founded, title: "Founded", description: `${profile.name} was founded by ${profile.founder} and co-founded by ${profile.cofounder}.` }];
   const [dbValues, dbTeam] = await Promise.all([getCoreValues(true), getTeamMembers(true)]);
   const values = dbValues.length > 0 ? dbValues : fallbackValues;
-  const team = dbTeam.length > 0 ? dbTeam : fallbackTeam;
+  const team = dbTeam;
 
   return (
     <>
@@ -160,7 +118,7 @@ export default async function AboutPage() {
         </h2>
         <ol className="mx-auto mt-10 flex max-w-6xl w-full flex-col gap-0">
           {timeline.map((milestone, index) => (
-            <ScrollReveal key={milestone.title} animation="clip-reveal" delay={index * 120} className="relative flex gap-6 border-l-2 border-border pb-10 pl-8 last:pb-0">
+            <li key={milestone.title}><ScrollReveal animation="clip-reveal" delay={index * 120} className="relative flex gap-6 border-l-2 border-border pb-10 pl-8 last:pb-0">
               <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-primary ring-4 ring-primary/20" />
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -171,7 +129,7 @@ export default async function AboutPage() {
                   {milestone.description}
                 </p>
               </div>
-            </ScrollReveal>
+            </ScrollReveal></li>
           ))}
         </ol>
       </div>
@@ -206,8 +164,7 @@ export default async function AboutPage() {
             Who&apos;s building Mistravora
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
-            A small, senior team. No hand-offs, no layers — you talk directly
-            to the people who design and build your product.
+            Meet the people behind Mistravora.
           </p>
         </div>
         <div className="mx-auto mt-10 grid w-full max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -312,29 +269,6 @@ export default async function AboutPage() {
       </ScrollReveal>
     </section>
 
-    {/* Referral program */}
-    <section className="w-full px-4 py-16 sm:px-8 lg:px-12">
-      <ScrollReveal animation="scale-in" className="mx-auto max-w-6xl w-full rounded-2xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-8 text-center backdrop-blur-md">
-        <div
-          aria-hidden
-          className="absolute -top-12 left-1/2 h-32 w-64 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
-        />
-        <h2 className="relative text-2xl font-bold tracking-tight">
-          Refer a business, earn 10% off
-        </h2>
-        <p className="relative mt-3 text-sm leading-6 text-muted-foreground">
-          Know someone who needs a website or software? Send them our way. If they
-          become a client, you get 10% off your next project — or a LKR 10,000
-          referral bonus. No limits.
-        </p>
-        <Button asChild className="relative mt-6">
-          <Link href="/contact">
-            Refer a business
-            <ArrowRight aria-hidden className="h-4 w-4" />
-          </Link>
-        </Button>
-      </ScrollReveal>
-    </section>
     </>
   );
 }

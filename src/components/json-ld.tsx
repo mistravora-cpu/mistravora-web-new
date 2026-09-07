@@ -28,13 +28,6 @@ export async function OrganizationJsonLd() {
         founder: [{ "@type": "Person", name: site.founder }, { "@type": "Person", name: site.cofounder }],
         areaServed: site.coverage,
         knowsAbout: site.offering.split("\n").filter(Boolean),
-        priceRange: "$$",
-        sameAs: [
-          "https://github.com/mistravora",
-          "https://www.linkedin.com/company/mistravora",
-          "https://x.com/mistravora",
-          "https://web.facebook.com/people/Mistravora/61575779711385/",
-        ],
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "enquiries",

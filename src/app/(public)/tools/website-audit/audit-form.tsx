@@ -44,7 +44,7 @@ function ScoreDonut({ label, score }: { label: string; score: number }) {
 export function AuditForm() {
   const site = useBusinessProfile();
   const [url, setUrl] = React.useState("");
-  const [email, setEmail] = React.useState("");
+  const [auditConsent, setAuditConsent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [result, setResult] = React.useState<{
@@ -62,7 +62,7 @@ export function AuditForm() {
       const response = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, email }),
+        body: JSON.stringify({ url, auditConsent }),
       });
       const data = (await response.json()) as {
         url?: string;
@@ -110,24 +110,7 @@ export function AuditForm() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="audit-email" className="text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="audit-email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@company.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className={inputClass}
-          />
-          <p className="text-xs text-muted-foreground">
-            Used only to send your report — no spam, ever.
-          </p>
-        </div>
+        <label className="flex items-start gap-3 text-sm leading-6"><input type="checkbox" required checked={auditConsent} onChange={event => setAuditConsent(event.target.checked)} className="mt-1 h-5 w-5 shrink-0" /><span>Send this public website URL to Google PageSpeed to run the audit. Do not enter a private or token-bearing URL. No email address is required.</span></label>
 
         {error ? (
           <p role="alert" className="text-sm text-red-500">

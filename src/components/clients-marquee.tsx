@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ExternalLink, Play } from "lucide-react";
 import { getTrustedCompanies, getCaseStudies } from "@/lib/services";
-import { clients as fallbackClients } from "@/lib/social-proof";
 
 export async function ClientsMarquee() {
   const [dbCompanies, caseStudies] = await Promise.all([
@@ -33,17 +32,8 @@ export async function ClientsMarquee() {
       featured: c.featured,
     }));
 
-  const clients =
-    companies.length > 0
-      ? companies
-      : fallbackClients.map((name) => ({
-          name,
-          logo: null as string | null,
-          category: null as string | null,
-          demo_url: null as string | null,
-          website_url: null as string | null,
-          featured: false,
-        }));
+  const clients = companies;
+  if (!clients.length) return null;
 
   // Featured clients with demo links get highlighted cards below the marquee.
   const featured = clients.filter((c) => c.demo_url).slice(0, 3);
