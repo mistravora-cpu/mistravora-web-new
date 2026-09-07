@@ -1,5 +1,7 @@
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { requireAdmin } from "@/lib/auth";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
@@ -45,7 +47,7 @@ const IMAGE_EXTENSIONS_TO_OPTIMIZE = new Set([
 
 // Max dimensions for optimized images
 const MAX_WIDTH = 1920;
-const MAX_HEIGHT = 1080;
+const MAX_HEIGHT = 1920;
 // Quality for JPEG/WebP (1-100)
 const QUALITY = 82;
 
@@ -73,7 +75,7 @@ async function optimizeImage(
   }
 
   try {
-    const image = sharp(buffer, { animated: extension === "gif" });
+    const image = sharp(buffer, { animated: true, limitInputPixels: 40_000_000 }).rotate();
 
     // Get metadata to decide if resizing is needed
     const metadata = await image.metadata();
@@ -92,9 +94,9 @@ async function optimizeImage(
     }
 
     // Convert to WebP for optimal compression (except GIF which stays animated)
-    if (extension === "gif") {
+    if ((metadata.pages ?? 1) > 1) {
       // Keep GIF as-is to preserve animation
-      return { buffer, extension, contentType: "image/gif" };
+      return { buffer, extension, contentType };
     }
 
     const optimized = await pipeline
@@ -106,9 +108,8 @@ async function optimizeImage(
       extension: "webp",
       contentType: "image/webp",
     };
-  } catch (error) {
-    console.error("Image optimization failed, using original:", error);
-    return { buffer, extension, contentType };
+  } catch {
+    throw new Error("Invalid or unsupported image. Try a JPEG, PNG or WebP under 40 megapixels.");
   }
 }
 
@@ -140,15 +141,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try { formData = await request.formData(); } catch { return NextResponse.json({error:"Invalid upload form."},{status:400}); }
   const file = formData.get("file");
-  const altText = (formData.get("alt_text") as string | null) ?? "";
+  const altText = String(formData.get("alt_text") ?? "").slice(0,256);
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "No file provided." }, { status: 400 });
   }
 
-  if (file.size > MAX_SIZE_BYTES) {
+  if (file.size === 0 || file.size > MAX_SIZE_BYTES) {
     return NextResponse.json(
       { error: "File too large (max 10 MB)." },
       { status: 400 }
@@ -175,11 +177,10 @@ export async function POST(request: Request) {
   const originalBuffer = Buffer.from(await file.arrayBuffer());
 
   // Optimize images (compress, resize, convert to WebP)
-  const { buffer: optimizedBuffer, extension, contentType } = await optimizeImage(
-    originalBuffer,
-    originalExtension,
-    file.type || "application/octet-stream"
-  );
+  let optimized: Awaited<ReturnType<typeof optimizeImage>>;
+  try { optimized = await optimizeImage(originalBuffer, originalExtension, file.type || "application/octet-stream"); }
+  catch { return NextResponse.json({error:"Invalid or oversized image. Use a valid image under 40 megapixels."},{status:400}); }
+  const {buffer: optimizedBuffer, extension, contentType} = optimized;
 
   const key = `uploads/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
 
@@ -199,8 +200,9 @@ export async function POST(request: Request) {
         Key: key,
         Body: optimizedBuffer,
         ContentType: contentType,
+        CacheControl: "public, max-age=31536000, immutable",
         Metadata: {
-          "alt-text": altText.slice(0, 256),
+          "alt-text": encodeURIComponent(altText),
           "original-size": String(originalBuffer.length),
           "optimized-size": String(optimizedBuffer.length),
         },
@@ -221,17 +223,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const compressionRatio = originalBuffer.length > 0
-    ? Math.round((1 - optimizedBuffer.length / originalBuffer.length) * 100)
-    : 0;
-
-  return NextResponse.json({
-    key,
-    url: `${R2_PUBLIC_URL.replace(/\/$/, "")}/${key}`,
-    optimized: extension !== originalExtension,
-    originalSize: originalBuffer.length,
-    optimizedSize: optimizedBuffer.length,
-    compressionRatio: `${compressionRatio}% smaller`,
-    contentType,
-  });
+  // Register only after R2 confirms the upload. Never store image bytes in Supabase.
+  const url = `${R2_PUBLIC_URL.replace(/\/$/, "")}/${key}`;
+  const db = await createClient();
+  const {data: item, error: saveError} = await db.from("media_library").insert({
+    name: String(formData.get("name") || file.name).slice(0,255),
+    alt_text: altText || null,
+    note: String(formData.get("note") || "").slice(0,1000) || null,
+    url, file_key: key, file_type: contentType, file_size: optimizedBuffer.length,
+  }).select().single();
+  if (saveError) {
+    try { await s3.send(new DeleteObjectCommand({Bucket:R2_BUCKET_NAME,Key:key})); }
+    catch { /* Preserve the original database failure; no successful upload is reported. */ }
+    return NextResponse.json({error:"Could not register the uploaded file. Please retry."},{status:502});
+  }
+  revalidatePath("/dashboard/media");
+  revalidateTag("public-data", {expire:0});
+  return NextResponse.json({key,url,item,contentType,originalSize:originalBuffer.length,optimizedSize:optimizedBuffer.length});
 }

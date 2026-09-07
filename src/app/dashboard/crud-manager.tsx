@@ -58,17 +58,21 @@ function formatValue(value: unknown): string {
 }
 
 function ImageField({
+  id,
   name,
   label,
   value,
   onChange,
+  onUploading,
 }: {
+  id: string;
   name: string;
   label: string;
   value: string;
   onChange: (name: string, value: unknown) => void;
+  onUploading: (busy: boolean) => void;
 }) {
-  const [mode, setMode] = React.useState<"url" | "upload">("url");
+  const [mode, setMode] = React.useState<"url" | "upload">("upload");
   const [uploading, setUploading] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
@@ -77,6 +81,7 @@ function ImageField({
     if (!file) return;
 
     setUploading(true);
+    onUploading(true);
     setUploadError(null);
 
     try {
@@ -96,6 +101,7 @@ function ImageField({
       setUploadError("Network error");
     } finally {
       setUploading(false);
+      onUploading(false);
     }
   }
 
@@ -125,10 +131,12 @@ function ImageField({
 
       {mode === "url" ? (
         <input
+          id={id}
+          name={name}
           type="url"
           value={value}
           onChange={(e) => onChange(name, e.target.value)}
-          placeholder="https://cdn.simpleicons.org/react"
+          placeholder="Paste an R2 media-library URL"
           className="h-9 rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       ) : (
@@ -145,6 +153,8 @@ function ImageField({
             </>
           )}
           <input
+            id={id}
+            name={name}
             type="file"
             accept="image/*"
             onChange={handleUpload}
@@ -177,9 +187,11 @@ export function CrudManager({
   filterColumn,
   filterValue,
 }: Props) {
+  const formId = React.useId();
   const [showForm, setShowForm] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [formData, setFormData] = React.useState<Record<string, unknown>>({});
+  const [activeUploads, setActiveUploads] = React.useState(0);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
@@ -213,6 +225,7 @@ export function CrudManager({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (activeUploads > 0) return;
     setSaving(true);
     setError(null);
     trackButtonClick(editingId ? "update_row" : "create_row", table);
@@ -312,13 +325,13 @@ export function CrudManager({
                     : "flex flex-col gap-1.5"
                 }
               >
-                <label htmlFor={f.name} className="text-xs font-medium text-muted-foreground">
+                <label htmlFor={`${formId}-${f.name}`} className="text-xs font-medium text-muted-foreground">
                   {f.label}
                   {f.required ? " *" : ""}
                 </label>
                 {f.type === "textarea" ? (
                   <textarea
-                    id={f.name}
+                    id={`${formId}-${f.name}`}
                     required={f.required}
                     value={String(formData[f.name] ?? "")}
                     onChange={(e) => setField(f.name, e.target.value)}
@@ -328,7 +341,10 @@ export function CrudManager({
                   />
                 ) : f.type === "boolean" ? (
                   <button
+                    id={`${formId}-${f.name}`}
                     type="button"
+                    role="switch"
+                    aria-checked={Boolean(formData[f.name])}
                     onClick={() => setField(f.name, !formData[f.name])}
                     className={
                       formData[f.name]
@@ -340,7 +356,7 @@ export function CrudManager({
                   </button>
                 ) : f.type === "select" ? (
                   <select
-                    id={f.name}
+                    id={`${formId}-${f.name}`}
                     required={f.required}
                     value={String(formData[f.name] ?? "")}
                     onChange={(e) => setField(f.name, e.target.value)}
@@ -353,7 +369,7 @@ export function CrudManager({
                   </select>
                 ) : f.type === "list" ? (
                   <textarea
-                    id={f.name}
+                    id={`${formId}-${f.name}`}
                     value={Array.isArray(formData[f.name]) ? (formData[f.name] as string[]).join("\n") : String(formData[f.name] ?? "")}
                     onChange={(e) => setField(f.name, e.target.value)}
                     placeholder={f.placeholder ?? "One item per line"}
@@ -362,14 +378,16 @@ export function CrudManager({
                   />
                 ) : f.type === "image" ? (
                   <ImageField
+                    id={`${formId}-${f.name}`}
                     name={f.name}
                     label={f.label}
                     value={String(formData[f.name] ?? "")}
                     onChange={setField}
+                    onUploading={busy => setActiveUploads(count => Math.max(0, count + (busy ? 1 : -1)))}
                   />
                 ) : f.type === "icon" ? (
                   <select
-                    id={f.name}
+                    id={`${formId}-${f.name}`}
                     required={f.required}
                     aria-label={`Select ${f.label}`}
                     value={String(formData[f.name] ?? "")}
@@ -383,7 +401,7 @@ export function CrudManager({
                   </select>
                 ) : (
                   <input
-                    id={f.name}
+                    id={`${formId}-${f.name}`}
                     type={f.type === "number" ? "number" : "text"}
                     required={f.required}
                     value={String(formData[f.name] ?? "")}
@@ -397,7 +415,7 @@ export function CrudManager({
           </div>
 
           <div className="flex items-center gap-2">
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving || activeUploads > 0}>
               <Check aria-hidden className="h-4 w-4" />
               {saving ? "Saving…" : editingId ? "Update" : "Create"}
             </Button>

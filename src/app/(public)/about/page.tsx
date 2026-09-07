@@ -170,7 +170,7 @@ export default async function AboutPage() {
                           delay={Math.min(groupDelayBase + i * 90, 600)}
                           className="group relative flex h-full flex-col"
                         >
-                          <figure className="relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-border/60 transition-all duration-300 group-hover:ring-2 group-hover:ring-primary/50 motion-safe:group-hover:-translate-y-1">
+                          <figure className="relative aspect-[4/5] overflow-hidden transition-transform duration-300 motion-safe:group-hover:-translate-y-1">
                             {photo ? (
                               /* eslint-disable-next-line @next/next/no-img-element */
                               <img

@@ -31,6 +31,8 @@ export function MediaUpload({ initialItems }: MediaUploadProps) {
       const formData = new FormData();
       formData.append("file", file);
       if (altText) formData.append("alt_text", altText);
+      formData.append("name", name || file.name);
+      formData.append("note", note);
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -39,6 +41,7 @@ export function MediaUpload({ initialItems }: MediaUploadProps) {
       const data = (await response.json()) as {
         url?: string;
         key?: string;
+        item?: MediaItem;
         error?: string;
       };
 
@@ -47,30 +50,8 @@ export function MediaUpload({ initialItems }: MediaUploadProps) {
         return;
       }
 
-      const saveResponse = await fetch("/api/media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name || file.name,
-          alt_text: altText,
-          note,
-          url: data.url,
-          file_key: data.key ?? "",
-          file_type: file.type || null,
-          file_size: file.size,
-        }),
-      });
-      const saved = (await saveResponse.json()) as {
-        item?: MediaItem;
-        error?: string;
-      };
-
-      if (!saveResponse.ok || !saved.item) {
-        setError(saved.error ?? "Failed to save media record.");
-        return;
-      }
-
-      setItems((prev) => [saved.item!, ...prev]);
+      if (!data.item) { setError("The uploaded file was not registered. Please retry."); return; }
+      setItems((prev) => [data.item!, ...prev]);
       setFile(null);
       setName("");
       setAltText("");
@@ -92,11 +73,12 @@ export function MediaUpload({ initialItems }: MediaUploadProps) {
   async function deleteItem(id: string) {
     setDeletingId(id);
     try {
-      await fetch("/api/media", {
+      const response = await fetch("/api/media", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
+      if (!response.ok) throw new Error("Delete failed");
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch {
       setError("Failed to delete media record.");

@@ -92,6 +92,9 @@ export function SettingsEditor({ groups, initialData }: Props) {
                       />
                     ) : field.type === "boolean" ? (
                       <button
+                        id={field.key}
+                        role="switch"
+                        aria-checked={value === "true"}
                         type="button"
                         onClick={() => update(field.key, value === "true" ? "false" : "true")}
                         className={

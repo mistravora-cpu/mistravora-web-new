@@ -117,7 +117,7 @@ export default async function TeamMemberPage({
           <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_1fr] lg:gap-14">
             {/* Portrait */}
             <div className="md:sticky md:top-24 md:self-start">
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl ring-1 ring-border/60">
+              <div className="relative aspect-[4/5] w-full overflow-hidden">
                 {photo ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img

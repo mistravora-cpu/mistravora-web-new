@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createRequire} from 'node:module';import {readFileSync} from 'node:fs';import vm from 'node:vm';import ts from 'typescript';import sharp from 'sharp';import {webcrypto} from 'node:crypto';
+const require=createRequire(import.meta.url);
+function load(fail=false){const events=[];let record;const db={from:()=>({insert:r=>{events.push('database');record=r;return {select:()=>({single:async()=>({data:fail?null:{id:'media',...r},error:fail?{message:'failure'}:null})})}}})};class Put{constructor(input){this.input=input;}}class Delete{constructor(input){this.input=input;}}const context={exports:{},Buffer,File,crypto:webcrypto,console,require:n=>{
+ if(n==='@aws-sdk/client-s3')return {PutObjectCommand:Put,DeleteObjectCommand:Delete,S3Client:class {async send(c){events.push(c instanceof Put?'r2-upload':'r2-delete');}}};
+ if(n==='@/lib/auth')return {requireAdmin:async()=>({id:'admin'})};
+ if(n==='@/lib/rate-limit')return {checkRateLimit:()=>null,RATE_LIMITS:{upload:{}}};
+ if(n==='@/lib/env')return {serverEnv:{R2_ENDPOINT:'https://r2.example',R2_ACCESS_KEY_ID:'test',R2_SECRET_ACCESS_KEY:'test',R2_BUCKET_NAME:'test',R2_PUBLIC_URL:'https://media.example'}};
+ if(n==='@/lib/supabase/server')return {createClient:async()=>db};
+ if(n==='next/cache')return {revalidatePath:()=>{},revalidateTag:()=>{}};
+ return require(n);
+}};vm.runInNewContext(ts.transpileModule(readFileSync('src/app/api/upload/route.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true,target:ts.ScriptTarget.ES2022}}).outputText,context);return {post:context.exports.POST,events,get record(){return record;}};}
+async function request(buffer){const form=new FormData();form.append('file',new File([buffer],'portrait.jpg',{type:'image/jpeg'}));return new Request('https://example.com/api/upload',{method:'POST',body:form});}
+test('uploads optimize to WebP then register actual R2 metadata in Supabase',async()=>{const api=load();const buffer=await sharp({create:{width:2400,height:1200,channels:3,background:'#fff'}}).jpeg().toBuffer();const response=await api.post(await request(buffer));assert.equal(response.status,200);const data=await response.json();assert.deepEqual(api.events,['r2-upload','database']);assert.equal(api.record.file_type,'image/webp');assert.equal(api.record.file_size,data.optimizedSize);assert.ok(api.record.url.startsWith('https://media.example/uploads/'));});
+test('failed database registration rolls back the new R2 object',async()=>{const api=load(true);const buffer=await sharp({create:{width:8,height:8,channels:3,background:'#fff'}}).jpeg().toBuffer();assert.equal((await api.post(await request(buffer))).status,502);assert.deepEqual(api.events,['r2-upload','database','r2-delete']);});
+test('corrupt images are rejected before uploading or writing records',async()=>{const api=load();assert.equal((await api.post(await request(Buffer.from('not an image')))).status,400);assert.deepEqual(api.events,[]);});

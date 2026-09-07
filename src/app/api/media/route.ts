@@ -1,3 +1,4 @@
+import { isR2MediaUrl } from "@/lib/media-url";
 import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -38,6 +39,9 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!isR2MediaUrl(body.url, process.env.R2_PUBLIC_URL || "")) {
+    return NextResponse.json({error:"Upload the file to R2 before adding it to the media library."},{status:400});
+  }
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("media_library")
