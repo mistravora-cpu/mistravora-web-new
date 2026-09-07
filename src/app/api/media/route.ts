@@ -58,6 +58,7 @@ export async function POST(request: Request) {
   }
 
   revalidatePath("/dashboard/media");
+  revalidatePath("/", "layout");
   revalidateTag("public-data", { expire: 0 });
   return NextResponse.json({ item: data });
 }
@@ -92,6 +93,7 @@ export async function DELETE(request: Request) {
   }
 
   revalidatePath("/dashboard/media");
+  revalidatePath("/", "layout");
   revalidateTag("public-data", { expire: 0 });
   return NextResponse.json({ success: true });
 }

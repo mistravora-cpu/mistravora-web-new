@@ -1,10 +1,18 @@
 "use server";
 
 import { normalizeResearchSlug } from "@/lib/research-slug";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { publicBusinessKeys } from "@/lib/business-profile-data";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+
+// Expire shared CMS reads immediately after writes. Root layout invalidation
+// covers all public routes, including dynamic detail pages and new routes.
+// Do not follow this with refresh(): it only requests a dynamic client refresh.
+function revalidatePublicPaths() {
+  updateTag("public-data");
+  revalidatePath("/", "layout");
+}
 
 // ─── Admin RBAC ────────────────────────────────────────────────────────
 async function verifyAdmin() {
@@ -232,8 +240,7 @@ export async function upsertRow(
   }
 
   revalidatePath("/dashboard");
-  revalidatePath("/", "layout");
-  revalidateTag("public-data", { expire: 0 });
+  revalidatePublicPaths();
   return { error: null };
 }
 
@@ -245,8 +252,7 @@ export async function deleteRow(table: string, id: string) {
   const { error } = await supabase.from(table).delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/dashboard");
-  revalidatePath("/", "layout");
-  revalidateTag("public-data", { expire: 0 });
+  revalidatePublicPaths();
   return { error: null };
 }
 
@@ -334,7 +340,6 @@ export async function saveSettings(data: Record<string, string>) {
   const firstError = results.find((r) => r.error);
   if (firstError?.error) return { error: firstError.error.message };
   revalidatePath("/dashboard");
-  revalidatePath("/", "layout");
-  revalidateTag("public-data", { expire: 0 });
+  revalidatePublicPaths();
   return { error: null };
 }
