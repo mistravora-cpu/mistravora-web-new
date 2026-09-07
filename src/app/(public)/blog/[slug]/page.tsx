@@ -61,7 +61,7 @@ export default async function BlogPostPage({
   return (
     <article className="w-full site-gutter py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, name: post.title, description: post.excerpt, url: `${site.url}/blog/${post.slug}`, dateModified: post.updated_at, datePublished: post.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto  w-full">
+      <div className="mx-auto max-w-3xl w-full">
         <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -72,15 +72,15 @@ export default async function BlogPostPage({
           </Button>
 
           {post.category && (
-            <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+            <span className="eyebrow">
               {post.category}
             </span>
           )}
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             {post.title}
           </h1>
 
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
             {post.author && (
               <span className="flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" />
@@ -111,28 +111,28 @@ export default async function BlogPostPage({
             <img
               src={post.cover_image}
               alt={post.title}
-              className="mt-8 h-64 w-full rounded-xl object-cover sm:h-80"
+              className="mt-10 h-64 w-full rounded-xl border border-border object-cover sm:h-80"
             />
           )}
 
           {post.excerpt && (
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+            <p className="mt-8 text-lg leading-8 text-muted-foreground">
               {post.excerpt}
             </p>
           )}
 
           {post.body && (
-            <div className="mt-8 max-w-none text-sm leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground">
+            <div className="mt-8 max-w-none text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground">
               <ArticleBody body={post.body} title={post.title} />
             </div>
           )}
 
           {post.tags.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-10 flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
+                  className="rounded-md border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
                 >
                   {tag}
                 </span>
@@ -147,7 +147,7 @@ export default async function BlogPostPage({
                 href={post.medium_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary underline"
+                className="text-primary link-underline"
               >
                 Medium
               </a>
@@ -155,17 +155,17 @@ export default async function BlogPostPage({
           )}
         </ScrollReveal>
 
-        <ScrollReveal animation="fade-up" delay={200} className="mt-12 rounded-xl border border-border bg-card p-6 text-center">
-          <h2 className="text-lg font-semibold">Need help building something like this?</h2>
+        <ScrollReveal animation="fade-up" delay={200} className="mt-14 rounded-xl border border-border bg-card p-7 text-center">
+          <h2 className="text-lg font-semibold tracking-tight">Need help building something like this?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {profile.response}. Tell us about your requirements.
           </p>
-          <Button asChild className="mt-4">
+          <Button asChild className="mt-5">
             <Link href="/contact">Get a free quote</Link>
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto mt-8 "><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
+      <div className="mx-auto max-w-3xl mt-10"><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
     </article>
   );
 }

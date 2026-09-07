@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 const initialState: InquiryState = null;
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40";
 
 export function ContactForm() {
   const profile = useBusinessProfile();
@@ -25,10 +25,12 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-10 text-center"
+        className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-12 text-center"
       >
-        <CheckCircle2 aria-hidden className="h-10 w-10 text-primary" />
-        <h2 className="text-lg font-semibold">Message sent</h2>
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <CheckCircle2 aria-hidden className="h-6 w-6 text-primary" />
+        </span>
+        <h2 className="text-lg font-semibold tracking-tight">Message sent</h2>
         <p className="text-sm leading-6 text-muted-foreground">
           Thanks for reaching out. {profile.response}.
         </p>
@@ -40,7 +42,7 @@ export function ContactForm() {
     <form
       data-form-name="contact"
       action={(data) => { data.set("attribution", ""); formAction(data); }}
-      className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:p-6"
+      className="flex flex-col gap-5 rounded-xl border border-border bg-card p-5 sm:p-7"
     >
       <div className="flex flex-col gap-1.5">
         <label htmlFor="name" className="text-sm font-medium">
@@ -94,11 +96,11 @@ export function ContactForm() {
           required
           rows={5}
           minLength={10}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40"
         />
       </div>
 
-      <details className="rounded-lg border border-border p-4">
+      <details className="rounded-lg border border-border p-4 transition-colors hover:border-primary/20">
         <summary className="cursor-pointer text-sm font-medium">Add project details (optional)</summary>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {[["company", "Company", "organization"], ["service", "Service or project type", "off"], ["budget", "Budget range (LKR)", "off"], ["timeline", "Desired timeline", "off"]].map(([name, label, autoComplete]) => <label key={name} className="flex flex-col gap-2 text-sm">{label}<input name={name} maxLength={100} autoComplete={autoComplete} className={inputClass} /></label>)}

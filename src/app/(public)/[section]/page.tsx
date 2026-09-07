@@ -20,7 +20,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
   /* ── Policies: dedicated animated card grid ── */
   if (section === "policies") {
     return (
-      <main className="mx-auto w-full site-gutter py-12">
+      <main className="mx-auto w-full site-gutter py-16">
         <ScrollReveal animation="fade-up">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Policies &amp; Terms</h1>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
@@ -30,19 +30,19 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
         </ScrollReveal>
 
         {entries.length ? (
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {entries.map((entry, index) => (
               <ScrollReveal
                 key={entry.slug}
                 animation="fade-up"
-                delay={index * 80}
+                delay={index * 70}
               >
                 <Link
                   href={`/policies/${entry.slug}`}
-                  className="group flex h-full flex-col gap-4 rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+                  className="group interactive-card hover:-translate-y-0.5 flex h-full flex-col gap-4 p-6"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-transform group-hover:scale-110">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                       <Shield aria-hidden className="h-5 w-5 text-primary" />
                     </span>
                     <h2 className="text-lg font-semibold leading-tight tracking-tight">
@@ -54,7 +54,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
                   </p>
                   <div className="flex items-center justify-between">
                     {entry.updated ? (
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
+                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <Calendar aria-hidden className="h-3 w-3" />
                         {entry.updated.slice(0, 10)}
                       </span>
@@ -65,7 +65,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
                       Read
                       <ArrowRight
                         aria-hidden
-                        className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                        className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                       />
                     </span>
                   </div>
@@ -74,10 +74,10 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
             ))}
           </div>
         ) : (
-          <div className="mt-10 rounded-xl border border-border bg-card p-8 text-center">
+          <div className="mt-12 rounded-xl border border-border bg-card p-10 text-center">
             <p className="text-muted-foreground">
               We&apos;re preparing policy documents.{" "}
-              <Link href="/contact" className="text-primary underline">
+              <Link href="/contact" className="text-primary link-underline">
                 Contact us
               </Link>{" "}
               with any questions.

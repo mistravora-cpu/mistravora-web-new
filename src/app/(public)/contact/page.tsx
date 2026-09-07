@@ -40,11 +40,13 @@ export default async function ContactPage() {
           href={`https://wa.me/${site.whatsapp}?text=${whatsappMessage}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover-glow flex items-start gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+          className="group interactive-card hover:-translate-y-0.5 flex items-start gap-4 p-6"
         >
-          <MessageCircle aria-hidden className="h-6 w-6 text-primary hover-icon-bounce" />
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+            <MessageCircle aria-hidden className="h-5 w-5 text-primary" />
+          </span>
           <div>
-            <h2 className="font-semibold">WhatsApp</h2>
+            <h2 className="font-semibold tracking-tight">WhatsApp</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Fastest way to reach us — chat now.
             </p>
@@ -53,30 +55,36 @@ export default async function ContactPage() {
 
         <a
           href={`tel:${site.phoneHref}`}
-          className="hover-glow flex items-start gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+          className="group interactive-card hover:-translate-y-0.5 flex items-start gap-4 p-6"
         >
-          <Phone aria-hidden className="h-6 w-6 text-primary hover-icon-bounce" />
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+            <Phone aria-hidden className="h-5 w-5 text-primary" />
+          </span>
           <div>
-            <h2 className="font-semibold">Phone</h2>
+            <h2 className="font-semibold tracking-tight">Phone</h2>
             <p className="mt-1 text-sm text-muted-foreground">{site.phone}</p>
           </div>
         </a>
 
         <a
           href={`mailto:${site.email}`}
-          className="hover-glow flex items-start gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+          className="group interactive-card hover:-translate-y-0.5 flex items-start gap-4 p-6"
         >
-          <Mail aria-hidden className="h-6 w-6 text-primary hover-icon-bounce" />
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+            <Mail aria-hidden className="h-5 w-5 text-primary" />
+          </span>
           <div>
-            <h2 className="font-semibold">Email</h2>
+            <h2 className="font-semibold tracking-tight">Email</h2>
             <p className="mt-1 text-sm text-muted-foreground">{site.email}</p>
           </div>
         </a>
 
-        <div className="hover-glow flex items-start gap-4 rounded-xl border border-border bg-card p-6">
-          <MapPin aria-hidden className="h-6 w-6 text-primary hover-icon-bounce" />
+        <div className="interactive-card flex items-start gap-4 p-6">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10">
+            <MapPin aria-hidden className="h-5 w-5 text-primary" />
+          </span>
           <div>
-            <h2 className="font-semibold">Location</h2>
+            <h2 className="font-semibold tracking-tight">Location</h2>
             <p className="mt-1 text-sm text-muted-foreground">{site.address}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {site.coverage}
@@ -85,19 +93,21 @@ export default async function ContactPage() {
         </div>
       </ScrollReveal>
 
-      <p className="mt-6 text-muted-foreground">{site.showHours !== "false" ? `${site.availability}.` : ""} {site.response}.</p>
-      <ScrollReveal animation="blur-in" delay={200} className="mt-12 grid w-full gap-6 lg:grid-cols-2">
-        {contact && <div className="mb-6"><h2 className="text-xl font-semibold">{contact.headline}</h2><p className="mt-2 text-muted-foreground">{contact.description}</p></div>}
+      <p className="mt-6 text-sm text-muted-foreground">{site.showHours !== "false" ? `${site.availability}.` : ""} {site.response}.</p>
+      <ScrollReveal animation="fade-up" delay={200} className="mt-14 grid w-full gap-8 lg:grid-cols-2">
+        <div>
+          {contact && <div className="mb-6"><h2 className="text-xl font-semibold tracking-tight">{contact.headline}</h2><p className="mt-2 text-sm text-muted-foreground">{contact.description}</p></div>}
           <ContactForm />
-          <nav aria-label="Social profiles" className="mt-6 flex flex-wrap gap-4">{socials.filter(s=>/^https:\/\//.test(s.url)).map(s=><a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">{s.platform}</a>)}</nav>
+          <nav aria-label="Social profiles" className="mt-6 flex flex-wrap gap-4">{socials.filter(s=>/^https:\/\//.test(s.url)).map(s=><a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary link-underline">{s.platform}</a>)}</nav>
+        </div>
         <ContactMap />
       </ScrollReveal>
 
-      <ScrollReveal animation="scale-in" className="mx-auto mt-16 w-full ">
+      <ScrollReveal animation="fade-up" className="mx-auto mt-16 w-full">
         <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
           Before you ask
         </h2>
-        <div className="scroll-reveal mt-8">
+        <div className="mt-8">
           <Faq items={faqs.map(faq => ({q:faq.question,a:faq.answer}))} />
         </div>
       </ScrollReveal>

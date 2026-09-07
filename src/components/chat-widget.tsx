@@ -95,7 +95,7 @@ export function ChatWidget() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat with Mistravora on WhatsApp"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring nav:h-12 nav:w-12"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring nav:h-12 nav:w-12"
         >
           <MessageCircle aria-hidden className="h-5 w-5 nav:h-6 nav:w-6" />
         </a>
@@ -103,23 +103,23 @@ export function ChatWidget() {
           type="button"
           onClick={() => setOpen((value) => !value)}
           aria-label={open ? "Close chat assistant" : "Open chat assistant"}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-card text-primary shadow-lg ring-1 ring-border transition-all duration-300 hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring nav:h-12 nav:w-12"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-card text-primary shadow-md ring-1 ring-border transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring nav:h-12 nav:w-12"
         >
         {open ? (
           <X aria-hidden className="h-5 w-5" />
         ) : (
-          <Bot aria-hidden className="h-5 w-5 animate-bounce-soft" />
+          <Bot aria-hidden className="h-5 w-5" />
         )}
         </button>
       </div>
 
       {open ? (
-        <div className="animate-fade-in-up fixed bottom-36 right-3 z-40 flex h-[24rem] w-[20rem] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl nav:bottom-24 nav:right-5 nav:h-[26rem] nav:w-[21rem] nav:max-w-[calc(100vw-2.5rem)]">
+        <div className="animate-fade-in-up fixed bottom-36 right-3 z-40 flex h-[24rem] w-[20rem] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xl nav:bottom-24 nav:right-5 nav:h-[26rem] nav:w-[21rem] nav:max-w-[calc(100vw-2.5rem)]">
           <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-            <span className="relative flex h-2.5 w-2.5">
+            <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-pulse-soft rounded-full bg-primary" />
             </span>
-            <p className="text-sm font-semibold">Mistravora Assistant</p>
+            <p className="text-sm font-semibold tracking-tight">Mistravora Assistant</p>
           </div>
 
           <div
@@ -129,7 +129,9 @@ export function ChatWidget() {
           >
             {messages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-                <Bot aria-hidden className="h-8 w-8 text-primary" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <Bot aria-hidden className="h-5 w-5 text-primary" />
+                </span>
                 <p className="text-xs text-muted-foreground">
                   Ask me anything about our services, pricing, or process.
                 </p>
@@ -139,7 +141,7 @@ export function ChatWidget() {
                       key={prompt}
                       type="button"
                       onClick={() => void send(prompt)}
-                      className="ripple-click rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
                     >
                       {prompt}
                     </button>
@@ -152,8 +154,8 @@ export function ChatWidget() {
                   key={index}
                   className={
                     message.role === "user"
-                      ? "ml-auto max-w-[85%] whitespace-pre-wrap rounded-xl bg-primary px-3 py-2 text-xs text-primary-foreground"
-                      : "mr-auto max-w-[85%] whitespace-pre-wrap rounded-xl bg-muted px-3 py-2 text-xs"
+                      ? "ml-auto max-w-[85%] whitespace-pre-wrap rounded-lg bg-primary px-3 py-2 text-xs text-primary-foreground"
+                      : "mr-auto max-w-[85%] whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-xs"
                   }
                 >
                   {message.content}
@@ -162,13 +164,13 @@ export function ChatWidget() {
             )}
 
             {loading ? (
-              <p className="mr-auto rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
+              <p className="mr-auto rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
                 Thinking…
               </p>
             ) : null}
           </div>
 
-          <p className="px-4 py-2 text-xs leading-5 text-muted-foreground">Automated answers may be wrong. Do not share sensitive data. <Link href="/policies/privacy-policy" className="underline">Privacy Policy</Link></p>
+          <p className="px-4 py-2 text-xs leading-5 text-muted-foreground">Automated answers may be wrong. Do not share sensitive data. <Link href="/policies/privacy-policy" className="link-underline">Privacy Policy</Link></p>
           <form
             onSubmit={handleSubmit}
             className="flex items-center gap-2 border-t border-border p-2"
@@ -183,13 +185,13 @@ export function ChatWidget() {
               onChange={(event) => setInput(event.target.value)}
               placeholder="Type a message…"
               maxLength={2000}
-              className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-xs transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
               aria-label="Send message"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 active:scale-90 disabled:opacity-50"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-opacity hover:bg-primary/90 disabled:opacity-50"
             >
               <Send aria-hidden className="h-4 w-4" />
             </button>

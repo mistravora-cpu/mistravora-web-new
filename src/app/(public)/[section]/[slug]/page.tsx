@@ -138,14 +138,14 @@ export default async function DetailPage({ params }: { params: Promise<{ section
           </ScrollReveal>
 
           {/* Contact CTA */}
-          <ScrollReveal animation="scale-in" delay={300} className="mt-8">
-            <aside className="flex flex-col gap-3 rounded-xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
+          <ScrollReveal animation="fade-up" delay={300} className="mt-10">
+            <aside className="flex flex-col gap-3 rounded-xl border border-border bg-card p-7 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                   <Shield aria-hidden className="h-5 w-5 text-primary" />
                 </span>
                 <div>
-                  <h2 className="text-base font-semibold">Questions about this policy?</h2>
+                  <h2 className="text-base font-semibold tracking-tight">Questions about this policy?</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
                     We&apos;re happy to clarify any terms. Reach out and we&apos;ll respond quickly.
                   </p>
@@ -153,7 +153,7 @@ export default async function DetailPage({ params }: { params: Promise<{ section
               </div>
               <Link
                 href="/contact"
-                className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
               >
                 Contact us
               </Link>
@@ -164,19 +164,19 @@ export default async function DetailPage({ params }: { params: Promise<{ section
     ) : (
       /* ── Non-policy detail: standard content layout ── */
       <>
-        {entry.updated && <p className="mt-4 text-xs text-muted-foreground">Updated <time dateTime={entry.updated}>{entry.updated.slice(0, 10)}</time></p>}
+        {entry.updated && <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Updated <time dateTime={entry.updated}>{entry.updated.slice(0, 10)}</time></p>}
         {entry.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={entry.image} alt={entry.title} loading="lazy" width={1200} height={675} className="mt-8 max-h-96 w-full rounded-xl object-contain" />
+          <img src={entry.image} alt={entry.title} loading="lazy" width={1200} height={675} className="mt-10 max-h-96 w-full rounded-xl border border-border object-contain" />
         )}
-        {entry.body && <div className="mt-8 text-base leading-8"><ArticleBody body={entry.body} title={entry.title} /></div>}
-        {!!entry.features?.length && <section className="mt-8"><h2 className="text-2xl font-semibold">What&apos;s included</h2><ul className="mt-4 list-inside list-disc space-y-2">{entry.features.map(f => <li key={f}>{f}</li>)}</ul></section>}
-        {!!entry.technologies?.length && <section className="mt-8"><h2 className="text-2xl font-semibold">Technologies</h2><p className="mt-3 text-muted-foreground">{entry.technologies.join(" · ")}</p></section>}
-        {entry.download && <a href={entry.download} className="mt-6 inline-block rounded-lg bg-primary px-5 py-3 text-primary-foreground" rel="noopener noreferrer" data-event="download">Download {entry.title}</a>}
-        {entry.links?.map(link => <a key={link} href={link} rel="noopener noreferrer" className="mt-4 mr-4 inline-block text-primary underline">{new URL(link).hostname}</a>)}
-        <div className="mt-8"><ShareButton title={entry.title} /></div>
-        <aside className="mt-12 rounded-xl border border-border bg-card p-6"><h2 className="text-xl font-semibold">Discuss your project</h2><p className="mt-2 text-muted-foreground">Tell us what you need. We&apos;ll help you choose the next step.</p><Link className="mt-4 inline-block text-primary underline" href={`/contact?service=${encodeURIComponent(entry.title)}`}>Get a quote</Link><Link className="ml-6 text-primary underline" href="/book">Book a consultation</Link></aside>
-        {!!related.length && <section className="mt-12"><h2 className="text-2xl font-semibold">Related {collections[section].title.toLowerCase()}</h2><ContentGrid entries={related} prefix={`/${section}`} /></section>}
+        {entry.body && <div className="mt-10 max-w-3xl text-base leading-8 text-foreground/90"><ArticleBody body={entry.body} title={entry.title} /></div>}
+        {!!entry.features?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What&apos;s included</h2><ul className="mt-5 grid gap-2.5 sm:grid-cols-2">{entry.features.map(f => <li key={f} className="flex items-start gap-2.5 text-sm leading-6 text-foreground/85"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" aria-hidden />{f}</li>)}</ul></section>}
+        {!!entry.technologies?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Technologies</h2><div className="mt-5 flex flex-wrap gap-2">{entry.technologies.map(t => <span key={t} className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground/80">{t}</span>)}</div></section>}
+        {entry.download && <a href={entry.download} className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90" rel="noopener noreferrer" data-event="download">Download {entry.title}</a>}
+        {entry.links?.map(link => <a key={link} href={link} rel="noopener noreferrer" className="mt-4 mr-4 inline-block text-sm text-primary link-underline">{new URL(link).hostname}</a>)}
+        <div className="mt-10"><ShareButton title={entry.title} /></div>
+        <aside className="mt-14 rounded-xl border border-border bg-card p-7"><h2 className="text-xl font-semibold tracking-tight">Discuss your project</h2><p className="mt-2 text-sm text-muted-foreground">Tell us what you need. We&apos;ll help you choose the next step.</p><div className="mt-5 flex flex-wrap gap-4"><Link className="text-sm font-medium text-primary link-underline" href={`/contact?service=${encodeURIComponent(entry.title)}`}>Get a quote</Link><Link className="text-sm font-medium text-primary link-underline" href="/book">Book a consultation</Link></div></aside>
+        {!!related.length && <section className="mt-16"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Related {collections[section].title.toLowerCase()}</h2><ContentGrid entries={related} prefix={`/${section}`} /></section>}
       </>
     )}
   </ContentShell>;

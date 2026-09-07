@@ -49,9 +49,9 @@ export async function TechStack() {
   }
 
   return (
-    <section className="w-full overflow-hidden bg-surface site-gutter py-16">
+    <section className="w-full overflow-hidden bg-surface site-gutter section-py">
       <div className="flex flex-col items-center gap-3 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <p className="eyebrow">
           Technology options
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -62,7 +62,7 @@ export async function TechStack() {
         </p>
       </div>
 
-      <div className="mt-10 flex flex-col gap-3">
+      <div className="mt-12 flex flex-col gap-3">
         {rows.map((row, rowIndex) => {
           const loopItems = buildLoopItems(row.items);
           const originalCount = row.items.length;
@@ -72,7 +72,7 @@ export async function TechStack() {
               className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
             >
               <ul
-                className="flex w-max gap-3 will-change-transform "
+                className="flex w-max gap-3 will-change-transform"
                 style={{
                   animation: `marquee-var 40s linear infinite${row.reverse ? " reverse" : ""}`,
                   ["--marquee-end" as string]: loopPercent(row.items),
@@ -82,7 +82,7 @@ export async function TechStack() {
                   <li
                     key={`${item.name}-${index}`}
                     aria-hidden={index >= originalCount}
-                    className="group flex items-center gap-2 rounded-full border border-border bg-card py-2 pl-2.5 pr-4 transition-all duration-300 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
+                    className="group flex items-center gap-2 rounded-full border border-border bg-card py-2 pl-2.5 pr-4 transition-colors duration-200 hover:border-primary/30"
                   >
                     <TechChip item={item} />
                   </li>

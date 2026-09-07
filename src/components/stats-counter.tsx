@@ -70,17 +70,15 @@ export function StatsCounter({ stats }: { stats?: Stat[] }) {
   const data = stats ?? [];
 
   return (
-    <section data-cv="auto" className="relative w-full overflow-hidden border-y border-border bg-surface py-16 sm:py-20">
-      {/* Animated background orbs */}
+    <section data-cv="auto" className="relative w-full overflow-hidden border-y border-border bg-surface section-py">
+      {/* Subtle background */}
       <div aria-hidden className="absolute inset-0">
-        <div className="aurora-bg animate-gradient-mesh absolute inset-0 opacity-40" />
-        <div className="absolute left-[-10%] top-[20%] h-40 w-40 animate-float rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute right-[-5%] bottom-[10%] h-52 w-52 animate-float rounded-full bg-accent/10 blur-3xl" style={{ animationDelay: "2s" }} />
+        <div className="aurora-bg absolute inset-0 opacity-30" />
       </div>
 
       <div className="relative mx-auto max-w-5xl site-gutter">
-        <ScrollReveal animation="fade-up" className="mb-10 flex flex-col items-center gap-2 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <ScrollReveal animation="fade-up" className="mb-12 flex flex-col items-center gap-2 text-center">
+          <p className="eyebrow">
             By the numbers
           </p>
           <h2 className="max-w-lg text-2xl font-bold tracking-tight sm:text-3xl">
@@ -88,24 +86,18 @@ export function StatsCounter({ stats }: { stats?: Stat[] }) {
           </h2>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {data.map((stat, i) => (
             <ScrollReveal
               key={stat.label}
-              animation={i % 2 === 0 ? "scale-in" : "elastic"}
-              delay={i * 100}
-              className="group flex flex-col items-center gap-2 text-center"
+              animation="fade-up"
+              delay={i * 80}
+              className="flex flex-col items-center gap-2 text-center"
             >
-              <div className="relative">
-                <div
-                  aria-hidden
-                  className="absolute inset-0 -z-10 rounded-full bg-primary/5 blur-xl transition-opacity duration-500 group-hover:opacity-100 opacity-0"
-                />
-                <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                  <AnimatedCounter target={stat.numericValue} suffix={stat.suffix} />
-                </p>
-              </div>
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground sm:text-sm">
+              <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl tabular-nums">
+                <AnimatedCounter target={stat.numericValue} suffix={stat.suffix} />
+              </p>
+              <p className="text-xs font-medium uppercase tracking-[0.1em] text-muted-foreground sm:text-sm">
                 {stat.label}
               </p>
             </ScrollReveal>

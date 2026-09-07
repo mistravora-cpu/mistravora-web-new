@@ -30,12 +30,12 @@ const steps = [
 
 export function Process() {
   return (
-    <section className="relative w-full overflow-hidden site-gutter py-16">
+    <section className="relative w-full overflow-hidden site-gutter section-py">
       {/* Subtle background grid */}
       <div aria-hidden className="bg-grid absolute inset-0 opacity-[0.03]" />
 
       <div className="relative flex flex-col items-center gap-3 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <p className="eyebrow">
           How we work
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -43,38 +43,38 @@ export function Process() {
         </h2>
       </div>
 
-      <ol className="relative mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ol className="relative mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* Connecting line — hidden on mobile, visible on lg */}
         <div
           aria-hidden
-          className="pointer-events-none absolute left-0 right-0 top-[3.25rem] hidden h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent lg:block"
+          className="pointer-events-none absolute left-0 right-0 top-[3.25rem] hidden h-px bg-gradient-to-r from-transparent via-border to-transparent lg:block"
         />
 
         {steps.map((step, index) => (
           <ScrollReveal
             key={step.title}
-            animation={index % 2 === 0 ? "flip-in" : "elastic"}
-            delay={index * 120}
+            animation="fade-up"
+            delay={index * 100}
             as="li"
-            className="shine-sweep hover-lift group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+            className="group interactive-card hover:-translate-y-0.5 relative overflow-hidden p-6"
           >
             <span
               aria-hidden
-              className="absolute right-4 top-3 text-5xl font-bold text-muted transition-colors group-hover:text-primary/15"
+              className="absolute right-4 top-3 text-5xl font-bold text-muted/60 transition-colors group-hover:text-primary/15"
             >
               {index + 1}
             </span>
-            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-all group-hover:bg-primary/20 group-hover:ring-primary/20 hover-icon-bounce">
+            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
               <step.icon aria-hidden className="h-5 w-5 text-primary" />
             </span>
-            <h3 className="relative mt-4 font-semibold">{step.title}</h3>
+            <h3 className="relative mt-4 font-semibold tracking-tight">{step.title}</h3>
             <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
               {step.description}
             </p>
             {/* Progress bar at bottom */}
             <div
               aria-hidden
-              className="absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r from-primary to-accent transition-all duration-500 group-hover:w-full"
+              className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-500 group-hover:w-full"
             />
           </ScrollReveal>
         ))}

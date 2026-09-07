@@ -68,7 +68,7 @@ export function SiteHeader() {
         {/* Nav — flex-1 centered, takes space between logo and actions */}
         <nav
           aria-label="Primary"
-          className="hidden flex-1 items-center justify-center gap-0 whitespace-nowrap nav:flex"
+          className="hidden flex-1 items-center justify-center gap-0.5 whitespace-nowrap nav:flex"
         >
           {mainNav.map((item, i) => (
             <Link
@@ -76,18 +76,18 @@ export function SiteHeader() {
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
-                "group relative rounded-md px-2 py-1.5 text-sm whitespace-nowrap transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring animate-fade-in-up",
+                "group relative rounded-md px-3 py-1.5 text-[0.8125rem] font-medium whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring animate-fade-in-up",
                 isActive(item.href)
-                  ? "bg-primary/10 font-medium text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               style={{ animationDelay: `${i * 40}ms` }}
             >
               {item.title}
               <span
                 className={cn(
-                  "absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-primary transition-all duration-300",
-                  isActive(item.href) ? "opacity-100" : "opacity-0 group-hover:opacity-50"
+                  "absolute inset-x-2.5 -bottom-px h-px bg-primary transition-opacity duration-200",
+                  isActive(item.href) ? "opacity-100" : "opacity-0 group-hover:opacity-60"
                 )}
               />
             </Link>
@@ -117,7 +117,7 @@ export function SiteHeader() {
             {mobileOpen ? (
               <nav
                 aria-label="Mobile"
-                className="animate-fade-in-up absolute right-0 top-11 flex w-56 flex-col gap-1 rounded-lg border border-border bg-card p-2 shadow-xl"
+                className="animate-fade-in-up absolute right-0 top-11 flex w-60 flex-col gap-0.5 rounded-xl border border-border bg-card p-2 shadow-lg"
               >
                 {mainNav.map((item, i) => (
                   <Link
@@ -126,9 +126,9 @@ export function SiteHeader() {
                     onClick={() => setMobileOpen(false)}
                     aria-current={isActive(item.href) ? "page" : undefined}
                     className={cn(
-                      "animate-fade-in-up rounded-md px-3 py-2 text-sm transition-colors",
+                      "animate-fade-in-up rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       isActive(item.href)
-                        ? "bg-primary/10 font-medium text-primary"
+                        ? "text-primary"
                         : "text-foreground hover:bg-muted"
                     )}
                     style={{ animationDelay: `${i * 30}ms` }}
@@ -139,7 +139,7 @@ export function SiteHeader() {
                 <Link
                   href="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="ripple-click mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
+                  className="ripple-click mt-1.5 rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
                 >
                   Get in touch
                 </Link>

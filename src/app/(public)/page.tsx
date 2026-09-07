@@ -196,14 +196,14 @@ export default async function Home() {
       <ClientsMarquee />
 
       {/* Feature highlights grid — 6 cards with gradient icons */}
-      <section data-cv="auto" className="relative w-full overflow-hidden site-gutter py-16">
+      <section data-cv="auto" className="relative w-full overflow-hidden site-gutter section-py">
         <GradientOrbs />
         <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <p className="eyebrow">
             Why Mistravora
           </p>
           <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Engineered for <span className="gradient-text-flow">performance</span>, built for <span className="text-gradient">growth</span>
+            Engineered for <span className="text-gradient">performance</span>, built for <span className="text-gradient">growth</span>
           </h2>
           <p className="max-w-md text-sm leading-6 text-muted-foreground">
             Every project is crafted with the same obsessive attention to detail —
@@ -211,17 +211,17 @@ export default async function Home() {
           </p>
         </ScrollReveal>
 
-        <div className="relative mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featureHighlights.map((feature, i) => (
             <ScrollReveal
               key={feature.title}
-              animation={i % 3 === 0 ? "clip-reveal" : i % 3 === 1 ? "elastic" : "flip-in"}
+              animation="fade-up"
               delay={i * 80}
-              className="group glass-card hover-lift card-glow shine-sweep relative overflow-hidden rounded-2xl p-6"
+              className="group interactive-card hover:-translate-y-0.5 relative overflow-hidden p-6"
             >
               <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
-              <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
-                <feature.icon aria-hidden className="h-5.5 w-5.5 text-primary" />
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+                <feature.icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
               <h3 className="mt-4 font-semibold tracking-tight">{feature.title}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -240,12 +240,12 @@ export default async function Home() {
 
       {/* Highlights */}
       <section data-cv="auto" className="relative border-y border-border bg-surface overflow-hidden">
-        <div aria-hidden className="aurora-bg absolute inset-0 opacity-50" />
-        <div className="relative grid w-full gap-8 site-gutter py-16 sm:grid-cols-3">
+        <div aria-hidden className="aurora-bg absolute inset-0 opacity-40" />
+        <div className="relative grid w-full gap-6 site-gutter section-py sm:grid-cols-3">
           {highlights.map((highlight, i) => (
-            <ScrollReveal key={highlight.title} animation={i === 0 ? "clip-reveal" : i === 1 ? "elastic" : "flip-in"} delay={i * 120} className="glass-card hover-lift rounded-2xl p-6 flex flex-col gap-3">
-              <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10">
-                <highlight.icon aria-hidden className="h-5.5 w-5.5 text-primary" />
+            <ScrollReveal key={highlight.title} animation="fade-up" delay={i * 100} className="surface-card p-7 flex flex-col gap-3">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10">
+                <highlight.icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
               <h2 className="text-lg font-semibold tracking-tight">{highlight.title}</h2>
               <p className="text-sm leading-6 text-muted-foreground">
@@ -257,9 +257,9 @@ export default async function Home() {
       </section>
 
       {/* Free tools */}
-      <section data-cv="auto" className="w-full site-gutter py-16">
+      <section data-cv="auto" className="w-full site-gutter section-py">
         <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <p className="eyebrow">
             Free tools
           </p>
           <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -267,14 +267,14 @@ export default async function Home() {
           </h2>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {freeTools.map((tool, i) => (
-            <ScrollReveal key={tool.href} animation={i === 0 ? "rotate-in" : i === 1 ? "flip-in" : "clip-reveal"} delay={i * 120} className="gradient-border-card shine-sweep card-glow group flex flex-col gap-3 rounded-2xl p-6 transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10">
+            <ScrollReveal key={tool.href} animation="fade-up" delay={i * 100} className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-3 p-7">
               <Link href={tool.href} className="flex flex-1 flex-col gap-3">
-                <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-110">
-                  <tool.icon aria-hidden className="h-6 w-6 text-primary" />
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+                  <tool.icon aria-hidden className="h-5 w-5 text-primary" />
                 </span>
-                <h3 className="font-semibold">{tool.title}</h3>
+                <h3 className="font-semibold tracking-tight">{tool.title}</h3>
                 <p className="flex-1 text-sm leading-6 text-muted-foreground">
                   {tool.description}
                 </p>
@@ -307,14 +307,10 @@ export default async function Home() {
 
       {/* CTA band */}
       <section data-cv="auto" className="w-full site-gutter pb-20">
-        <ScrollReveal animation="scale-in" className="gradient-border-card relative overflow-hidden rounded-3xl p-8 text-center sm:p-14">
+        <ScrollReveal animation="fade-up" className="surface-card relative overflow-hidden rounded-2xl p-8 text-center sm:p-14">
           <div
             aria-hidden
-            className="aurora-bg animate-gradient-mesh absolute inset-0"
-          />
-          <div
-            aria-hidden
-            className="absolute -top-20 left-1/2 h-56 w-full max-w-lg -translate-x-1/2 animate-aurora rounded-full bg-primary/20 blur-2xl"
+            className="aurora-bg absolute inset-0 opacity-60"
           />
           <div className="relative flex flex-col items-center gap-5">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary">
@@ -388,10 +384,10 @@ async function SolutionsSection() {
     short_description: service.description, summary: service.description, icon: null }));
 
   return (
-    <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-16 pt-4">
+    <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-20 pt-8">
       <GradientOrbs />
       <ScrollReveal animation="fade-up" className="relative flex flex-col items-center gap-3 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <p className="eyebrow">
           What we build
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -399,23 +395,23 @@ async function SolutionsSection() {
         </h2>
       </ScrollReveal>
 
-      <div className="relative mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="relative mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {solutions.map((solution, index) => {
           const Icon = solution.icon ? getSolutionIcon(solution.icon) : fallbackIcons[index % fallbackIcons.length];
           return (
             <ScrollReveal
               key={solution.id}
-              animation={index % 3 === 0 ? "elastic" : index % 3 === 1 ? "flip-in" : "rotate-in"}
-              delay={index * 80}
-              className={`gradient-border-card shine-sweep card-glow group rounded-2xl p-6 transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10 ${
+              animation="fade-up"
+              delay={index * 60}
+              className={`group interactive-card hover:-translate-y-0.5 p-6 ${
                 index === 0 || index === 3 ? "lg:col-span-2" : ""
               }`}
             >
               <article>
-              <span className="glow-icon inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
-                <Icon aria-hidden className="h-5.5 w-5.5 text-primary" />
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
+                <Icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
-              <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${solution.slug}`}>{solution.title}</Link></h3>
+              <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${solution.slug}`} className="transition-colors group-hover:text-primary">{solution.title}</Link></h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {solution.short_description ?? solution.summary ?? ""}
               </p>
@@ -425,7 +421,7 @@ async function SolutionsSection() {
         })}
       </div>
 
-      <ScrollReveal animation="fade-up" delay={200} className="relative mt-8 text-center">
+      <ScrollReveal animation="fade-up" delay={200} className="relative mt-10 text-center">
         <Button variant="outline" asChild>
           <Link href="/services">
             Explore all services
@@ -444,9 +440,9 @@ async function CaseStudiesTeaser() {
   if (caseStudies.length === 0) return null;
 
   return (
-    <section data-cv="auto" className="w-full site-gutter py-16">
+    <section data-cv="auto" className="w-full site-gutter section-py">
       <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <p className="eyebrow">
           Powering digital success across Sri Lanka &amp; beyond
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
@@ -457,20 +453,20 @@ async function CaseStudiesTeaser() {
         </p>
       </ScrollReveal>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {caseStudies.map((cs, i) => {
           const initials = (cs.client || cs.title).split(" ").map((w) => w[0]).slice(0, 2).join("");
           return (
             <ScrollReveal
               key={cs.id}
-              animation={i % 3 === 0 ? "flip-in" : i % 3 === 1 ? "elastic" : "clip-reveal"}
-              delay={i * 80}
-              className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
+              animation="fade-up"
+              delay={i * 70}
+              className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-0 overflow-hidden"
             >
               <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col">
                 {/* Cover image or initials avatar */}
                 {cs.cover_image ? (
-                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-muted p-4">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted p-4">
                     <Image
                       src={cs.cover_image}
                       alt={`${cs.title} — ${cs.client}`}
@@ -480,14 +476,14 @@ async function CaseStudiesTeaser() {
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 border-b border-border/50 p-5">
-                    <span className="glow-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-sm font-bold text-primary ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex items-center gap-3 border-b border-border p-5">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                       {initials}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{cs.client}</p>
                       {cs.industry && (
-                        <p className="truncate text-xs text-foreground/60">{cs.industry}</p>
+                        <p className="truncate text-xs text-muted-foreground">{cs.industry}</p>
                       )}
                     </div>
                   </div>
@@ -499,21 +495,21 @@ async function CaseStudiesTeaser() {
                     <div className="flex items-center gap-2">
                       <p className="truncate text-sm font-semibold">{cs.client}</p>
                       {cs.location && (
-                        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground/70">
+                        <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                           {cs.location}
                         </span>
                       )}
                     </div>
                   )}
-                  <h3 className="text-base font-bold leading-tight tracking-tight">{cs.title}</h3>
+                  <h3 className="text-base font-semibold leading-tight tracking-tight">{cs.title}</h3>
                   {cs.outcome && (
-                    <p className="text-sm leading-6 text-foreground/70">{cs.outcome}</p>
+                    <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>
                   )}
                   {cs.results.length > 0 && (
                     <ul className="flex flex-col gap-1.5">
                       {cs.results.slice(0, 3).map((r, ri) => (
-                        <li key={ri} className="flex items-center gap-2 text-xs text-primary">
-                          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                        <li key={ri} className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
                           {r}
                         </li>
                       ))}
@@ -522,9 +518,9 @@ async function CaseStudiesTeaser() {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between border-t border-border/50 px-5 py-3">
+                <div className="flex items-center justify-between border-t border-border px-5 py-3.5">
                   <span className="text-xs font-medium text-primary">View details</span>
-                  <ArrowRight aria-hidden className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                  <ArrowRight aria-hidden className="h-4 w-4 text-primary transition-transform group-hover:translate-x-0.5" />
                 </div>
               </Link>
             </ScrollReveal>
@@ -532,7 +528,7 @@ async function CaseStudiesTeaser() {
         })}
       </div>
 
-      <ScrollReveal animation="fade-up" delay={200} className="mt-8 text-center">
+      <ScrollReveal animation="fade-up" delay={200} className="mt-10 text-center">
         <Button variant="outline" asChild className="ripple-click">
           <Link href="/projects">
             View all projects

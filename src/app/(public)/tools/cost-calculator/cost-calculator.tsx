@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useBusinessProfile } from "@/components/business-profile-provider";
 
 const selectClass =
-  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40";
 
 export function CostCalculator({ config }: { config: CalculatorConfig }) {
   const { projectTypes, features, timelines, usdRate: USD_RATE } = config;
@@ -140,15 +140,15 @@ export function CostCalculator({ config }: { config: CalculatorConfig }) {
           </div>
         </div>
 
-        <p className="text-3xl font-bold text-primary">
+        <p className="text-3xl font-bold tracking-tight text-primary tabular-nums">
           {format(low)} – {format(high)}
         </p>
 
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
+        <ul className="flex flex-col gap-1.5 text-sm text-muted-foreground">
           {selectedLabels.map((label) => (
-            <li key={label}>• {label}</li>
+            <li key={label} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary/60" aria-hidden />{label}</li>
           ))}
-          <li>• {timeline.label} timeline</li>
+          <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary/60" aria-hidden />{timeline.label} timeline</li>
         </ul>
 
         <Button asChild className="mt-2">

@@ -23,7 +23,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
     .toUpperCase();
 
   return (
-    <figure className="group/card shine-sweep hover-lift card-glow relative flex w-[20rem] shrink-0 flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 sm:w-[24rem]">
+    <figure className="group/card relative flex w-[20rem] shrink-0 flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-6 transition-colors duration-200 hover:border-primary/30 sm:w-[24rem]">
       <div className="flex items-center justify-between">
         <div
           role="img"
@@ -31,20 +31,20 @@ function TestimonialCard({ t }: { t: Testimonial }) {
           className="flex gap-0.5 text-primary"
         >
           {Array.from({ length: t.rating }).map((_, i) => (
-            <Star key={i} aria-hidden className="h-4 w-4 fill-current transition-transform duration-300 group-hover/card:scale-110" />
+            <Star key={i} aria-hidden className="h-4 w-4 fill-current" />
           ))}
         </div>
-        <Quote aria-hidden className="h-6 w-6 text-primary/20 transition-colors duration-300 group-hover/card:text-primary/40" />
+        <Quote aria-hidden className="h-6 w-6 text-primary/15" />
       </div>
       <blockquote className="flex-1 text-sm leading-6 text-muted-foreground">
         &ldquo;{t.quote}&rdquo;
       </blockquote>
-      <figcaption className="flex items-center gap-3 border-t border-border/50 pt-3">
+      <figcaption className="flex items-center gap-3 border-t border-border pt-4">
         {t.avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={t.avatar} alt={t.name} className="h-9 w-9 rounded-full object-cover" />
         ) : (
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary transition-transform duration-300 group-hover/card:scale-110">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
             {initials}
           </span>
         )}
@@ -68,20 +68,20 @@ export async function Testimonials() {
   const row2 = buildLoopItems(row2Items);
 
   return (
-    <section className="w-full overflow-hidden bg-surface py-16">
+    <section className="w-full overflow-hidden bg-surface section-py">
       <div className="flex flex-col items-center gap-3 px-4 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+        <p className="eyebrow">
           Client love
         </p>
         <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          What our <span className="gradient-text-flow">clients</span> say
+          What our <span className="text-gradient">clients</span> say
         </h2>
       </div>
 
-      <div className="mt-10 flex flex-col gap-4">
+      <div className="mt-12 flex flex-col gap-4">
         <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div
-            className="flex w-max gap-4 will-change-transform "
+            className="flex w-max gap-4 will-change-transform"
             style={{ animation: "marquee-var 50s linear infinite", ["--marquee-end" as string]: loopPercent(row1Items.length) }}
           >
             {row1.map((t, i) => (
@@ -91,7 +91,7 @@ export async function Testimonials() {
         </div>
         <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div
-            className="flex w-max gap-4 will-change-transform "
+            className="flex w-max gap-4 will-change-transform"
             style={{ animation: "marquee-var 50s linear infinite reverse", ["--marquee-end" as string]: loopPercent(row2Items.length) }}
           >
             {row2.map((t, i) => (

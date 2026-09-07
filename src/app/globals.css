@@ -21,6 +21,26 @@
   --brand-silver: #5b6470;
   --brand-gray: #374151;
   --radius: 0.75rem;
+
+  /* ─── Spacing scale ─── */
+  --section-py: 5rem;
+  --section-py-sm: 3.5rem;
+  --section-gap: 4rem;
+  --card-pad: 1.5rem;
+  --card-pad-lg: 2rem;
+  --grid-gap: 1.5rem;
+  --grid-gap-lg: 2rem;
+
+  /* ─── Typography ─── */
+  --heading-tracking: -0.02em;
+  --heading-lh: 1.2;
+  --body-lh: 1.65;
+  --prose-max: 65ch;
+
+  /* ─── Shadows ─── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 12px 32px -8px rgb(0 0 0 / 0.10);
 }
 
 .dark {
@@ -89,7 +109,7 @@ body {
 }
 
 @utility text-gradient {
-  background-image: linear-gradient(135deg, var(--primary) 0%, #5eead4 100%);
+  background-image: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: var(--primary);
@@ -215,10 +235,10 @@ body {
 
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--primary) 30%, transparent);
+    box-shadow: 0 0 12px -4px color-mix(in oklab, var(--primary) 15%, transparent);
   }
   50% {
-    box-shadow: 0 0 40px -5px color-mix(in oklab, var(--primary) 60%, transparent);
+    box-shadow: 0 0 24px -4px color-mix(in oklab, var(--primary) 25%, transparent);
   }
 }
 
@@ -260,7 +280,7 @@ body {
 @keyframes flip-in {
   from {
     opacity: 0;
-    transform: perspective(800px) rotateX(-25deg) translateY(20px);
+    transform: perspective(800px) rotateX(-8deg) translateY(12px);
   }
   to {
     opacity: 1;
@@ -271,16 +291,10 @@ body {
 @keyframes elastic-scale {
   0% {
     opacity: 0;
-    transform: scale(0.7);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  80% {
-    transform: scale(0.98);
+    transform: scale(0.92);
   }
   100% {
+    opacity: 1;
     transform: scale(1);
   }
 }
@@ -288,7 +302,7 @@ body {
 @keyframes rotate-in {
   from {
     opacity: 0;
-    transform: rotate(-8deg) scale(0.9);
+    transform: rotate(-3deg) scale(0.97);
   }
   to {
     opacity: 1;
@@ -555,12 +569,14 @@ body {
 }
 
 .site-header.scrolled {
-  top: 0.75rem;
-  margin-inline: 0.75rem;
+  top: 0.5rem;
+  margin-inline: 0.5rem;
   border-color: var(--border);
   border-radius: 1rem;
-  background-color: var(--background);
-  box-shadow: 0 16px 40px -16px rgb(0 0 0 / 0.35);
+  background-color: color-mix(in oklab, var(--background) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.18);
 }
 
 @media (min-width: 1024px) {
@@ -608,8 +624,8 @@ h3 {
   background: conic-gradient(
     from var(--beam-angle),
     transparent 0%,
-    var(--primary) 15%,
-    transparent 35%
+    var(--primary) 10%,
+    transparent 30%
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -625,8 +641,8 @@ h3 {
 }
 
 .card-glow:hover::before {
-  opacity: 1;
-  animation: beam-spin 2.5s linear infinite;
+  opacity: 0.5;
+  animation: beam-spin 4s linear infinite;
 }
 
 .shine-sweep {
@@ -639,12 +655,12 @@ h3 {
   position: absolute;
   top: 0;
   left: 0;
-  width: 60%;
+  width: 50%;
   height: 100%;
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in oklab, var(--primary) 15%, transparent),
+    color-mix(in oklab, var(--primary) 8%, transparent),
     transparent
   );
   transform: translateX(-120%) skewX(-15deg);
@@ -653,7 +669,7 @@ h3 {
 }
 
 .shine-sweep:hover::after {
-  animation: sweep 0.8s ease-out;
+  animation: sweep 0.7s ease-out;
 }
 
 .hover-lift {
@@ -664,21 +680,17 @@ h3 {
 }
 
 .hover-lift:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow:
-    0 20px 40px -12px color-mix(in oklab, var(--primary) 15%, transparent),
-    0 8px 16px -8px rgb(0 0 0 / 0.1);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 
 .hover-glow {
-  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .hover-glow:hover {
-  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent),
-    0 12px 32px -8px color-mix(in oklab, var(--primary) 25%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .ripple-click {
@@ -707,15 +719,13 @@ h3 {
   background: linear-gradient(
     90deg,
     var(--primary),
-    #5eead4,
-    var(--accent),
-    var(--primary)
+    var(--accent)
   );
-  background-size: 300% 100%;
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: gradient-shift 6s ease infinite;
+  animation: gradient-shift 8s ease infinite;
 }
 
 .hover-underline {
@@ -738,11 +748,11 @@ h3 {
 }
 
 .hover-icon-bounce {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.25s ease;
 }
 
 .hover-icon-bounce:hover {
-  transform: scale(1.15) rotate(-5deg);
+  transform: scale(1.08);
 }
 
 @keyframes aurora-drift {
@@ -779,10 +789,10 @@ h3 {
 }
 
 .glass-card {
-  background: color-mix(in oklab, var(--card) 70%, transparent);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
 }
 
 .glow-icon {
@@ -792,17 +802,17 @@ h3 {
 .glow-icon::after {
   content: "";
   position: absolute;
-  inset: -4px;
+  inset: -2px;
   border-radius: inherit;
-  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 25%, transparent), transparent 70%);
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 12%, transparent), transparent 70%);
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: -1;
 }
 
 .glow-icon:hover::after {
-  opacity: 1;
+  opacity: 0.7;
 }
 
 .gradient-border-card {
@@ -842,9 +852,9 @@ h3 {
 
 .aurora-bg {
   background:
-    radial-gradient(ellipse 60% 50% at 20% 30%, color-mix(in oklab, var(--primary) 12%, transparent), transparent),
-    radial-gradient(ellipse 50% 40% at 80% 70%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
-    radial-gradient(ellipse 40% 30% at 50% 50%, color-mix(in oklab, var(--primary) 8%, transparent), transparent);
+    radial-gradient(ellipse 60% 50% at 20% 30%, color-mix(in oklab, var(--primary) 7%, transparent), transparent),
+    radial-gradient(ellipse 50% 40% at 80% 70%, color-mix(in oklab, var(--accent) 5%, transparent), transparent),
+    radial-gradient(ellipse 40% 30% at 50% 50%, color-mix(in oklab, var(--primary) 4%, transparent), transparent);
 }
 
 /* === Performance optimizations === */
@@ -890,3 +900,126 @@ section[data-cv="auto"] {
 [data-article-content] img { max-width: 100%; height: auto; }
 [data-article-content] :is(pre, table) { display: block; max-width: 100%; overflow-x: auto; }
 [data-article-content] .article-container { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Premium design system — frontend visual refinement
+   Adds consistent spacing, typography, section containers, and refined
+   surface treatments using ONLY existing theme colors.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* Section rhythm — consistent vertical padding across all public sections */
+@utility section-py {
+  padding-block: var(--section-py);
+}
+@utility section-py-sm {
+  padding-block: var(--section-py-sm);
+}
+
+/* Centered content container with comfortable reading width */
+@utility section-narrow {
+  max-width: 56rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* Eyebrow label — small uppercase section labels */
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* Premium surface — clean card with subtle border + light shadow */
+@utility surface-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Subtle interactive card — hover raises gently, no glow */
+@utility interactive-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+@utility interactive-card-hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: color-mix(in oklab, var(--primary) 22%, var(--border));
+}
+
+/* Prose width for body copy in articles and detail pages */
+@utility prose-width {
+  max-width: var(--prose-max);
+}
+
+/* Consistent grid gap for public grids */
+@utility grid-gap {
+  gap: var(--grid-gap);
+}
+@utility grid-gap-lg {
+  gap: var(--grid-gap-lg);
+}
+
+/* Refined heading defaults — tighter tracking, balanced leading */
+h1, h2, h3, h4 {
+  letter-spacing: var(--heading-tracking);
+  line-height: var(--heading-lh);
+}
+
+/* Premium button refinements — applied on top of existing Button variants */
+.btn-premium-primary {
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--primary) 30%, transparent);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.btn-premium-primary:hover {
+  box-shadow: 0 4px 12px -2px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+.btn-premium-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-premium-outline {
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.btn-premium-outline:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+  color: var(--primary);
+}
+
+/* Reduce heading scale jumps on small screens for better mobile hierarchy */
+@media (max-width: 640px) {
+  h1 { font-size: clamp(1.875rem, 7vw, 2.25rem); }
+  h2 { font-size: clamp(1.5rem, 5vw, 1.875rem); }
+}
+
+/* Premium link underline for in-content links */
+.link-underline {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.2s ease;
+}
+.link-underline:hover {
+  text-decoration-color: var(--primary);
+}
+
+/* Divider line for section separation */
+@utility section-divider-line {
+  border-top: 1px solid var(--border);
+}
+
+/* Muted container band — subtle surface differentiation without heavy bg */
+@utility muted-band {
+  background: var(--surface);
+}
+

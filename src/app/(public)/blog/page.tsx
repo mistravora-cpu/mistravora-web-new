@@ -47,7 +47,7 @@ export default async function BlogPage() {
       {posts.length > 0 ? (
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, i) => (
-            <ScrollReveal key={post.id} animation={i % 2 === 0 ? "flip-in" : "elastic"} delay={i * 80} className="shine-sweep hover-lift group flex flex-col gap-3 rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+            <ScrollReveal key={post.id} animation="fade-up" delay={i * 70} className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-3 p-6">
               <Link href={`/blog/${post.slug}`} className="flex flex-col gap-3">
               <article className="flex flex-col gap-3">
               {post.cover_image && (
@@ -59,15 +59,15 @@ export default async function BlogPage() {
                   width={800}
                   height={450}
                   alt={post.title}
-                  className="h-40 w-full rounded-lg object-cover"
+                  className="-mx-2 -mt-2 h-40 w-[calc(100%+1rem)] rounded-t-lg object-cover"
                 />
               )}
               {post.category && (
-                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                <span className="eyebrow">
                   {post.category}
                 </span>
               )}
-              <h2 className="text-lg font-semibold">{post.title}</h2>
+              <h2 className="text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">{post.title}</h2>
               {post.excerpt && (
                 <p className="text-sm leading-6 text-muted-foreground">{post.excerpt}</p>
               )}
@@ -81,8 +81,8 @@ export default async function BlogPage() {
           ))}
         </div>
       ) : (
-        <ScrollReveal animation="scale-in" className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-card p-10 text-center">
-          <h2 className="text-lg font-semibold">No posts yet</h2>
+        <ScrollReveal animation="fade-up" className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-card p-12 text-center">
+          <h2 className="text-lg font-semibold tracking-tight">No posts yet</h2>
           <p className="text-sm leading-6 text-muted-foreground">
             Our first articles are being written. Subscribe or check back soon —
             or tell us what you&apos;d like to read about.

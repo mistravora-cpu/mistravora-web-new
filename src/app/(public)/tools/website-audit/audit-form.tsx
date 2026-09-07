@@ -13,7 +13,7 @@ type Scores = {
 };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40";
 
 function scoreColor(score: number) {
   if (score >= 90) return "#22c55e";

@@ -57,7 +57,7 @@ export default async function CaseStudyPage({
   return (
     <article className="w-full site-gutter py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: cs.problem_statement, url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto  w-full">
+      <div className="mx-auto max-w-4xl w-full">
         <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -71,7 +71,7 @@ export default async function CaseStudyPage({
             {cs.title}
           </h1>
 
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
             {cs.client && (
               <span className="flex items-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5" />
@@ -79,7 +79,7 @@ export default async function CaseStudyPage({
               </span>
             )}
             {cs.industry && (
-              <span className="rounded-full border border-border bg-card px-2.5 py-0.5">
+              <span className="rounded-md border border-border bg-card px-2.5 py-0.5">
                 {cs.industry}
               </span>
             )}
@@ -100,7 +100,7 @@ export default async function CaseStudyPage({
           </div>
 
           {cs.cover_image && (
-            <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-muted p-6 sm:h-96 lg:h-[28rem]">
+            <div className="relative mt-10 h-72 w-full overflow-hidden rounded-xl border border-border bg-muted p-6 sm:h-96 lg:h-[28rem]">
               <Image
                 src={cs.cover_image}
                 alt={`${cs.title} — ${cs.client}`}
@@ -113,31 +113,31 @@ export default async function CaseStudyPage({
           )}
 
           {cs.problem_statement && (
-            <section className="mt-8">
-              <h2 className="text-xl font-semibold">The challenge</h2>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            <section className="mt-12">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">The challenge</h2>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/85">
                 {cs.problem_statement}
               </p>
             </section>
           )}
 
           {cs.solution && (
-            <section className="mt-6">
-              <h2 className="text-xl font-semibold">What we built</h2>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            <section className="mt-10">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What we built</h2>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/85">
                 {cs.solution}
               </p>
             </section>
           )}
 
           {cs.results.length > 0 && (
-            <section className="mt-6">
-              <h2 className="text-xl font-semibold">Results</h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <section className="mt-10">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Results</h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {cs.results.map((result, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-3 rounded-xl border border-border bg-card p-4"
+                    className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
                   >
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                     <span className="text-sm leading-6 text-foreground/90">{result}</span>
@@ -148,26 +148,26 @@ export default async function CaseStudyPage({
           )}
 
           {cs.outcome && (
-            <section className="mt-6 rounded-xl border border-border bg-card p-5">
-              <h2 className="text-lg font-semibold">Outcome</h2>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+            <section className="mt-10 rounded-xl border border-border bg-surface p-6">
+              <h2 className="text-lg font-semibold tracking-tight">Outcome</h2>
+              <p className="mt-3 text-base leading-7 text-muted-foreground">
                 {cs.outcome}
               </p>
             </section>
           )}
 
           {cs.body && (
-            <div className="mt-8 max-w-none text-sm leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4">
+            <div className="mt-10 max-w-3xl text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4">
               {cs.body}
             </div>
           )}
 
           {cs.technologies.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-10 flex flex-wrap gap-2">
               {cs.technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
+                  className="rounded-md border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
                 >
                   {tech}
                 </span>
@@ -176,17 +176,17 @@ export default async function CaseStudyPage({
           )}
         </ScrollReveal>
 
-        <ScrollReveal animation="fade-up" delay={200} className="mt-12 rounded-xl border border-border bg-card p-6 text-center">
-          <h2 className="text-lg font-semibold">Want results like these?</h2>
+        <ScrollReveal animation="fade-up" delay={200} className="mt-14 rounded-xl border border-border bg-card p-7 text-center">
+          <h2 className="text-lg font-semibold tracking-tight">Want results like these?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Tell us about your business — we&apos;ll recommend the simplest thing that works.
           </p>
-          <Button asChild className="mt-4">
+          <Button asChild className="mt-5">
             <Link href="/contact">Start a project</Link>
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto mt-8 "><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
+      <div className="mx-auto max-w-4xl mt-10"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
     </article>
   );
 }

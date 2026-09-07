@@ -38,18 +38,18 @@ export default async function SolutionsPage() {
   return (
     <>
     <AnimatedHero hero={hero} page="solutions" />
-    <section className="w-full site-gutter py-16">
+    <section className="w-full site-gutter section-py">
 
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {solutions.map((solution, i) => {
           const Icon = getIcon(solution.icon);
           return (
-            <ScrollReveal key={solution.id} animation={i % 2 === 0 ? "slide-left" : "slide-right"} delay={i * 80} className="shine-sweep hover-glow group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+            <ScrollReveal key={solution.id} animation="fade-up" delay={i * 70} className="group interactive-card hover:-translate-y-0.5 p-6">
               <article>
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 transition-all group-hover:bg-primary/20 hover-icon-bounce">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                   <Icon aria-hidden className="h-5 w-5 text-primary" />
                 </span>
-                <h2 className="mt-4 text-lg font-semibold">{<Link href={`/solutions/${solution.slug}`}>{solution.title}</Link>}</h2>
+                <h2 className="mt-4 text-lg font-semibold tracking-tight">{<Link href={`/solutions/${solution.slug}`} className="transition-colors group-hover:text-primary">{solution.title}</Link>}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {solution.short_description ?? solution.summary ?? solution.body ?? ""}
                 </p>
@@ -60,31 +60,31 @@ export default async function SolutionsPage() {
       </div>
 
       {/* Social proof — client logos */}
-      <div className="mt-16">
+      <div className="mt-20">
         <ClientsMarquee />
       </div>
 
       {/* Case studies preview */}
       {caseStudies.length > 0 && (
-        <section className="mt-16">
+        <section className="mt-20">
           <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <p className="eyebrow">
               Recent work
             </p>
             <h2 className="max-w-xl text-2xl font-bold tracking-tight sm:text-3xl">
               Real projects, real results
             </h2>
           </ScrollReveal>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {caseStudies.map((cs, i) => (
               <ScrollReveal
                 key={cs.id}
-                animation={i % 2 === 0 ? "slide-left" : "slide-right"}
-                delay={i * 80}
-                className="shine-sweep hover-glow group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                animation="fade-up"
+                delay={i * 70}
+                className="group interactive-card hover:-translate-y-0.5 p-6"
               >
                 <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col gap-2">
-                  <h3 className="font-semibold tracking-tight">{cs.title}</h3>
+                  <h3 className="font-semibold tracking-tight transition-colors group-hover:text-primary">{cs.title}</h3>
                   {cs.outcome && (
                     <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>
                   )}
@@ -104,7 +104,7 @@ export default async function SolutionsPage() {
       {/* Testimonials */}
       <Testimonials />
 
-      <ScrollReveal animation="scale-in" delay={200} className="mt-12 flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-8 text-center sm:p-10">
+      <ScrollReveal animation="fade-up" delay={200} className="mt-16 flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-8 text-center sm:p-12">
         <h2 className="text-2xl font-bold tracking-tight">
           Not sure which one fits?
         </h2>
