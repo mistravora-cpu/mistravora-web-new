@@ -1,3 +1,4 @@
+import { attachProjectLinks } from "./project-links";
 import { memberSlug } from "./team-slug";
 export { memberSlug } from "./team-slug";
 import { createClient } from "@/lib/supabase/server";
@@ -171,7 +172,7 @@ const _getCaseStudies = unstable_cache(
     let query = supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
     const rows = await queryRows(query);
-    return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
+    return attachProjectLinks(rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy), supabase);
   },
   ["projects-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -495,7 +496,7 @@ export async function getAdminSolutions(): Promise<Solution[]> {
 export async function getAdminCaseStudies(): Promise<CaseStudy[]> {
   const supabase = await createClient();
   const rows = await queryRows(supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true }));
-  return rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy);
+  return attachProjectLinks(rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy), supabase);
 }
 export async function getAdminPosts(): Promise<Post[]> {
   const supabase = await createClient();

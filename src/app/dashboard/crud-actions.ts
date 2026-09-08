@@ -192,10 +192,12 @@ export async function upsertRow(
   if (table === "case_studies" && typeof parentData.published === "boolean") {
     parentData.status = parentData.published ? "active" : "draft";
   }
+  let projectPublicLink: string | undefined;
   if (table === "case_studies" && "website_url" in parentData) {
     const url = typeof parentData.website_url === "string" ? parentData.website_url.trim() : "";
     if (url && !isPublicMediaUrl(url)) return { error: "Use a public HTTPS project URL, or leave it blank for sensitive systems." };
-    parentData.website_url = url || null;
+    projectPublicLink = url;
+    delete parentData.website_url;
   }
 
   if (table === "research" && "slug" in parentData) {
@@ -239,6 +241,13 @@ export async function upsertRow(
       .single();
     if (error) return { error: error.message };
     parentId = inserted?.id;
+  }
+
+  if (parentId && projectPublicLink !== undefined) {
+    const { error } = await supabase.from("settings").upsert({
+      key: `project_public_link:${parentId}`, value: projectPublicLink,
+    }, { onConflict: "key" });
+    if (error) return { error: "Project saved, but its public link could not be saved. Please retry." };
   }
 
   // Sync child tables

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { getAdminCaseStudies as getCaseStudies } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
@@ -39,10 +38,6 @@ const fields: FieldDef[] = [
 
 export default async function CaseStudiesAdminPage() {
   const caseStudies = await getCaseStudies();
-  const db = await createClient();
-  const { error: linkSchemaError } = await db.from("case_studies").select("website_url").limit(0);
-  const linkReady = !linkSchemaError;
-  if (linkSchemaError && !["42703", "PGRST204"].includes(linkSchemaError.code)) throw linkSchemaError;
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,11 +47,10 @@ export default async function CaseStudiesAdminPage() {
           Manage client projects with real, permission-backed metrics. Upload a cover image for each project to showcase on the website.
         </p>
       </div>
-      {!linkReady && <p className="text-sm text-muted-foreground">Public project links need database migration 0042_project_website_url.sql before they can be edited.</p>}
       <CrudManager
         table="case_studies"
         columns={columns}
-        fields={linkReady ? fields : fields.filter(field => field.name !== "website_url")}
+        fields={fields}
         rows={caseStudies as unknown as Record<string, unknown>[]}
       />
     </div>

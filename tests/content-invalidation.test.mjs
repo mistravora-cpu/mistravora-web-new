@@ -7,10 +7,11 @@ import ts from 'typescript';
 const require = createRequire(import.meta.url);
 function load({authorized = true, fail = false} = {}) {
   const calls = [];
+  const writes = [];
   const result = {error: fail ? {message: 'Write failed'} : null, data: {id: 'saved'}};
   const db = {auth: {getUser: async () => ({data: {user: authorized ? {id: 'admin'} : null}})}, from(table) {
     const query = {select: () => query, eq: () => query, maybeSingle: async () => ({data: {id: 'admin'}}),
-      update: () => query, insert: () => query, delete: () => query, upsert: () => query,
+      update: data => {writes.push({table,data});return query;}, insert: data => {writes.push({table,data});return query;}, delete: () => query, upsert: data => {writes.push({table,data});return query;},
       single: async () => result, then: (resolve) => Promise.resolve(table === 'admin_users' ? {data: {id: 'admin'}} : result).then(resolve)};
     return query;
   }};
@@ -26,7 +27,7 @@ function load({authorized = true, fail = false} = {}) {
     return require(name);
   }};
   vm.runInNewContext(ts.transpileModule(readFileSync('src/app/dashboard/crud-actions.ts','utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020}}).outputText, context);
-  return {actions: context.exports, calls};
+  return {actions: context.exports, calls, writes};
 }
 for (const action of ['upsertRow', 'deleteRow', 'saveSettings']) {
   const args = action === 'upsertRow' ? ['policies', {title: 'Updated'}, 'existing'] : action === 'deleteRow' ? ['policies', 'existing'] : [{site_name: 'Mistravora'}];
@@ -49,4 +50,18 @@ test('image fields accept external HTTPS links and reject executable URLs', asyn
   for (const url of ['javascript:alert(1)', 'data:image/svg+xml,unsafe', 'https://user:password@example.com/image.jpg']) {
     assert.ok((await actions.upsertRow('team_members', {photo:url}, 'existing')).error);
   }
+});
+
+test('public project links save and clear without requiring a project-table column', async () => {
+  for(const website_url of ['https://example.com/project', '']) {
+    const {actions,writes} = load();
+    const result = await actions.upsertRow('case_studies', {title:'Project',website_url}, 'project-id');
+    assert.equal(result.error,null);
+    assert.equal('website_url' in writes.find(row=>row.table==='case_studies').data,false);
+    assert.equal(writes.find(row=>row.table==='settings').data.key,'project_public_link:project-id');
+    assert.equal(writes.find(row=>row.table==='settings').data.value,website_url);
+  }
+  const {actions,writes}=load();
+  assert.ok((await actions.upsertRow('case_studies',{website_url:'javascript:alert(1)'},'id')).error);
+  assert.equal(writes.length,0);
 });
