@@ -1,3 +1,4 @@
+import { RequirementAdminSummary } from "@/components/requirements/admin-summary";
 import type { Metadata } from "next";
 import { getInquiries } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
@@ -62,6 +63,7 @@ export default async function InquiriesAdminPage() {
         </div>
       </div>
 
+      <section aria-label="Project requirement submissions" className="space-y-3">{inquiries.map(inquiry => <RequirementAdminSummary key={inquiry.id} id={inquiry.id} message={inquiry.message} />)}</section>
       <CrudManager
         table="inquiries"
         columns={columns}

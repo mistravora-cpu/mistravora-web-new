@@ -1,0 +1,3438 @@
+{
+  "version": "2026-09-v1",
+  "minimum": 120000,
+  "rounding": 5000,
+  "rangeLow": 0.9,
+  "rangeHigh": 1.1,
+  "advancePercent": 30,
+  "notice": "This preliminary estimate is based on your selected requirements and is for planning only. Final pricing and delivery dates are confirmed after Mistravora reviews and agrees the complete scope. A 30% advance of the agreed project price is required before work begins.",
+  "exclusions": [
+    "Hosting, domains and third-party subscriptions are separate.",
+    "Payment gateway, SMS, WhatsApp, AI/API usage and app-store charges are separate.",
+    "Hardware, licences, taxes and content/translation work require scope confirmation unless expressly included.",
+    "Delivery begins after scope approval, the 30% advance, and receipt of required access/content."
+  ],
+  "projectTypes": [
+    {
+      "id": "website",
+      "label": "Business / Marketing Website",
+      "description": "Company pages, content and enquiries",
+      "category": "Website",
+      "useCases": "Services, portfolios, lead generation",
+      "base": 120000,
+      "included": [],
+      "optional": [
+        "cms",
+        "blog",
+        "booking",
+        "search",
+        "multilingual",
+        "seo",
+        "analytics",
+        "email",
+        "ai",
+        "integration",
+        "pwa"
+      ],
+      "weeks": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "ecommerce",
+      "label": "E-commerce Store",
+      "description": "Product catalogue, cart, basic checkout and order management",
+      "category": "Commerce",
+      "useCases": "Retail and direct sales",
+      "base": 220000,
+      "included": [
+        "admin"
+      ],
+      "optional": [
+        "inventory",
+        "payments",
+        "booking",
+        "rbac",
+        "reports",
+        "marketplace",
+        "search",
+        "multilingual",
+        "email",
+        "messaging",
+        "ai",
+        "integration",
+        "pwa"
+      ],
+      "weeks": [
+        5,
+        8
+      ]
+    },
+    {
+      "id": "webapp",
+      "label": "Web Application / Client Portal",
+      "description": "Secure dashboards, portals and online workflows",
+      "category": "Platform",
+      "useCases": "Customer portals and SaaS",
+      "base": 350000,
+      "included": [],
+      "optional": [
+        "auth",
+        "rbac",
+        "admin",
+        "portal",
+        "payments",
+        "reports",
+        "booking",
+        "email",
+        "messaging",
+        "ai",
+        "search",
+        "integration",
+        "pwa",
+        "realtime",
+        "workflow",
+        "documents",
+        "migration"
+      ],
+      "weeks": [
+        8,
+        12
+      ]
+    },
+    {
+      "id": "pos",
+      "label": "POS / Inventory System",
+      "description": "Basic POS and inventory operations",
+      "category": "Operations",
+      "useCases": "Shops and branch operations",
+      "base": 300000,
+      "included": [
+        "pos",
+        "inventory"
+      ],
+      "optional": [
+        "reports",
+        "rbac",
+        "crm",
+        "suppliers",
+        "purchases",
+        "offline",
+        "integration",
+        "email",
+        "messaging",
+        "migration"
+      ],
+      "weeks": [
+        6,
+        10
+      ]
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile Application",
+      "description": "Customer or staff applications for Android and iOS",
+      "category": "Mobile",
+      "useCases": "Mobile services and field teams",
+      "base": 400000,
+      "included": [],
+      "optional": [
+        "auth",
+        "admin",
+        "payments",
+        "maps",
+        "realtime",
+        "offline",
+        "ai",
+        "integration",
+        "email"
+      ],
+      "weeks": [
+        10,
+        16
+      ]
+    },
+    {
+      "id": "custom",
+      "label": "Custom Business Software",
+      "description": "Connected modules tailored to your business",
+      "category": "Business systems",
+      "useCases": "CRM, HR, finance and workflow automation",
+      "base": 500000,
+      "included": [],
+      "optional": [
+        "cms",
+        "auth",
+        "rbac",
+        "admin",
+        "portal",
+        "inventory",
+        "pos",
+        "reports",
+        "booking",
+        "payments",
+        "email",
+        "messaging",
+        "ai",
+        "search",
+        "multilingual",
+        "pwa",
+        "integration",
+        "maps",
+        "analytics",
+        "marketplace",
+        "realtime",
+        "offline",
+        "migration",
+        "workflow",
+        "crm",
+        "hr",
+        "payroll",
+        "finance",
+        "sales",
+        "purchases",
+        "suppliers",
+        "projects",
+        "tasks",
+        "documents"
+      ],
+      "weeks": [
+        10,
+        18
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "cms",
+      "label": "CMS / admin content management",
+      "price": 30000,
+      "score": 1,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "blog",
+      "label": "Blog / SEO content system",
+      "price": 25000,
+      "score": 1,
+      "weeks": 0.5,
+      "dependencies": [
+        "cms"
+      ]
+    },
+    {
+      "id": "auth",
+      "label": "Authentication",
+      "price": 40000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "rbac",
+      "label": "Role-based access",
+      "price": 40000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": [
+        "auth"
+      ]
+    },
+    {
+      "id": "admin",
+      "label": "Admin dashboard",
+      "price": 70000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "portal",
+      "label": "Customer portal",
+      "price": 90000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": [
+        "auth"
+      ]
+    },
+    {
+      "id": "inventory",
+      "label": "Inventory",
+      "price": 75000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "pos",
+      "label": "POS",
+      "price": 80000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "reports",
+      "label": "Reports & analytics",
+      "price": 50000,
+      "score": 3,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "booking",
+      "label": "Booking",
+      "price": 65000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "payments",
+      "label": "Payment integration",
+      "price": 45000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "email",
+      "label": "Email notifications",
+      "price": 25000,
+      "score": 1,
+      "weeks": 0.25,
+      "dependencies": []
+    },
+    {
+      "id": "messaging",
+      "label": "SMS / WhatsApp",
+      "price": 40000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "ai",
+      "label": "AI features (starting)",
+      "price": 80000,
+      "score": 4,
+      "weeks": 2,
+      "dependencies": []
+    },
+    {
+      "id": "search",
+      "label": "Advanced search",
+      "price": 35000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "multilingual",
+      "label": "Multilingual",
+      "price": 45000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "pwa",
+      "label": "Progressive web app",
+      "price": 45000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "integration",
+      "label": "Third-party integration (starting)",
+      "price": 50000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "maps",
+      "label": "Maps / location",
+      "price": 35000,
+      "score": 2,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "seo",
+      "label": "Advanced technical SEO",
+      "price": 30000,
+      "score": 1,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "analytics",
+      "label": "Analytics",
+      "price": 20000,
+      "score": 1,
+      "weeks": 0.25,
+      "dependencies": []
+    },
+    {
+      "id": "marketplace",
+      "label": "Multi-vendor marketplace",
+      "price": 120000,
+      "score": 3,
+      "weeks": 2,
+      "dependencies": [
+        "auth",
+        "admin",
+        "rbac"
+      ]
+    },
+    {
+      "id": "realtime",
+      "label": "Real-time functionality",
+      "price": 60000,
+      "score": 3,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "offline",
+      "label": "Offline synchronization",
+      "price": 70000,
+      "score": 3,
+      "weeks": 1.5,
+      "dependencies": []
+    },
+    {
+      "id": "migration",
+      "label": "Data migration",
+      "price": 50000,
+      "score": 3,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "workflow",
+      "label": "Custom approval workflows",
+      "price": 60000,
+      "score": 4,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "crm",
+      "label": "CRM",
+      "price": 90000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "hr",
+      "label": "Human resources",
+      "price": 90000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "payroll",
+      "label": "Payroll",
+      "price": 80000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "finance",
+      "label": "Finance",
+      "price": 100000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "sales",
+      "label": "Sales",
+      "price": 65000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "purchases",
+      "label": "Purchases",
+      "price": 65000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "suppliers",
+      "label": "Suppliers",
+      "price": 40000,
+      "score": 1,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "projects",
+      "label": "Project management",
+      "price": 80000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    },
+    {
+      "id": "tasks",
+      "label": "Task management",
+      "price": 40000,
+      "score": 1,
+      "weeks": 0.5,
+      "dependencies": []
+    },
+    {
+      "id": "documents",
+      "label": "Document management",
+      "price": 55000,
+      "score": 2,
+      "weeks": 1,
+      "dependencies": []
+    }
+  ],
+  "questions": [
+    {
+      "id": "project_name",
+      "label": "Project / business name",
+      "type": "text",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "organization",
+      "label": "Business / organization name",
+      "type": "text",
+      "projects": [],
+      "group": "Business overview",
+      "required": false
+    },
+    {
+      "id": "industry",
+      "label": "Industry",
+      "type": "text",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "country",
+      "label": "Country / location",
+      "type": "text",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "description",
+      "label": "Briefly describe the project",
+      "type": "textarea",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "problem",
+      "label": "What problem are you trying to solve?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "audience",
+      "label": "Who will use this system?",
+      "type": "text",
+      "projects": [],
+      "group": "Business overview",
+      "required": true
+    },
+    {
+      "id": "objective",
+      "label": "Primary business objective",
+      "type": "single",
+      "projects": [],
+      "group": "Business overview",
+      "required": true,
+      "options": [
+        {
+          "id": "Generate leads",
+          "label": "Generate leads"
+        },
+        {
+          "id": "Sell products",
+          "label": "Sell products"
+        },
+        {
+          "id": "Manage operations",
+          "label": "Manage operations"
+        },
+        {
+          "id": "Automate processes",
+          "label": "Automate processes"
+        },
+        {
+          "id": "Serve customers",
+          "label": "Serve customers"
+        },
+        {
+          "id": "Manage staff",
+          "label": "Manage staff"
+        },
+        {
+          "id": "Improve existing system",
+          "label": "Improve existing system"
+        },
+        {
+          "id": "Launch new digital product",
+          "label": "Launch new digital product"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "project_state",
+      "label": "Is this a new project or a change?",
+      "type": "single",
+      "projects": [],
+      "group": "Business overview",
+      "options": [
+        {
+          "id": "New project",
+          "label": "New project"
+        },
+        {
+          "id": "Rebuild",
+          "label": "Rebuild"
+        },
+        {
+          "id": "Upgrade",
+          "label": "Upgrade"
+        },
+        {
+          "id": "Replacement of existing software",
+          "label": "Replacement of existing software"
+        }
+      ]
+    },
+    {
+      "id": "existing_url",
+      "label": "Existing website / system URL, if applicable",
+      "type": "url",
+      "projects": [],
+      "group": "Business overview"
+    },
+    {
+      "id": "launch_date",
+      "label": "Expected launch date",
+      "type": "date",
+      "projects": [],
+      "group": "Business overview"
+    },
+    {
+      "id": "budget",
+      "label": "Approximate budget (does not change the estimate)",
+      "type": "single",
+      "projects": [],
+      "group": "Business overview",
+      "options": [
+        {
+          "id": "Under LKR 200K",
+          "label": "Under LKR 200K"
+        },
+        {
+          "id": "LKR 200K–500K",
+          "label": "LKR 200K–500K"
+        },
+        {
+          "id": "LKR 500K–1M",
+          "label": "LKR 500K–1M"
+        },
+        {
+          "id": "LKR 1M–2M",
+          "label": "LKR 1M–2M"
+        },
+        {
+          "id": "LKR 2M+",
+          "label": "LKR 2M+"
+        },
+        {
+          "id": "Not sure yet",
+          "label": "Not sure yet"
+        }
+      ]
+    },
+    {
+      "id": "pages",
+      "label": "Number of pages",
+      "type": "single",
+      "projects": [
+        "website"
+      ],
+      "group": "Website structure",
+      "options": [
+        {
+          "id": "1–5",
+          "label": "1–5",
+          "score": 0,
+          "scale": 1
+        },
+        {
+          "id": "6–10",
+          "label": "6–10",
+          "score": 1,
+          "scale": 1.08
+        },
+        {
+          "id": "11–20",
+          "label": "11–20",
+          "score": 2,
+          "scale": 1.15
+        },
+        {
+          "id": "20+",
+          "label": "20+",
+          "score": 3,
+          "scale": 1.15
+        }
+      ]
+    },
+    {
+      "id": "page_types",
+      "label": "Required pages",
+      "type": "multi",
+      "projects": [
+        "website"
+      ],
+      "group": "Website structure",
+      "options": [
+        {
+          "id": "Home",
+          "label": "Home"
+        },
+        {
+          "id": "About",
+          "label": "About"
+        },
+        {
+          "id": "Services",
+          "label": "Services"
+        },
+        {
+          "id": "Products",
+          "label": "Products"
+        },
+        {
+          "id": "Industries",
+          "label": "Industries"
+        },
+        {
+          "id": "Projects / Portfolio",
+          "label": "Projects / Portfolio"
+        },
+        {
+          "id": "Team",
+          "label": "Team"
+        },
+        {
+          "id": "Careers",
+          "label": "Careers"
+        },
+        {
+          "id": "Contact",
+          "label": "Contact"
+        },
+        {
+          "id": "Blog",
+          "label": "Blog"
+        },
+        {
+          "id": "Research / Insights",
+          "label": "Research / Insights"
+        },
+        {
+          "id": "FAQ",
+          "label": "FAQ"
+        },
+        {
+          "id": "Custom pages",
+          "label": "Custom pages"
+        }
+      ]
+    },
+    {
+      "id": "content",
+      "label": "Content responsibility",
+      "type": "single",
+      "projects": [
+        "website"
+      ],
+      "group": "Website structure",
+      "options": [
+        {
+          "id": "Client provides all",
+          "label": "Client provides all"
+        },
+        {
+          "id": "Mistravora helps structure content",
+          "label": "Mistravora helps structure content"
+        },
+        {
+          "id": "Content writing required",
+          "label": "Content writing required"
+        }
+      ]
+    },
+    {
+      "id": "cms_required",
+      "label": "CMS required?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "cms"
+    },
+    {
+      "id": "blog_required",
+      "label": "Blog / article system?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "blog"
+    },
+    {
+      "id": "contact_form",
+      "label": "Contact / enquiry form?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "score": 1
+    },
+    {
+      "id": "booking_required",
+      "label": "Booking / consultation?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "booking"
+    },
+    {
+      "id": "search_required",
+      "label": "Advanced search?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "search"
+    },
+    {
+      "id": "multilingual_required",
+      "label": "Multilingual?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "multilingual"
+    },
+    {
+      "id": "seo_required",
+      "label": "Advanced SEO?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "seo"
+    },
+    {
+      "id": "schema",
+      "label": "Schema / structured data?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "score": 1
+    },
+    {
+      "id": "analytics_required",
+      "label": "Analytics?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "analytics"
+    },
+    {
+      "id": "newsletter",
+      "label": "Newsletter?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "email"
+    },
+    {
+      "id": "chatbot",
+      "label": "AI chatbot?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "ai"
+    },
+    {
+      "id": "integration_required",
+      "label": "External integrations?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "feature": "integration"
+    },
+    {
+      "id": "domain",
+      "label": "Existing domain?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "score": 0
+    },
+    {
+      "id": "hosting",
+      "label": "Existing hosting?",
+      "type": "boolean",
+      "projects": [
+        "website"
+      ],
+      "group": "Website capabilities",
+      "score": 0
+    },
+    {
+      "id": "products",
+      "label": "Approximate number of products",
+      "type": "single",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store setup",
+      "options": [
+        {
+          "id": "Under 50",
+          "label": "Under 50",
+          "scale": 1,
+          "manual": false
+        },
+        {
+          "id": "50–250",
+          "label": "50–250",
+          "scale": 1.08,
+          "manual": false
+        },
+        {
+          "id": "250–1,000",
+          "label": "250–1,000",
+          "scale": 1.15,
+          "manual": false
+        },
+        {
+          "id": "1,000+",
+          "label": "1,000+",
+          "scale": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "product_type",
+      "label": "Product types",
+      "type": "single",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store setup",
+      "options": [
+        {
+          "id": "Physical",
+          "label": "Physical"
+        },
+        {
+          "id": "Digital",
+          "label": "Digital"
+        },
+        {
+          "id": "Services",
+          "label": "Services"
+        },
+        {
+          "id": "Mixed",
+          "label": "Mixed"
+        }
+      ]
+    },
+    {
+      "id": "variants",
+      "label": "Product variants?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "inventory_required",
+      "label": "Inventory management?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "inventory"
+    },
+    {
+      "id": "stock_alerts",
+      "label": "Low-stock alerts?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "expiry",
+      "label": "Expiry tracking?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "warehouses",
+      "label": "Multiple warehouses / branches?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 3,
+      "scale": 1.08
+    },
+    {
+      "id": "payments_required",
+      "label": "Online payments?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "payments"
+    },
+    {
+      "id": "cod",
+      "label": "Cash on delivery?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "delivery",
+      "label": "Delivery integration?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "integration"
+    },
+    {
+      "id": "orders",
+      "label": "Order management?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 0
+    },
+    {
+      "id": "accounts",
+      "label": "Customer accounts?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "auth"
+    },
+    {
+      "id": "guest",
+      "label": "Guest checkout?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 0
+    },
+    {
+      "id": "coupons",
+      "label": "Coupons / discounts?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "loyalty",
+      "label": "Loyalty system?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "wishlist",
+      "label": "Wishlists?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "reviews",
+      "label": "Product reviews?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "store_search",
+      "label": "Advanced search / filters?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "search"
+    },
+    {
+      "id": "tax",
+      "label": "Tax calculation?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "invoices",
+      "label": "Invoice generation?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "score": 1
+    },
+    {
+      "id": "store_reports",
+      "label": "Sales reporting?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "reports"
+    },
+    {
+      "id": "store_admin",
+      "label": "Admin dashboard?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "admin"
+    },
+    {
+      "id": "store_roles",
+      "label": "Role-based access?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "rbac"
+    },
+    {
+      "id": "marketplace_required",
+      "label": "Marketplace / multiple vendors?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Store operations",
+      "feature": "marketplace"
+    },
+    {
+      "id": "vendor_registration",
+      "label": "Vendor registration?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "vendor_dashboard",
+      "label": "Vendor dashboard?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "vendor_approval",
+      "label": "Vendor approval?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "commission",
+      "label": "Commission management?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "payouts",
+      "label": "Vendor payouts?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "vendor_products",
+      "label": "Vendor products?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "vendor_reports",
+      "label": "Vendor reports?",
+      "type": "boolean",
+      "projects": [
+        "ecommerce"
+      ],
+      "group": "Marketplace",
+      "when": {
+        "field": "marketplace_required",
+        "value": true
+      },
+      "score": 1
+    },
+    {
+      "id": "application_type",
+      "label": "Primary application type",
+      "type": "single",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application setup",
+      "options": [
+        {
+          "id": "Customer portal",
+          "label": "Customer portal"
+        },
+        {
+          "id": "Staff portal",
+          "label": "Staff portal"
+        },
+        {
+          "id": "Management platform",
+          "label": "Management platform"
+        },
+        {
+          "id": "SaaS product",
+          "label": "SaaS product"
+        },
+        {
+          "id": "Marketplace",
+          "label": "Marketplace",
+          "features": [
+            "marketplace"
+          ]
+        },
+        {
+          "id": "Booking platform",
+          "label": "Booking platform"
+        },
+        {
+          "id": "Internal application",
+          "label": "Internal application"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "roles",
+      "label": "User types / roles",
+      "type": "text",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application setup"
+    },
+    {
+      "id": "users",
+      "label": "Approximate users",
+      "type": "single",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application setup",
+      "options": [
+        {
+          "id": "Under 100",
+          "label": "Under 100",
+          "scale": 1,
+          "manual": false
+        },
+        {
+          "id": "100–1,000",
+          "label": "100–1,000",
+          "scale": 1.08,
+          "manual": false
+        },
+        {
+          "id": "1,000–10,000",
+          "label": "1,000–10,000",
+          "scale": 1.15,
+          "manual": false
+        },
+        {
+          "id": "10,000+",
+          "label": "10,000+",
+          "scale": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "authentication",
+      "label": "Authentication methods",
+      "type": "multi",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application setup",
+      "options": [
+        {
+          "id": "Email/password",
+          "label": "Email/password",
+          "features": [
+            "auth"
+          ]
+        },
+        {
+          "id": "Google",
+          "label": "Google",
+          "features": [
+            "auth"
+          ]
+        },
+        {
+          "id": "Microsoft",
+          "label": "Microsoft",
+          "features": [
+            "auth"
+          ]
+        },
+        {
+          "id": "Phone OTP",
+          "label": "Phone OTP",
+          "features": [
+            "auth"
+          ]
+        },
+        {
+          "id": "Other",
+          "label": "Other",
+          "features": [
+            "auth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "notifications",
+      "label": "Notifications",
+      "type": "multi",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "options": [
+        {
+          "id": "Email",
+          "label": "Email",
+          "features": [
+            "email"
+          ]
+        },
+        {
+          "id": "SMS",
+          "label": "SMS",
+          "features": [
+            "messaging"
+          ]
+        },
+        {
+          "id": "WhatsApp",
+          "label": "WhatsApp",
+          "features": [
+            "messaging"
+          ]
+        },
+        {
+          "id": "Push",
+          "label": "Push",
+          "features": [
+            "realtime"
+          ]
+        },
+        {
+          "id": "In-app",
+          "label": "In-app",
+          "features": [
+            "realtime"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web_roles",
+      "label": "Role-based access?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "rbac"
+    },
+    {
+      "id": "web_admin",
+      "label": "Admin dashboard?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "admin"
+    },
+    {
+      "id": "web_portal",
+      "label": "User dashboard?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "portal"
+    },
+    {
+      "id": "file_upload",
+      "label": "File uploads?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "score": 1
+    },
+    {
+      "id": "document_management",
+      "label": "Document management?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "documents"
+    },
+    {
+      "id": "web_payments",
+      "label": "Payments?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "payments"
+    },
+    {
+      "id": "subscriptions",
+      "label": "Subscriptions?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "payments"
+    },
+    {
+      "id": "web_booking",
+      "label": "Booking?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "booking"
+    },
+    {
+      "id": "web_reports",
+      "label": "Reports?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "reports"
+    },
+    {
+      "id": "charts",
+      "label": "Charts / dashboards?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "reports"
+    },
+    {
+      "id": "web_search",
+      "label": "Advanced search / filter?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "search"
+    },
+    {
+      "id": "approvals",
+      "label": "Approval workflows?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "workflow"
+    },
+    {
+      "id": "audit",
+      "label": "Audit logs?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "score": 1
+    },
+    {
+      "id": "web_integrations",
+      "label": "API integrations?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "integration"
+    },
+    {
+      "id": "realtime_required",
+      "label": "Real-time functionality?",
+      "type": "boolean",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "feature": "realtime"
+    },
+    {
+      "id": "export",
+      "label": "Export formats",
+      "type": "multi",
+      "projects": [
+        "webapp"
+      ],
+      "group": "Application capabilities",
+      "options": [
+        {
+          "id": "PDF",
+          "label": "PDF"
+        },
+        {
+          "id": "Excel",
+          "label": "Excel"
+        },
+        {
+          "id": "CSV",
+          "label": "CSV"
+        },
+        {
+          "id": "None",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "id": "pos_business",
+      "label": "Business type",
+      "type": "single",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS setup",
+      "options": [
+        {
+          "id": "Retail",
+          "label": "Retail"
+        },
+        {
+          "id": "Restaurant",
+          "label": "Restaurant"
+        },
+        {
+          "id": "Automotive",
+          "label": "Automotive"
+        },
+        {
+          "id": "Pharmacy",
+          "label": "Pharmacy"
+        },
+        {
+          "id": "Jewellery",
+          "label": "Jewellery"
+        },
+        {
+          "id": "Grocery",
+          "label": "Grocery"
+        },
+        {
+          "id": "Wholesale",
+          "label": "Wholesale"
+        },
+        {
+          "id": "Service business",
+          "label": "Service business"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "branches",
+      "label": "Number of branches",
+      "type": "single",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS setup",
+      "options": [
+        {
+          "id": "1",
+          "label": "1"
+        },
+        {
+          "id": "2–5",
+          "label": "2–5",
+          "score": 3,
+          "scale": 1.08
+        },
+        {
+          "id": "6+",
+          "label": "6+",
+          "score": 3,
+          "scale": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "terminals",
+      "label": "Number of POS terminals",
+      "type": "number",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS setup",
+      "scaleThresholds": [
+        {
+          "at": 5,
+          "multiplier": 1.08
+        },
+        {
+          "at": 20,
+          "multiplier": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "staff",
+      "label": "Number of staff / users",
+      "type": "number",
+      "projects": [
+        "pos",
+        "custom"
+      ],
+      "group": "People and scale",
+      "scaleThresholds": [
+        {
+          "at": 100,
+          "multiplier": 1.08
+        },
+        {
+          "at": 1000,
+          "multiplier": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "pos_inventory",
+      "label": "Inventory management?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "inventory"
+    },
+    {
+      "id": "barcode",
+      "label": "Barcode support?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "pos_variants",
+      "label": "Product variants?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "transfers",
+      "label": "Stock transfers?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "pos_suppliers",
+      "label": "Supplier management?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "suppliers"
+    },
+    {
+      "id": "purchase_orders",
+      "label": "Purchase orders?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "purchases"
+    },
+    {
+      "id": "pos_expiry",
+      "label": "Expiry tracking?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "batches",
+      "label": "Batch tracking?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "serials",
+      "label": "Serial number tracking?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "pos_alerts",
+      "label": "Low-stock alerts?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "units",
+      "label": "Measurements / units?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "quantity_limits",
+      "label": "Special quantity limits?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "sales_history",
+      "label": "Sales history?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "returns",
+      "label": "Returns / refunds?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "discounts",
+      "label": "Discounts?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "customers",
+      "label": "Customer management?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "crm"
+    },
+    {
+      "id": "credit",
+      "label": "Credit sales?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "receipt",
+      "label": "Invoice / receipt printing?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "printer",
+      "label": "Thermal printer integration?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "cash_drawer",
+      "label": "Cash drawer?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "pos_rbac",
+      "label": "Role-based access?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "rbac"
+    },
+    {
+      "id": "pos_audit",
+      "label": "Audit logs?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "score": 1
+    },
+    {
+      "id": "branch_sync",
+      "label": "Multiple branch synchronization?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "realtime"
+    },
+    {
+      "id": "pos_offline",
+      "label": "Offline capability?",
+      "type": "boolean",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "feature": "offline"
+    },
+    {
+      "id": "pos_reports",
+      "label": "Reports required",
+      "type": "multi",
+      "projects": [
+        "pos"
+      ],
+      "group": "POS capabilities",
+      "options": [
+        {
+          "id": "Sales",
+          "label": "Sales",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Profit",
+          "label": "Profit",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Inventory",
+          "label": "Inventory",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Expenses",
+          "label": "Expenses",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Staff",
+          "label": "Staff",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Products",
+          "label": "Products",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Suppliers",
+          "label": "Suppliers",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "Custom",
+          "label": "Custom",
+          "features": [
+            "reports"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform",
+      "label": "Platforms",
+      "type": "single",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile setup",
+      "options": [
+        {
+          "id": "Android",
+          "label": "Android"
+        },
+        {
+          "id": "iOS",
+          "label": "iOS"
+        },
+        {
+          "id": "Both",
+          "label": "Both",
+          "score": 2,
+          "scale": 1.08
+        }
+      ]
+    },
+    {
+      "id": "mobile_type",
+      "label": "Application type",
+      "type": "single",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile setup",
+      "options": [
+        {
+          "id": "Customer app",
+          "label": "Customer app"
+        },
+        {
+          "id": "Marketplace",
+          "label": "Marketplace",
+          "features": [
+            "marketplace"
+          ]
+        },
+        {
+          "id": "E-commerce",
+          "label": "E-commerce"
+        },
+        {
+          "id": "Booking",
+          "label": "Booking"
+        },
+        {
+          "id": "Business management",
+          "label": "Business management"
+        },
+        {
+          "id": "Delivery",
+          "label": "Delivery"
+        },
+        {
+          "id": "Social/community",
+          "label": "Social/community"
+        },
+        {
+          "id": "Service application",
+          "label": "Service application"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "mobile_auth",
+      "label": "Authentication?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "auth"
+    },
+    {
+      "id": "profiles",
+      "label": "User profiles?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "score": 1
+    },
+    {
+      "id": "backend",
+      "label": "Admin backend required?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "admin"
+    },
+    {
+      "id": "push",
+      "label": "Push notifications?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "realtime"
+    },
+    {
+      "id": "gps",
+      "label": "Location / GPS?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "maps"
+    },
+    {
+      "id": "mobile_maps",
+      "label": "Maps?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "maps"
+    },
+    {
+      "id": "camera",
+      "label": "Camera?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "score": 1
+    },
+    {
+      "id": "mobile_files",
+      "label": "File uploads?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "score": 1
+    },
+    {
+      "id": "mobile_payments",
+      "label": "Payments?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "payments"
+    },
+    {
+      "id": "chat",
+      "label": "Chat / messaging?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "realtime"
+    },
+    {
+      "id": "tracking",
+      "label": "Real-time tracking?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "realtime"
+    },
+    {
+      "id": "mobile_offline",
+      "label": "Offline functionality?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "offline"
+    },
+    {
+      "id": "biometric",
+      "label": "Biometric login?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "auth"
+    },
+    {
+      "id": "qr",
+      "label": "QR / barcode scanning?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "score": 1
+    },
+    {
+      "id": "social_login",
+      "label": "Social login?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "auth"
+    },
+    {
+      "id": "mobile_api",
+      "label": "External APIs?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "feature": "integration"
+    },
+    {
+      "id": "app_store",
+      "label": "App Store / Play Store deployment support?",
+      "type": "boolean",
+      "projects": [
+        "mobile"
+      ],
+      "group": "Mobile capabilities",
+      "score": 1
+    },
+    {
+      "id": "manual_process",
+      "label": "What process is currently managed manually?",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business processes",
+      "required": true
+    },
+    {
+      "id": "current_tools",
+      "label": "Current tools",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business processes",
+      "options": [
+        {
+          "id": "Excel",
+          "label": "Excel"
+        },
+        {
+          "id": "Google Sheets",
+          "label": "Google Sheets"
+        },
+        {
+          "id": "Paper",
+          "label": "Paper"
+        },
+        {
+          "id": "WhatsApp",
+          "label": "WhatsApp"
+        },
+        {
+          "id": "Existing software",
+          "label": "Existing software"
+        },
+        {
+          "id": "Multiple systems",
+          "label": "Multiple systems"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "departments",
+      "label": "Main departments involved",
+      "type": "text",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business processes"
+    },
+    {
+      "id": "role_count",
+      "label": "Number of user roles",
+      "type": "number",
+      "projects": [
+        "custom"
+      ],
+      "group": "People and scale"
+    },
+    {
+      "id": "modules",
+      "label": "Primary modules needed",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business processes",
+      "options": [
+        {
+          "id": "crm",
+          "label": "CRM",
+          "features": [
+            "crm"
+          ]
+        },
+        {
+          "id": "inventory",
+          "label": "Inventory",
+          "features": [
+            "inventory"
+          ]
+        },
+        {
+          "id": "pos",
+          "label": "POS",
+          "features": [
+            "pos"
+          ]
+        },
+        {
+          "id": "hr",
+          "label": "Human resources",
+          "features": [
+            "hr"
+          ]
+        },
+        {
+          "id": "payroll",
+          "label": "Payroll",
+          "features": [
+            "payroll"
+          ]
+        },
+        {
+          "id": "finance",
+          "label": "Finance",
+          "features": [
+            "finance"
+          ]
+        },
+        {
+          "id": "sales",
+          "label": "Sales",
+          "features": [
+            "sales"
+          ]
+        },
+        {
+          "id": "purchases",
+          "label": "Purchases",
+          "features": [
+            "purchases"
+          ]
+        },
+        {
+          "id": "suppliers",
+          "label": "Suppliers",
+          "features": [
+            "suppliers"
+          ]
+        },
+        {
+          "id": "projects",
+          "label": "Project management",
+          "features": [
+            "projects"
+          ]
+        },
+        {
+          "id": "tasks",
+          "label": "Task management",
+          "features": [
+            "tasks"
+          ]
+        },
+        {
+          "id": "documents",
+          "label": "Document management",
+          "features": [
+            "documents"
+          ]
+        },
+        {
+          "id": "booking",
+          "label": "Booking",
+          "features": [
+            "booking"
+          ]
+        },
+        {
+          "id": "portal",
+          "label": "Customer portal",
+          "features": [
+            "portal"
+          ]
+        },
+        {
+          "id": "reports",
+          "label": "Reports & analytics",
+          "features": [
+            "reports"
+          ]
+        },
+        {
+          "id": "analytics",
+          "label": "Analytics",
+          "features": [
+            "analytics"
+          ]
+        },
+        {
+          "id": "workflow",
+          "label": "Custom approval workflows",
+          "features": [
+            "workflow"
+          ]
+        },
+        {
+          "id": "other",
+          "label": "Other"
+        }
+      ],
+      "scaleThresholds": [
+        {
+          "at": 5,
+          "multiplier": 1.08
+        },
+        {
+          "at": 9,
+          "multiplier": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "module_crm",
+      "label": "Required crm capabilities",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "crm"
+      },
+      "options": [
+        {
+          "id": "Leads",
+          "label": "Leads"
+        },
+        {
+          "id": "Customers",
+          "label": "Customers"
+        },
+        {
+          "id": "Pipeline",
+          "label": "Pipeline"
+        },
+        {
+          "id": "Follow-ups",
+          "label": "Follow-ups"
+        },
+        {
+          "id": "Notes",
+          "label": "Notes"
+        },
+        {
+          "id": "Tasks",
+          "label": "Tasks"
+        },
+        {
+          "id": "Quotations",
+          "label": "Quotations"
+        },
+        {
+          "id": "Communication history",
+          "label": "Communication history"
+        }
+      ]
+    },
+    {
+      "id": "module_inventory",
+      "label": "Required inventory capabilities",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "inventory"
+      },
+      "options": [
+        {
+          "id": "Stock locations",
+          "label": "Stock locations"
+        },
+        {
+          "id": "Transfers",
+          "label": "Transfers"
+        },
+        {
+          "id": "Batches",
+          "label": "Batches"
+        },
+        {
+          "id": "Expiry",
+          "label": "Expiry"
+        },
+        {
+          "id": "Serial numbers",
+          "label": "Serial numbers"
+        },
+        {
+          "id": "Suppliers",
+          "label": "Suppliers"
+        },
+        {
+          "id": "Purchases",
+          "label": "Purchases"
+        },
+        {
+          "id": "Alerts",
+          "label": "Alerts"
+        }
+      ]
+    },
+    {
+      "id": "module_pos",
+      "label": "Required pos capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "pos"
+      }
+    },
+    {
+      "id": "module_hr",
+      "label": "Required hr capabilities",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "hr"
+      },
+      "options": [
+        {
+          "id": "Employees",
+          "label": "Employees"
+        },
+        {
+          "id": "Attendance",
+          "label": "Attendance"
+        },
+        {
+          "id": "Leave",
+          "label": "Leave"
+        },
+        {
+          "id": "Payroll",
+          "label": "Payroll"
+        },
+        {
+          "id": "Performance",
+          "label": "Performance"
+        },
+        {
+          "id": "Documents",
+          "label": "Documents"
+        }
+      ]
+    },
+    {
+      "id": "module_payroll",
+      "label": "Required payroll capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "payroll"
+      }
+    },
+    {
+      "id": "module_finance",
+      "label": "Required finance capabilities",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "finance"
+      },
+      "options": [
+        {
+          "id": "Expenses",
+          "label": "Expenses"
+        },
+        {
+          "id": "Income",
+          "label": "Income"
+        },
+        {
+          "id": "Invoices",
+          "label": "Invoices"
+        },
+        {
+          "id": "Payments",
+          "label": "Payments"
+        },
+        {
+          "id": "Reports",
+          "label": "Reports"
+        },
+        {
+          "id": "Tax requirements",
+          "label": "Tax requirements"
+        }
+      ]
+    },
+    {
+      "id": "module_sales",
+      "label": "Required sales capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "sales"
+      }
+    },
+    {
+      "id": "module_purchases",
+      "label": "Required purchases capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "purchases"
+      }
+    },
+    {
+      "id": "module_suppliers",
+      "label": "Required suppliers capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "suppliers"
+      }
+    },
+    {
+      "id": "module_projects",
+      "label": "Required projects capabilities",
+      "type": "multi",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "projects"
+      },
+      "options": [
+        {
+          "id": "Projects",
+          "label": "Projects"
+        },
+        {
+          "id": "Tasks",
+          "label": "Tasks"
+        },
+        {
+          "id": "Assignments",
+          "label": "Assignments"
+        },
+        {
+          "id": "Deadlines",
+          "label": "Deadlines"
+        },
+        {
+          "id": "Statuses",
+          "label": "Statuses"
+        },
+        {
+          "id": "Attachments",
+          "label": "Attachments"
+        },
+        {
+          "id": "Comments",
+          "label": "Comments"
+        },
+        {
+          "id": "Reports",
+          "label": "Reports"
+        }
+      ]
+    },
+    {
+      "id": "module_tasks",
+      "label": "Required tasks capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "tasks"
+      }
+    },
+    {
+      "id": "module_documents",
+      "label": "Required documents capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "documents"
+      }
+    },
+    {
+      "id": "module_booking",
+      "label": "Required booking capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "booking"
+      }
+    },
+    {
+      "id": "module_portal",
+      "label": "Required portal capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "portal"
+      }
+    },
+    {
+      "id": "module_reports",
+      "label": "Required reports capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "reports"
+      }
+    },
+    {
+      "id": "module_analytics",
+      "label": "Required analytics capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "analytics"
+      }
+    },
+    {
+      "id": "module_workflow",
+      "label": "Required workflow capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "workflow"
+      }
+    },
+    {
+      "id": "module_other",
+      "label": "Required other capabilities",
+      "type": "textarea",
+      "projects": [
+        "custom"
+      ],
+      "group": "Module details",
+      "when": {
+        "field": "modules",
+        "value": "other"
+      }
+    },
+    {
+      "id": "custom_approvals",
+      "label": "Approval workflows?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "feature": "workflow"
+    },
+    {
+      "id": "custom_roles",
+      "label": "Role-based access?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "feature": "rbac"
+    },
+    {
+      "id": "audit_trails",
+      "label": "Audit trails?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "score": 1
+    },
+    {
+      "id": "multi_branch",
+      "label": "Multiple branches?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "score": 3,
+      "scale": 1.08
+    },
+    {
+      "id": "custom_integrations",
+      "label": "External integrations?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "feature": "integration"
+    },
+    {
+      "id": "migration_required",
+      "label": "Existing data migration?",
+      "type": "boolean",
+      "projects": [
+        "custom"
+      ],
+      "group": "Business capabilities",
+      "feature": "migration"
+    },
+    {
+      "id": "gateway",
+      "label": "Payment gateway, if known",
+      "type": "text",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "payments"
+    },
+    {
+      "id": "payment_market",
+      "label": "Payment market",
+      "type": "single",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "payments",
+      "options": [
+        {
+          "id": "Sri Lankan / local",
+          "label": "Sri Lankan / local"
+        },
+        {
+          "id": "International",
+          "label": "International"
+        },
+        {
+          "id": "Both",
+          "label": "Both"
+        }
+      ]
+    },
+    {
+      "id": "payment_model",
+      "label": "Payment model",
+      "type": "single",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "payments",
+      "options": [
+        {
+          "id": "One-time",
+          "label": "One-time"
+        },
+        {
+          "id": "Recurring",
+          "label": "Recurring"
+        },
+        {
+          "id": "Both",
+          "label": "Both"
+        }
+      ]
+    },
+    {
+      "id": "currencies",
+      "label": "Currencies needed",
+      "type": "text",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "payments"
+    },
+    {
+      "id": "languages",
+      "label": "Languages required",
+      "type": "text",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "multilingual"
+    },
+    {
+      "id": "translations",
+      "label": "Who provides translations?",
+      "type": "single",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "multilingual",
+      "options": [
+        {
+          "id": "Client",
+          "label": "Client"
+        },
+        {
+          "id": "Mistravora",
+          "label": "Mistravora"
+        },
+        {
+          "id": "Not sure",
+          "label": "Not sure"
+        }
+      ]
+    },
+    {
+      "id": "translation_cms",
+      "label": "Should the CMS support translations?",
+      "type": "boolean",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "multilingual"
+    },
+    {
+      "id": "ai_use",
+      "label": "AI requirements",
+      "type": "multi",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "ai",
+      "options": [
+        {
+          "id": "Chatbot",
+          "label": "Chatbot"
+        },
+        {
+          "id": "Document assistant",
+          "label": "Document assistant"
+        },
+        {
+          "id": "Recommendations",
+          "label": "Recommendations"
+        },
+        {
+          "id": "Content generation",
+          "label": "Content generation"
+        },
+        {
+          "id": "Search",
+          "label": "Search"
+        },
+        {
+          "id": "Analytics",
+          "label": "Analytics"
+        },
+        {
+          "id": "Workflow automation",
+          "label": "Workflow automation"
+        },
+        {
+          "id": "Custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "id": "integration_systems",
+      "label": "What systems should this connect to?",
+      "type": "multi",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "integration",
+      "options": [
+        {
+          "id": "Accounting",
+          "label": "Accounting"
+        },
+        {
+          "id": "Payment",
+          "label": "Payment"
+        },
+        {
+          "id": "CRM",
+          "label": "CRM"
+        },
+        {
+          "id": "Booking",
+          "label": "Booking"
+        },
+        {
+          "id": "ERP",
+          "label": "ERP"
+        },
+        {
+          "id": "Email",
+          "label": "Email"
+        },
+        {
+          "id": "WhatsApp",
+          "label": "WhatsApp"
+        },
+        {
+          "id": "API",
+          "label": "API"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ],
+      "scaleThresholds": [
+        {
+          "at": 2,
+          "multiplier": 1,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "integration_details",
+      "label": "Integration names and available documentation",
+      "type": "textarea",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "integration"
+    },
+    {
+      "id": "migration_format",
+      "label": "Current data format",
+      "type": "single",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "migration",
+      "options": [
+        {
+          "id": "Excel",
+          "label": "Excel"
+        },
+        {
+          "id": "CSV",
+          "label": "CSV"
+        },
+        {
+          "id": "Existing database",
+          "label": "Existing database"
+        },
+        {
+          "id": "Existing software",
+          "label": "Existing software"
+        },
+        {
+          "id": "Other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "id": "records",
+      "label": "Approximate records to migrate",
+      "type": "number",
+      "projects": [],
+      "group": "Integration and specialist details",
+      "whenFeature": "migration",
+      "scaleThresholds": [
+        {
+          "at": 10000,
+          "multiplier": 1.08
+        },
+        {
+          "at": 100000,
+          "multiplier": 1.15,
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "easier",
+      "label": "What should this system make easier?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "workflow_details",
+      "label": "Describe your current workflow.",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "biggest_problem",
+      "label": "What is the biggest problem with the current process?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "essential",
+      "label": "Which features are essential for launch?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "later",
+      "label": "Which features can wait for a later phase?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "replace_integrate",
+      "label": "Existing system to replace or integrate with?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "references",
+      "label": "Websites / apps / systems you like as references",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    },
+    {
+      "id": "other",
+      "label": "Anything else our technical team should know?",
+      "type": "textarea",
+      "projects": [],
+      "group": "Priorities and references"
+    }
+  ],
+  "design": [
+    {
+      "id": "standard",
+      "label": "Professional Standard",
+      "description": "Clear responsive layouts and established interaction patterns.",
+      "multiplier": 1,
+      "durationMultiplier": 1
+    },
+    {
+      "id": "premium",
+      "label": "Premium Custom UI/UX",
+      "description": "Custom visual design and more detailed user journeys.",
+      "multiplier": 1.1,
+      "durationMultiplier": 1.1
+    },
+    {
+      "id": "interactive",
+      "label": "Advanced Interactive Experience",
+      "description": "Bespoke interactions, motion and advanced interface design.",
+      "multiplier": 1.18,
+      "durationMultiplier": 1.18
+    }
+  ],
+  "timelines": [
+    {
+      "id": "flexible",
+      "label": "Flexible Timeline",
+      "description": "More scheduling flexibility.",
+      "multiplier": 0.95,
+      "durationMultiplier": 1.2
+    },
+    {
+      "id": "standard",
+      "label": "Standard Delivery",
+      "description": "Normal discovery, design, build and testing schedule.",
+      "multiplier": 1,
+      "durationMultiplier": 1
+    },
+    {
+      "id": "priority",
+      "label": "Priority / Fast Track",
+      "description": "Subject to team capacity and scope confirmation.",
+      "multiplier": 1.15,
+      "durationMultiplier": 0.8
+    }
+  ],
+  "maintenance": [
+    {
+      "id": "none",
+      "label": "No ongoing maintenance",
+      "monthly": 0,
+      "description": "No recurring maintenance selected."
+    },
+    {
+      "id": "basic",
+      "label": "Basic Maintenance",
+      "monthly": 15000,
+      "description": "Routine maintenance; final scope agreed in writing."
+    },
+    {
+      "id": "standard",
+      "label": "Standard Maintenance",
+      "monthly": 25000,
+      "description": "Ongoing maintenance and support; scope agreed in writing."
+    },
+    {
+      "id": "priority",
+      "label": "Priority Maintenance",
+      "monthly": 45000,
+      "description": "Priority support scheduling; response commitments agreed in writing."
+    }
+  ],
+  "complexity": [
+    {
+      "max": 8,
+      "label": "Standard",
+      "multiplier": 1,
+      "manual": false
+    },
+    {
+      "max": 18,
+      "label": "Medium",
+      "multiplier": 1.12,
+      "manual": false
+    },
+    {
+      "max": 30,
+      "label": "Advanced",
+      "multiplier": 1.25,
+      "manual": false
+    },
+    {
+      "max": 10000,
+      "label": "Enterprise / manual review",
+      "multiplier": 1.25,
+      "manual": true
+    }
+  ],
+  "phases": [
+    {
+      "label": "Discovery and scope",
+      "share": 0.15
+    },
+    {
+      "label": "UI/UX design",
+      "share": 0.2
+    },
+    {
+      "label": "Development and integrations",
+      "share": 0.4
+    },
+    {
+      "label": "Testing and acceptance",
+      "share": 0.2
+    },
+    {
+      "label": "Deployment and handover",
+      "share": 0.05
+    }
+  ]
+}

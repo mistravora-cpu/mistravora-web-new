@@ -20,9 +20,9 @@ const tools = [
   {
     href: "/tools/cost-calculator",
     icon: Calculator,
-    title: "Cost Calculator",
+    title: "Project Requirements & Estimate",
     description:
-      "Estimate a project range using the configured costs and selected features.",
+      "Build your requirement brief, explore investment and delivery ranges, and request a preliminary quotation PDF.",
     available: true,
   },
   {

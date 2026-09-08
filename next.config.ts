@@ -54,6 +54,7 @@ const nextConfig: NextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
   },
+  outputFileTracingIncludes: { "/api/requirements": ["./src/assets/fonts/*.ttf"], "/api/requirements/*": ["./src/assets/fonts/*.ttf"] },
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
