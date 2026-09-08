@@ -1,5 +1,6 @@
 "use server";
 
+import { heroMediaSchema } from "@/lib/hero-media-config";
 import { isPublicMediaUrl } from "@/lib/media-url";
 
 import { normalizeTeamSlug } from "@/lib/team-slug";
@@ -287,6 +288,7 @@ export async function deleteRow(table: string, id: string) {
 
 // Allowed setting keys — prevents arbitrary key injection.
 const ALLOWED_SETTING_KEYS = new Set([
+  "hero_media_config",
   ...publicBusinessKeys,
   "pricing_calculator_config",
   // Marketing — analytics
@@ -347,7 +349,7 @@ export async function saveSettings(data: Record<string, string>) {
   if (!(await verifyAdmin())) return { error: "Unauthorized" };
 
   if (Object.keys(data).some(key => !ALLOWED_SETTING_KEYS.has(key))) return { error: "Unsupported settings key. Secrets must be configured on the server." };
-  if (Object.values(data).some(value => typeof value !== "string" || value.length > 10000)) return { error: "Settings must be text of at most 10,000 characters." };
+  if (Object.entries(data).some(([key, value]) => typeof value !== "string" || value.length > (key === "hero_media_config" ? 200000 : 10000))) return { error: "Settings exceed their supported size limit." };
   if (data.company_founded && !/^\d{4}-(0[1-9]|1[0-2])$/.test(data.company_founded)) return { error: "Use YYYY-MM for the founding date." };
   if (data.site_email && !z.email().safeParse(data.site_email).success) return { error: "Provide a valid email address." };
   for (const key of ["show_business_hours", "enable_newsletter", "enable_chat_widget", "enable_cookie_consent"]) {
@@ -355,6 +357,10 @@ export async function saveSettings(data: Record<string, string>) {
   }
   for (const [key, limit] of [["site_geo_lat", 90], ["site_geo_lng", 180]] as const) {
     if (data[key] && (!Number.isFinite(Number(data[key])) || Math.abs(Number(data[key])) > limit)) return {error: "Provide valid latitude and longitude coordinates."};
+  }
+  if (data.hero_media_config) {
+    try { heroMediaSchema.parse(JSON.parse(data.hero_media_config)); }
+    catch { return { error: "Provide valid page paths, HTTPS media links, types, and descriptions (up to 12 items per page)." }; }
   }
   if (data.pricing_calculator_config) {
     try { calculatorSchema.parse(JSON.parse(data.pricing_calculator_config)); }

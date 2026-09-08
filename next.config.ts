@@ -16,7 +16,7 @@ const cspDirectives = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data:",
   "img-src 'self' data: https: blob:",
-  "media-src 'self'",
+  "media-src 'self' https:",
   "connect-src 'self' https://*.supabase.co https://mistravora.com https://www.google-analytics.com https://*.clarity.ms https://sc-static.net https://api.iconify.design",
   "frame-ancestors 'none'",
   "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com",

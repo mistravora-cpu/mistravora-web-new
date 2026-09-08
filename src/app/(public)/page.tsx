@@ -1,3 +1,4 @@
+import { HeroMedia } from "@/components/hero-media";
 import { getCollection } from "@/lib/content";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { jsonLd } from "@/lib/seo";
@@ -106,6 +107,7 @@ export default async function Home() {
 
       {/* Keep the CMS headline in the initial server-rendered content. */}
       <RobotHeroClient hero={hero} />
+      <HeroMedia page="/" />
       <ScrollIndicator />
 
       {/* Stats counter — animated numbers that count up on scroll */}

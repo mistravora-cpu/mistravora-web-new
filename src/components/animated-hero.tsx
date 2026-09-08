@@ -1,3 +1,4 @@
+import { HeroMedia } from "@/components/hero-media";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -95,6 +96,7 @@ export function AnimatedHero({
 
   return (
     <section className="relative overflow-hidden" aria-label="Page hero">
+      <div className="relative z-10"><HeroMedia page={`/${page}`} /></div>
       <div
         aria-hidden
         className={`absolute inset-0 ${theme.pattern} [mask-image:radial-gradient(ellipse_at_center,black_25%,transparent_72%)]`}

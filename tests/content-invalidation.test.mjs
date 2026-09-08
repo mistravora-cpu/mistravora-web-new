@@ -15,6 +15,7 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
+    if(name === '@/lib/hero-media-config') return {heroMediaSchema:{parse:v=>v}};
     if(name === '@/lib/media-url') { const media = {exports:{}, URL}; vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/media-url.ts','utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText, media); return media.exports; }
     if(name === '@/lib/team-slug') return {normalizeTeamSlug:s=>s};
     if(name === '@/lib/calculator-config') return {calculatorSchema:{parse:v=>v}};

@@ -1,3 +1,5 @@
+import { getHeroMedia } from "@/lib/hero-media";
+import { HeroMediaEditor } from "./media-editor";
 import type { Metadata } from "next";
 import { getAdminHeroSections as getAllHeroSections } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
@@ -31,7 +33,7 @@ const heroFields: FieldDef[] = [
 ];
 
 export default async function HeroAdminPage() {
-  const heroes = await getAllHeroSections();
+  const [heroes, media] = await Promise.all([getAllHeroSections(), getHeroMedia()]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -43,6 +45,7 @@ export default async function HeroAdminPage() {
         </p>
       </div>
 
+      <HeroMediaEditor initial={media} />
       <CrudManager
         table="hero_sections"
         title="Page Heroes"

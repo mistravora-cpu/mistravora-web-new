@@ -1038,3 +1038,12 @@ h1, h2, h3, h4 {
   .company-marquee-track { animation: none; }
   .company-marquee-copy { display: none; }
 }
+
+@keyframes hero-media-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@utility animate-hero-media-in {
+  animation: hero-media-in 450ms ease-out both;
+}
