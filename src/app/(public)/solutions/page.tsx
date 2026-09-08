@@ -9,7 +9,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { ClientsMarquee } from "@/components/clients-marquee";
 import { Testimonials } from "@/components/testimonials";
 import { SectionDivider } from "@/components/section-divider";
-import { getSolutions, getCaseStudies, getHeroSection } from "@/lib/services";
+import { getSolutions, getHeroSection } from "@/lib/services";
 import { site } from "@/lib/site";
 import { getIcon as getMappedIcon } from "@/lib/icon-map";
 
@@ -25,15 +25,11 @@ function getIcon(name: string | null): LucideIcon {
 }
 
 export default async function SolutionsPage() {
-  const [hero, solutionsData, caseStudiesData] = await Promise.all([
+  const [hero, solutionsData] = await Promise.all([
     getHeroSection("solutions"),
     getSolutions(true),
-    getCaseStudies(true),
   ]);
   const solutions = solutionsData;
-  const caseStudies = caseStudiesData
-    .filter((cs) => cs.published && cs.status !== "archived")
-    .slice(0, 3);
 
   return (
     <>
@@ -63,41 +59,6 @@ export default async function SolutionsPage() {
       <div className="mt-20">
         <ClientsMarquee />
       </div>
-
-      {/* Case studies preview */}
-      {caseStudies.length > 0 && (
-        <section className="mt-20">
-          <ScrollReveal animation="fade-up" className="flex flex-col items-center gap-3 text-center">
-            <p className="eyebrow">
-              Recent work
-            </p>
-            <h2 className="max-w-xl text-2xl font-bold tracking-tight sm:text-3xl">
-              Real projects, real results
-            </h2>
-          </ScrollReveal>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {caseStudies.map((cs, i) => (
-              <ScrollReveal
-                key={cs.id}
-                animation="fade-up"
-                delay={i * 70}
-                className="group interactive-card hover:-translate-y-0.5 p-6"
-              >
-                <Link href={`/projects/${cs.slug}`} className="flex flex-1 flex-col gap-2">
-                  <h3 className="font-semibold tracking-tight transition-colors group-hover:text-primary">{cs.title}</h3>
-                  {cs.outcome && (
-                    <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>
-                  )}
-                  <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary">
-                    View case study
-                    <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </section>
-      )}
 
       <SectionDivider className="text-surface" />
 
