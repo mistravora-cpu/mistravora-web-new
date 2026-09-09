@@ -1,3 +1,4 @@
+import { primaryContentImage } from "./content-preview";
 import { attachProjectLinks } from "./project-links";
 import { memberSlug } from "./team-slug";
 export { memberSlug } from "./team-slug";
@@ -160,7 +161,7 @@ const _getSolutions = unstable_cache(
     let query = supabase.from("solutions").select(SOLUTION_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
     const rows = await queryRows(query);
-    return rows.map((r) => mapSolution(r));
+    return rows.map((r) => {const item=mapSolution(r);return {...item,image:primaryContentImage(item.image,item.long_description,item.body)};});
   },
   ["solutions-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -172,7 +173,7 @@ const _getCaseStudies = unstable_cache(
     let query = supabase.from("case_studies").select(CASE_STUDY_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
     const rows = await queryRows(query);
-    return attachProjectLinks(rows.map((r) => mapChildArrays(r, caseStudyMapping) as unknown as CaseStudy), supabase);
+    return attachProjectLinks(rows.map((r) => ({...mapChildArrays(r, caseStudyMapping),cover_image:primaryContentImage(r.cover_image,r.body,r.solution)}) as unknown as CaseStudy), supabase);
   },
   ["projects-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -184,7 +185,7 @@ const _getPosts = unstable_cache(
     const rows = await queryRows(
       supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false })
     );
-    return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
+    return rows.map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
   },
   ["posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -196,7 +197,7 @@ const _getPublishedPosts = unstable_cache(
     const rows = await queryRows(
       supabase.from("posts").select(POST_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false })
     );
-    return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
+    return rows.map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
   },
   ["published-posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -326,7 +327,7 @@ const _getIndustries = unstable_cache(
     let query = supabase.from("industries").select(INDUSTRY_SELECT).order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("archived", false);
     const rows = await queryRows(query);
-    return rows.map((r) => mapChildArrays(r, industryMapping) as unknown as Industry);
+    return rows.map((r) => ({...mapChildArrays(r, industryMapping),image:primaryContentImage(r.image,r.description)}) as unknown as Industry);
   },
   ["industries-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -619,7 +620,7 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
 
 const publicResearch = unstable_cache(async (): Promise<Research[]> => {
   const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false }));
-  return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
+  return rows.map((r) => ({...mapChildArrays(r,researchMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Research);
 }, ["reviewed-public-research-v3"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
 
 export async function getResearch(publishedOnly = false): Promise<Research[]> {

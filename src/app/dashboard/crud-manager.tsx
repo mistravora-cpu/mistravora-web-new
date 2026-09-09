@@ -4,12 +4,13 @@ import * as React from "react";
 import { Pencil, Plus, Trash2, X, Check, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { upsertRow, deleteRow } from "./crud-actions";
+import { previewContent } from "./content-preview-action";
 import { trackButtonClick } from "@/lib/track-event";
 
 export type FieldDef = {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "boolean" | "select" | "list" | "image" | "icon";
+  type?: "text" | "textarea" | "richtext" | "number" | "boolean" | "select" | "list" | "image" | "icon";
   options?: string[];
   required?: boolean;
   placeholder?: string;
@@ -178,7 +179,7 @@ function ImageField({
   );
 }
 
-function ProjectScreenshot({ bodyId, onInsert, onUploading }: {
+function ContentImageInsert({ bodyId, onInsert, onUploading }: {
   bodyId: string;
   onInsert: (html: string, position: number | null) => void;
   onUploading: (busy: boolean) => void;
@@ -194,12 +195,12 @@ function ProjectScreenshot({ bodyId, onInsert, onUploading }: {
       const body = document.getElementById(bodyId) as HTMLTextAreaElement | null;
       if (position.current === null && body) position.current = body.selectionStart;
     }}>
-      <legend className="px-1 text-sm font-medium">Add a proof screenshot</legend>
-      <p className="text-xs text-muted-foreground">Place the cursor in the content above, then add an image. Only publish screenshots approved for public viewing.</p>
-      <label htmlFor={`${id}-image`} className="text-xs">Screenshot upload or image link</label>
-      <ImageField id={`${id}-image`} name="screenshot" label="Screenshot" value={url} onChange={(_, value) => setUrl(String(value))} onUploading={onUploading} />
+      <legend className="px-1 text-sm font-medium">Add an image</legend>
+      <p className="text-xs text-muted-foreground">Place the cursor in the content above, then add an image. Add more images wherever they help explain the content. Include a useful description for each image.</p>
+      <label htmlFor={`${id}-image`} className="text-xs">Image upload or URL</label>
+      <ImageField id={`${id}-image`} name="screenshot" label="Content image" value={url} onChange={(_, value) => setUrl(String(value))} onUploading={onUploading} />
       <label htmlFor={`${id}-caption`} className="text-xs">Description / caption</label>
-      <input id={`${id}-caption`} value={caption} onChange={event => setCaption(event.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Describe what the screenshot demonstrates" />
+      <input id={`${id}-caption`} value={caption} onChange={event => setCaption(event.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Describe what this image shows" />
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="button" variant="outline" className="w-fit" onClick={() => {
         let valid = false;
@@ -207,7 +208,7 @@ function ProjectScreenshot({ bodyId, onInsert, onUploading }: {
         if (!valid || !caption.trim()) { setError("Provide an HTTPS image link or upload, and a description."); return; }
         onInsert(`\n<figure><img src="${escape(url.trim())}" alt="${escape(caption.trim())}" loading="lazy" decoding="async"><figcaption>${escape(caption.trim())}</figcaption></figure>\n`, position.current);
         setUrl(""); setCaption(""); setError(""); position.current = null;
-      }}>Insert screenshot into content</Button>
+      }}>Insert image into content</Button>
     </fieldset>
   );
 }
@@ -228,6 +229,7 @@ export function CrudManager({
   const [activeUploads, setActiveUploads] = React.useState(0);
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [preview, setPreview] = React.useState<{field:string;document?:string;error?:string;busy?:boolean}|null>(null);
   const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
 
   function startCreate() {
@@ -235,6 +237,7 @@ export function CrudManager({
     setEditingId(null);
     setFormData({});
     setError(null);
+    setPreview(null);
     setShowForm(true);
   }
 
@@ -247,6 +250,7 @@ export function CrudManager({
     }
     setFormData(editable);
     setError(null);
+    setPreview(null);
     setShowForm(true);
   }
 
@@ -344,7 +348,7 @@ export function CrudManager({
             <h4 className="text-sm font-semibold">
               {editingId ? "Edit" : "Add New"}
             </h4>
-            <Button type="button" size="icon" variant="ghost" onClick={cancelForm}>
+            <Button type="button" size="icon" variant="ghost" onClick={cancelForm} aria-label="Close editor">
               <X aria-hidden className="h-4 w-4" />
             </Button>
           </div>
@@ -354,7 +358,7 @@ export function CrudManager({
               <div
                 key={f.name}
                 className={
-                  f.type === "textarea" || f.type === "list" || f.type === "image"
+                  f.type === "richtext" || f.type === "textarea" || f.type === "list" || f.type === "image"
                     ? "flex flex-col gap-1.5 sm:col-span-2"
                     : "flex flex-col gap-1.5"
                 }
@@ -363,7 +367,7 @@ export function CrudManager({
                   {f.label}
                   {f.required ? " *" : ""}
                 </label>
-                {f.type === "textarea" ? (
+                {f.type === "textarea" || f.type === "richtext" ? (
                   <>
                   <textarea
                     id={`${formId}-${f.name}`}
@@ -371,10 +375,17 @@ export function CrudManager({
                     value={String(formData[f.name] ?? "")}
                     onChange={(e) => setField(f.name, e.target.value)}
                     placeholder={f.placeholder}
-                    rows={4}
+                    rows={f.type === "richtext" ? 12 : 4}
+                    spellCheck={f.type === "richtext" ? false : undefined}
+                    aria-describedby={f.type === "richtext" ? `${formId}-${f.name}-help` : undefined}
                     className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
-                  {table === "case_studies" && f.name === "body" && <ProjectScreenshot
+                  {f.type === "richtext" && <>
+                  <p id={`${formId}-${f.name}-help`} className="text-xs leading-5 text-muted-foreground">Write plain text or HTML with internal &lt;style&gt; CSS. Headings, links, lists, tables and images are supported. CSS stays inside this content block; scripts, forms, embeds and external CSS are removed.</p>
+                  <Button type="button" variant="outline" className="w-fit" disabled={preview?.busy} onClick={async () => {setPreview({field:f.name,busy:true});try {const result=await previewContent(String(formData[f.name] ?? ""));setPreview({field:f.name,...result});}catch {setPreview({field:f.name,error:"Preview unavailable. Please retry."});}}}>{preview?.busy && preview.field === f.name ? "Preparing preview…" : "Preview HTML and CSS"}</Button>
+                  {preview?.field === f.name && preview.error && <p role="alert" className="text-sm text-destructive">{preview.error}</p>}
+                  {preview?.field === f.name && preview.document && <iframe title={`${f.label} preview`} sandbox="" referrerPolicy="no-referrer" srcDoc={preview.document} className="h-[28rem] w-full rounded-xl border border-border bg-white" />}
+                  <ContentImageInsert
                     bodyId={`${formId}-${f.name}`}
                     onUploading={busy => setActiveUploads(count => Math.max(0, count + (busy ? 1 : -1)))}
                     onInsert={(html, position) => {
@@ -385,7 +396,7 @@ export function CrudManager({
                       const textToHtml = (text: string) => text ? `<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")}</p>` : "";
                       setField(f.name, isHtml ? before + html + after : textToHtml(before) + html + textToHtml(after));
                     }}
-                  />}
+                  /></>}
                   </>
                 ) : f.type === "boolean" ? (
                   <button
@@ -555,7 +566,7 @@ export function CrudManager({
                   size="icon"
                   variant="ghost"
                   onClick={() => startEdit(row)}
-                  aria-label="Edit"
+                  aria-label={`Edit ${String(row.title ?? row.name ?? row.term ?? "item")}`}
                 >
                   <Pencil aria-hidden className="h-4 w-4" />
                 </Button>
@@ -574,7 +585,7 @@ export function CrudManager({
                     size="icon"
                     variant="ghost"
                     onClick={() => setConfirmDelete(row.id as string)}
-                    aria-label="Delete"
+                    aria-label={`Delete ${String(row.title ?? row.name ?? row.term ?? "item")}`}
                   >
                     <Trash2 aria-hidden className="h-4 w-4" />
                   </Button>

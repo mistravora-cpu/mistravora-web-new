@@ -25,7 +25,7 @@ const heroFields: FieldDef[] = [
   { name: "badge", label: "Badge", placeholder: "Small text above headline" },
   { name: "headline", label: "Headline", required: true },
   { name: "highlighted_text", label: "Highlighted Text", placeholder: "Words to accent in gradient" },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "primary_button_text", label: "Primary Button Text", placeholder: "Get in touch" },
   { name: "primary_button_link", label: "Primary Button Link", placeholder: "/contact or https://..." },
   { name: "secondary_button_text", label: "Secondary Button Text" },

@@ -1,3 +1,5 @@
+import { CatalogImage } from "@/components/catalog-image";
+import { contentText } from "@/lib/content-preview";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
@@ -47,18 +49,19 @@ export default async function IndustriesPage() {
               return (
                 <ScrollReveal
                   key={industry.id}
-                  animation={i % 3 === 0 ? "flip-in" : i % 3 === 1 ? "elastic" : "clip-reveal"}
+                  animation="fade-up"
                   delay={i * 80}
-                  className="shine-sweep card-glow group rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                  className="group interactive-card catalog-card p-5 sm:p-6"
                 >
-                  <Link href={`/industries/${industry.slug}`} className="flex flex-col gap-3">
+                  <Link href={`/industries/${industry.slug}`} className="flex h-full flex-col gap-3">
+                    <CatalogImage src={industry.image} title={industry.title} />
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 transition-all group-hover:bg-primary/20">
                       <Icon aria-hidden className="h-5 w-5 text-primary" />
                     </span>
                     <h2 className="text-lg font-semibold">{industry.title}</h2>
                     {industry.summary && (
                       <p className="text-sm leading-6 text-muted-foreground">
-                        {industry.summary}
+                        {contentText(industry.summary,200)}
                       </p>
                     )}
                     <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary">

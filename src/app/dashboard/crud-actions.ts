@@ -184,6 +184,11 @@ export async function upsertRow(
     }
   }
 
+  // Keep older readers aligned with the single solution content/summary editor.
+  if (table === "solutions") {
+    if (typeof parentData.long_description === "string") parentData.body = parentData.long_description;
+    if (typeof parentData.short_description === "string") parentData.summary = parentData.short_description;
+  }
   const imageKeys = ["photo", "image", "cover_image", "logo", "screenshot", "og_image", "file_url"].filter(key => typeof parentData[key] === "string" && parentData[key]);
   for (const key of imageKeys) {
     const value = String(parentData[key]).trim();

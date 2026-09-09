@@ -19,7 +19,7 @@ const tierFields: FieldDef[] = [
   { name: "icon", label: "Icon", type: "icon" },
   { name: "tagline", label: "Tagline" },
   { name: "price", label: "Price", placeholder: "LKR 150k+" },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "features", label: "Features (one per line)", type: "list" },
   { name: "button_text", label: "Button Text", placeholder: "Get Started" },
   { name: "sort_order", label: "Display Order", type: "number" },
@@ -33,7 +33,7 @@ const noteColumns: ColumnDef[] = [
 ];
 
 const noteFields: FieldDef[] = [
-  { name: "text", label: "Text", required: true, type: "textarea" },
+  { name: "text", label: "Text", required: true, type: "richtext" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "active", label: "Active", type: "boolean" },
 ];

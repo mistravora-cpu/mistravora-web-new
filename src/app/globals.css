@@ -1047,3 +1047,31 @@ h1, h2, h3, h4 {
 @utility animate-hero-media-in {
   animation: hero-media-in 450ms ease-out both;
 }
+
+/* Server-rendered editorial content. Low-specificity defaults allow the
+   administrator's scoped CSS to refine typography without affecting the shell. */
+:where(.rich-content) { line-height: 1.75; }
+:where(.rich-content [data-article-root]) > :first-child { margin-top: 0; }
+:where(.rich-content [data-article-root]) > :last-child { margin-bottom: 0; }
+:where(.rich-content h2) { margin-block: 1.75em .7em; font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 650; line-height: 1.3; letter-spacing: -.025em; }
+:where(.rich-content h3, .rich-content h4) { margin-block: 1.5em .65em; font-size: 1.125em; font-weight: 600; line-height: 1.4; }
+:where(.rich-content p, .rich-content ul, .rich-content ol) { margin-block: .9em; }
+:where(.rich-content ul) { list-style: disc; padding-inline-start: 1.5em; }
+:where(.rich-content ol) { list-style: decimal; padding-inline-start: 1.5em; }
+:where(.rich-content li) { margin-block: .35em; }
+:where(.rich-content a) { color: var(--primary); text-decoration: underline; text-underline-offset: .2em; }
+:where(.rich-content a:focus-visible) { outline: 2px solid var(--primary); outline-offset: 3px; }
+:where(.rich-content figure) { margin-block: 1.75em; }
+:where(.rich-content figcaption) { margin-top: .65em; font-size: .875em; color: var(--muted-foreground); }
+:where(.rich-content blockquote) { border-inline-start: 3px solid var(--primary); padding-inline-start: 1.25em; margin-block: 1.5em; }
+:where(.rich-content th, .rich-content td) { padding: .7em 1em; border: 1px solid var(--border); text-align: start; }
+:where(.rich-content pre) { background: var(--muted); border-radius: .75rem; padding: 1em; }
+:where(.rich-content details) { margin-block: 1em; border: 1px solid var(--border); border-radius: .75rem; padding: 1em; }
+:where(.rich-content summary) { cursor: pointer; font-weight: 600; }
+:where(.catalog-card:focus-within) { border-color: color-mix(in oklab, var(--primary) 45%, var(--border)); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .catalog-card:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); box-shadow: var(--shadow-md); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .catalog-card, .catalog-image img { transition: none; transform: none; }
+}

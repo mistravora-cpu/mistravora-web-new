@@ -30,7 +30,7 @@ const groups = [
       { key: "company_founder", label: "Founder" },
       { key: "company_cofounder", label: "Co-Founder" },
       { key: "company_founded", label: "Founded (YYYY-MM)" },
-      { key: "company_story", label: "Company story", type: "textarea" as const },
+      { key: "company_story", label: "Company story (plain text or HTML with internal CSS)", type: "textarea" as const },
       { key: "service_coverage", label: "Markets and locations served", type: "textarea" as const },
       { key: "customer_types", label: "Customer types", type: "textarea" as const },
       { key: "industry_coverage", label: "Industries served", type: "textarea" as const },

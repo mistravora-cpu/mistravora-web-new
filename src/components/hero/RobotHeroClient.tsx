@@ -25,7 +25,7 @@ const RobotHero = dynamic(
   },
 );
 
-export function RobotHeroClient({ hero }: { hero?: HeroSection | null }) {
+export function RobotHeroClient({ hero, description }: { hero?: HeroSection | null; description?: React.ReactNode }) {
   const profile = useBusinessProfile();
   const sectionRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -155,9 +155,9 @@ export function RobotHeroClient({ hero }: { hero?: HeroSection | null }) {
         </h1>
 
         {/* Subheadline */}
-        <p className="max-w-2xl text-sm leading-7 text-foreground/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7">
-          {hero?.description ?? profile.intro}
-        </p>
+        <div className="pointer-events-auto max-w-2xl text-sm leading-7 text-foreground/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7">
+          {description ?? hero?.description ?? profile.intro}
+        </div>
 
         {/* CTAs */}
         <div className="pointer-events-auto flex w-full flex-col gap-3 sm:w-auto sm:flex-row">

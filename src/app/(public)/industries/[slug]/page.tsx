@@ -1,3 +1,5 @@
+import { contentText, firstContent } from "@/lib/content-preview";
+import { ArticleBody } from "@/components/article-body";
 import { withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import type { Metadata } from "next";
@@ -38,13 +40,13 @@ export async function generateMetadata({
   const url = `${site.url}/industries/${industry.slug}`;
   return applySeoOverrides(withSocialMetadata({
     title: `${industry.title} — Software Solutions`,
-    description: industry.summary ?? industry.description ?? undefined,
+    description: contentText(firstContent(industry.summary,industry.description),160) || undefined,
     alternates: { canonical: url },
     openGraph: {
       type: "website",
       url,
       title: `${industry.title} — Software Solutions | Mistravora`,
-      description: industry.summary ?? industry.description ?? undefined,
+      description: contentText(firstContent(industry.summary,industry.description),160) || undefined,
       images: industry.image ? [{ url: industry.image }] : undefined,
     },
   }));
@@ -91,15 +93,17 @@ export default async function IndustryPage({
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={industry.image}
+              width={1200}
+              height={675}
+              loading="lazy"
+              decoding="async"
               alt={industry.title}
               className="mt-8 h-64 w-full rounded-xl object-cover sm:h-80"
             />
           )}
 
           {industry.description && (
-            <p className="mt-8 text-base leading-8 text-muted-foreground">
-              {industry.description}
-            </p>
+            <div className="mt-8 text-base leading-8 text-muted-foreground"><ArticleBody body={industry.description ?? ""} title="Industry details" /></div>
           )}
         </ScrollReveal>
 

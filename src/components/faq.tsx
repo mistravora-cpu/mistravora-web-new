@@ -1,3 +1,4 @@
+import { ArticleBody } from "@/components/article-body";
 import { Plus } from "lucide-react";
 
 export function Faq({
@@ -19,9 +20,7 @@ export function Faq({
               className="h-4 w-4 shrink-0 text-primary transition-transform group-open:rotate-45"
             />
           </summary>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            {item.a}
-          </p>
+          <div className="mt-3 text-sm leading-6 text-muted-foreground"><ArticleBody body={item.a ?? ""} title="Answer" /></div>
         </details>
       ))}
     </div>

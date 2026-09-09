@@ -18,7 +18,7 @@ const fields: FieldDef[] = [
   { name: "slug", label: "Slug", required: true, placeholder: "retail" },
   { name: "icon", label: "Icon", type: "icon" },
   { name: "summary", label: "Short Description", type: "textarea" },
-  { name: "description", label: "Long Description", type: "textarea" },
+  { name: "description", label: "Long Description", type: "richtext" },
   { name: "image", label: "Industry Image", type: "image" },
   { name: "challenges", label: "Industry Challenges (one per line)", type: "list" },
   { name: "solutions", label: "Industry Solutions (one per line)", type: "list" },

@@ -54,6 +54,22 @@ test('image fields accept external HTTPS links and reject executable URLs', asyn
   }
 });
 
+test('solution content edits mirror fallback fields, including deliberate clearing', async () => {
+  for (const content of ['<style>p{color:blue}</style><p>Solution</p>', '']) {
+    const {actions,writes} = load();
+    const result = await actions.upsertRow('solutions', {long_description:content,short_description:content}, 'existing');
+    assert.equal(result.error,null);
+    const saved = writes.find(row=>row.table==='solutions').data;
+    assert.equal(saved.body,content);
+    assert.equal(saved.summary,content);
+  }
+  const {actions,writes} = load();
+  await actions.upsertRow('solutions', {published:true}, 'existing');
+  const saved = writes.find(row=>row.table==='solutions').data;
+  assert.equal('body' in saved,false);
+  assert.equal('summary' in saved,false);
+});
+
 test('public project links save and clear without requiring a project-table column', async () => {
   for(const website_url of ['https://example.com/project', '']) {
     const {actions,writes} = load();

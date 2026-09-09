@@ -1,3 +1,4 @@
+import { contentText, firstContent } from "@/lib/content-preview";
 import { isPublicMediaUrl } from "@/lib/media-url";
 import { ArticleBody } from "@/components/article-body";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
@@ -29,19 +30,19 @@ export async function generateMetadata({
   const url = `${site.url}/projects/${cs.slug}`;
   return applySeoOverrides(withSocialMetadata({
     title: cs.title,
-    description: cs.outcome ?? cs.problem_statement ?? undefined,
+    description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title: cs.title,
-      description: cs.outcome ?? cs.problem_statement ?? undefined,
+      description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
       images: cs.cover_image ? [{ url: cs.cover_image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: cs.title,
-      description: cs.outcome ?? cs.problem_statement ?? undefined,
+      description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
       images: cs.cover_image ? [cs.cover_image] : undefined,
     },
   }));
@@ -58,7 +59,7 @@ export default async function CaseStudyPage({
 
   return (
     <article className="w-full site-gutter py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: cs.problem_statement, url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: contentText(cs.problem_statement,200), url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
       <div className="mx-auto max-w-4xl w-full">
         <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
@@ -123,18 +124,14 @@ export default async function CaseStudyPage({
           {cs.problem_statement && (
             <section className="mt-12">
               <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">The challenge</h2>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/85">
-                {cs.problem_statement}
-              </p>
+              <div className="mt-4 max-w-3xl text-base leading-7 text-foreground/85"><ArticleBody body={cs.problem_statement ?? ""} title="Project challenge" /></div>
             </section>
           )}
 
           {cs.solution && (
             <section className="mt-10">
               <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What we built</h2>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/85">
-                {cs.solution}
-              </p>
+              <div className="mt-4 max-w-3xl text-base leading-7 text-foreground/85"><ArticleBody body={cs.solution ?? ""} title="Project solution" /></div>
             </section>
           )}
 
@@ -158,9 +155,7 @@ export default async function CaseStudyPage({
           {cs.outcome && (
             <section className="mt-10 rounded-xl border border-border bg-surface p-6">
               <h2 className="text-lg font-semibold tracking-tight">Outcome</h2>
-              <p className="mt-3 text-base leading-7 text-muted-foreground">
-                {cs.outcome}
-              </p>
+              <div className="mt-3 text-base leading-7 text-muted-foreground"><ArticleBody body={cs.outcome ?? ""} title="Project outcome" /></div>
             </section>
           )}
 

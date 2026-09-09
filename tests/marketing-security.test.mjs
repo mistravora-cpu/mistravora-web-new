@@ -15,7 +15,7 @@ function load(file, overrides = {}) {
   });
   const context = vm.createContext({
     exports: {},
-    require: (name) => overrides[name] ?? (name === "./project-links" ? {attachProjectLinks:async rows=>rows} : name === "./team-slug" ? load("src/lib/team-slug.ts") : require(name)),
+    require: (name) => overrides[name] ?? (name === "./project-links" ? {attachProjectLinks:async rows=>rows} : name.startsWith("./") ? load(`src/lib/${name.slice(2)}.ts`) : require(name)),
     process: {
       env: {
         EMAIL_TOKEN_SECRET: "test-only-secret-that-is-more-than-32-characters",

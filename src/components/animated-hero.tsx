@@ -1,3 +1,4 @@
+import { ArticleBody } from "@/components/article-body";
 import { HeroMedia } from "@/components/hero-media";
 import Link from "next/link";
 import {
@@ -142,9 +143,7 @@ export function AnimatedHero({
         </h1>
 
         {description ? (
-          <p className="max-w-xl text-sm leading-6 text-foreground/70 sm:text-lg sm:leading-8">
-            {description}
-          </p>
+          <div className="max-w-xl text-sm leading-6 text-foreground/70 sm:text-lg sm:leading-8"><ArticleBody body={description ?? ""} title="Introduction" /></div>
         ) : null}
 
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">

@@ -16,7 +16,7 @@ const contactColumns: ColumnDef[] = [
 
 const contactFields: FieldDef[] = [
   { name: "headline", label: "Headline", required: true },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "address", label: "Address" },
   { name: "email", label: "Email" },
   { name: "phone", label: "Phone" },
@@ -45,7 +45,7 @@ const faqColumns: ColumnDef[] = [
 const faqFields: FieldDef[] = [
   { name: "page", label: "Page", required: true, placeholder: "contact" },
   { name: "question", label: "Question", required: true },
-  { name: "answer", label: "Answer", type: "textarea", required: true },
+  { name: "answer", label: "Answer", type: "richtext", required: true },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];

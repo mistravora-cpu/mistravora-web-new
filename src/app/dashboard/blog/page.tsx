@@ -19,7 +19,7 @@ const fields: FieldDef[] = [
   { name: "title", label: "Title", required: true },
   { name: "slug", label: "Slug", required: true, placeholder: "my-post" },
   { name: "excerpt", label: "Excerpt", type: "textarea" },
-  { name: "body", label: "Content (HTML or plain text; images supported)", type: "textarea" },
+  { name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
   { name: "cover_image", label: "Featured Image", type: "image" },
   { name: "author", label: "Author", placeholder: "Mr.Shakeel" },
   { name: "author_role", label: "Author Role", placeholder: "Founder" },

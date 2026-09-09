@@ -20,7 +20,7 @@ const fields: FieldDef[] = [
   { name: "title", label: "Title", required: true },
   { name: "slug", label: "URL slug (no leading slash)", required: true, placeholder: "pwa-vs-native-apps" },
   { name: "summary", label: "Summary", type: "textarea", required: true },
-  { name: "body", label: "Body (HTML and internal CSS; images supported)", type: "textarea", placeholder: '<p>Article text</p><figure><img src="/image.jpg" alt="Describe the image" width="1200" height="800"><figcaption>Caption</figcaption></figure>' },
+  { name: "body", label: "Content (HTML and internal CSS)", type: "richtext", placeholder: '<p>Article text</p><figure><img src="/image.jpg" alt="Describe the image" width="1200" height="800"><figcaption>Caption</figcaption></figure>' },
   { name: "category", label: "Category", placeholder: "Performance / AI / Security" },
   { name: "tags", label: "Tags", type: "list", placeholder: "web-performance, seo, nextjs" },
   { name: "cover_image", label: "Primary image (article and catalog)", type: "image" },

@@ -1,3 +1,5 @@
+import { CatalogImage } from "@/components/catalog-image";
+import { contentText, firstContent } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -40,15 +42,17 @@ export default async function SolutionsPage() {
         {solutions.map((solution, i) => {
           const Icon = getIcon(solution.icon);
           return (
-            <ScrollReveal key={solution.id} animation="fade-up" delay={i * 70} className="group interactive-card hover:-translate-y-0.5 p-6">
-              <article>
+            <ScrollReveal key={solution.id} animation="fade-up" delay={i * 70} className="group interactive-card catalog-card h-full p-5 sm:p-6">
+              <article className="flex h-full flex-col">
+                <CatalogImage src={solution.image} title={solution.title} />
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                   <Icon aria-hidden className="h-5 w-5 text-primary" />
                 </span>
                 <h2 className="mt-4 text-lg font-semibold tracking-tight">{<Link href={`/solutions/${solution.slug}`} className="transition-colors group-hover:text-primary">{solution.title}</Link>}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {solution.short_description ?? solution.summary ?? solution.body ?? ""}
+                  {contentText(firstContent(solution.short_description,solution.summary,solution.long_description,solution.body),200)}
                 </p>
+                <Link href={`/solutions/${solution.slug}`} className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-primary">Explore solution <ArrowRight aria-hidden className="h-4 w-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-1" /><span className="sr-only">: {solution.title}</span></Link>
               </article>
             </ScrollReveal>
           );

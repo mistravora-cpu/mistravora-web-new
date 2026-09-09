@@ -4,7 +4,7 @@ export const metadata = { title: "Authors", robots: { index: false } };
 const fields: FieldDef[] = [{ name: "name", label: "Name", type: "text", required: true },
 { name: "slug", label: "Slug", type: "text", required: true },
 { name: "role", label: "Role", type: "text" },
-{ name: "bio", label: "Biography", type: "textarea" },
+{ name: "bio", label: "Biography", type: "richtext" },
 { name: "expertise", label: "Expertise", type: "textarea" },
 { name: "photo", label: "Photo", type: "image" },
 { name: "linkedin", label: "LinkedIn URL", type: "text" },

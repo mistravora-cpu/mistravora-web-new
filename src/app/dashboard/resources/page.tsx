@@ -18,7 +18,7 @@ const fields: FieldDef[] = [
   { name: "title", label: "Title", required: true },
   { name: "slug", label: "Slug", required: true, placeholder: "my-resource" },
   { name: "category", label: "Category", placeholder: "Guides / White Papers / Webinars" },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "icon", label: "Icon", type: "icon" },
   { name: "cover_image", label: "Cover Image", type: "image" },
   { name: "file_url", label: "File URL", type: "image" },

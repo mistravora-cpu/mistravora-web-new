@@ -1,3 +1,4 @@
+import { firstContent, contentText, primaryContentImage } from "./content-preview";
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
 import {
@@ -62,6 +63,9 @@ export type ContentEntry = {
   links?: string[];
   features?: string[];
   technologies?: string[];
+  services?: string[];
+  process?: string[];
+  intro?: string;
 };
 
 type ContentRow = {
@@ -107,7 +111,9 @@ export const getCollection = unstable_cache(
       return (await getResources(true)).map((p) => ({
         slug: p.slug,
         title: p.title,
-        description: p.description ?? "",
+        description: contentText(p.description,220),
+        body:p.description,
+        image:primaryContentImage(null,p.description),
         download: p.file_url,
         category: p.category,
         updated: p.updated_at,
@@ -116,12 +122,13 @@ export const getCollection = unstable_cache(
       return (await getSolutions(true)).map((p) => ({
         slug: p.slug,
         title: p.title,
-        description: p.short_description ?? p.summary ?? "",
-        body: p.long_description ?? p.body,
-        image: p.image,
+        description: contentText(firstContent(p.short_description,p.summary),220),
+        body: firstContent(p.long_description,p.body),
+        image: primaryContentImage(p.image,p.long_description,p.body),
         updated: p.updated_at,
         features: p.features,
         technologies: p.technologies,
+        services:p.services,process:p.process_steps,
       }));
     const table =
       section === "glossary"
@@ -146,7 +153,8 @@ export const getCollection = unstable_cache(
     return ((data ?? []) as unknown as ContentRow[]).map((p) => ({
       slug: p.slug,
       title: p.title ?? p.term ?? p.name ?? p.slug,
-      description: p.description ?? p.definition ?? p.summary ?? p.role ?? "",
+      description: contentText(firstContent(p.description,p.definition,p.summary,p.role),220),
+      intro: section === "services" ? p.description : undefined,
       body:
         section === "glossary"
           ? [
@@ -158,7 +166,7 @@ export const getCollection = unstable_cache(
               .filter(Boolean)
               .join("\n\n")
           : (p.body ?? p.bio),
-      image: p.cover_image ?? p.photo,
+      image: primaryContentImage(firstContent(p.cover_image,p.photo),p.body,p.bio,p.description),
       updated: p.updated_at,
       published: p.published_at,
       category: p.category,
@@ -198,21 +206,21 @@ export async function getSearchEntries(): Promise<SearchEntry[]> {
     ...posts.map((p) => ({
       slug: p.slug,
       title: p.title,
-      description: p.excerpt ?? "",
+      description: contentText(p.excerpt,220),
       href: `/blog/${p.slug}`,
       kind: "Blog",
     })),
     ...projects.map((p) => ({
       slug: p.slug,
       title: p.title,
-      description: p.problem_statement ?? p.outcome ?? "",
+      description: contentText(firstContent(p.problem_statement,p.outcome),220),
       href: `/projects/${p.slug}`,
       kind: "Projects",
     })),
     ...research.map((p) => ({
       slug: p.slug,
       title: p.title,
-      description: p.summary,
+      description: contentText(p.summary,220),
       href: `/research/${p.slug}`,
       kind: "Research",
     })),

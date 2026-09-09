@@ -1,3 +1,4 @@
+import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -37,9 +38,9 @@ export default async function ResearchPage() {
             {research.map((item, i) => (
               <ScrollReveal
                 key={item.id}
-                animation={i % 3 === 0 ? "flip-in" : i % 3 === 1 ? "elastic" : "clip-reveal"}
+                animation="fade-up"
                 delay={i * 80}
-                className="gradient-border-card shine-sweep card-glow group flex flex-col gap-0 rounded-2xl transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
+                className="group interactive-card catalog-card flex flex-col overflow-hidden rounded-2xl"
               >
                 <Link href={`/research/${item.slug}`} className="flex flex-1 flex-col">
                   {item.cover_image && (
@@ -61,7 +62,7 @@ export default async function ResearchPage() {
                   {/* Body */}
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <h2 className="text-base font-bold leading-tight tracking-tight">{item.title}</h2>
-                    <p className="text-sm leading-6 text-muted-foreground">{item.summary}</p>
+                    <p className="text-sm leading-6 text-muted-foreground">{contentText(item.summary,200)}</p>
                     {item.tags.length > 0 && (
                       <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
                         {item.tags.slice(0, 4).map((tag, ti) => (

@@ -1,3 +1,4 @@
+import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -69,7 +70,7 @@ export default async function BlogPage() {
               )}
               <h2 className="text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">{post.title}</h2>
               {post.excerpt && (
-                <p className="text-sm leading-6 text-muted-foreground">{post.excerpt}</p>
+                <p className="text-sm leading-6 text-muted-foreground">{contentText(post.excerpt,200)}</p>
               )}
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 {post.author && <span>{post.author}</span>}

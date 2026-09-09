@@ -1,3 +1,5 @@
+import Image from "@/components/content-image";
+import { contentText } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import Link from "next/link";
@@ -6,7 +8,7 @@ import { collections, isCollection, getCollection } from "@/lib/content";
 import { ContentGrid, ContentShell } from "@/components/content-page";
 import { ShareButton } from "@/components/share-button";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { jsonLd, pageMetadata } from "@/lib/seo";
+import { jsonLd, pageMetadata, withSocialMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ArrowLeft, Calendar, FileText, Shield } from "lucide-react";
 export const revalidate = 300;
@@ -17,7 +19,7 @@ async function load(params: Promise<{ section: string; slug: string }>) {
   return { section, entry, related: entries.filter(e => e.slug !== slug && (!entry.category || e.category === entry.category)).slice(0, 3) };
 }
 export async function generateMetadata({ params }: { params: Promise<{ section: string; slug: string }> }) {
-  const { section, entry } = await load(params); return applySeoOverrides(pageMetadata(entry.title, entry.description.slice(0, 160), `/${section}/${entry.slug}`));
+  const { section, entry } = await load(params); const metadata=pageMetadata(entry.title,contentText(entry.description,160),`/${section}/${entry.slug}`); return applySeoOverrides(entry.image ? withSocialMetadata({...metadata,openGraph:{...metadata.openGraph,images:[{url:entry.image,alt:entry.title}]},twitter:{...metadata.twitter,images:[entry.image]}}) : metadata);
 }
 
 /** Parse policy body into structured sections with headings */
@@ -34,12 +36,13 @@ function parsePolicySections(body: string | null | undefined) {
 export default async function DetailPage({ params }: { params: Promise<{ section: string; slug: string }> }) {
   const { section, entry, related } = await load(params);
   const type = section === "services" || section === "solutions" ? "Service" : section === "glossary" ? "DefinedTerm" : section === "authors" ? "Person" : section === "knowledge-base" ? "Article" : "WebPage";
-  const schema = { "@context": "https://schema.org", "@type": type, name: entry.title, description: entry.description, url: `${site.url}/${section}/${entry.slug}`, ...(type === "Service" ? { provider: { "@id": `${site.url}/#organization` } } : {}), ...(type === "Article" ? { headline: entry.title, datePublished: entry.published, dateModified: entry.updated, author: { "@type": "Organization", name: site.name } } : {}) };
+  const schema = { "@context": "https://schema.org", "@type": type, name: entry.title, description: contentText(entry.description,200), image:entry.image || undefined, url: `${site.url}/${section}/${entry.slug}`, ...(type === "Service" ? { provider: { "@id": `${site.url}/#organization` } } : {}), ...(type === "Article" ? { headline: entry.title, datePublished: entry.published, dateModified: entry.updated, author: { "@type": "Organization", name: site.name } } : {}) };
 
   const isPolicy = section === "policies";
-  const policySections = isPolicy ? parsePolicySections(entry.body) : [];
+  const policyHtml=isPolicy && /<[a-z][\s\S]*>/i.test(entry.body ?? "");
+  const policySections = isPolicy && !policyHtml ? parsePolicySections(entry.body) : [];
 
-  return <ContentShell title={entry.title} description={entry.description} parent={{ label: collections[section].title, href: `/${section}` }}>
+  return <ContentShell title={entry.title} description={entry.intro || section === "resources" ? undefined : entry.description} parent={{ label: collections[section].title, href: `/${section}` }}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
 
     {isPolicy ? (
@@ -95,6 +98,7 @@ export default async function DetailPage({ params }: { params: Promise<{ section
           )}
 
           <div className="space-y-10">
+            {policyHtml && <ArticleBody body={entry.body ?? ""} title={entry.title} />}
             {policySections.map((sec, index) => (
               <ScrollReveal
                 key={index}
@@ -166,12 +170,14 @@ export default async function DetailPage({ params }: { params: Promise<{ section
       <>
         {entry.updated && <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Updated <time dateTime={entry.updated}>{entry.updated.slice(0, 10)}</time></p>}
         {entry.image && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={entry.image} alt={entry.title} loading="lazy" width={1200} height={675} className="mt-10 max-h-96 w-full rounded-xl border border-border object-contain" />
+          <figure className="relative mt-10 aspect-video w-full overflow-hidden rounded-2xl bg-muted/30"><Image src={entry.image} alt={`${entry.title} overview`} fill sizes="(max-width: 768px) calc(100vw - 32px), 90vw" className="object-contain" /></figure>
         )}
-        {entry.body && <div className="mt-10 max-w-3xl text-base leading-8 text-foreground/90"><ArticleBody body={entry.body} title={entry.title} /></div>}
+        {entry.intro && <div className="mt-8"><ArticleBody body={entry.intro} title={`${entry.title} introduction`} /></div>}
+        {entry.body && <div className="mt-10 w-full min-w-0 text-base leading-8 text-foreground/90"><ArticleBody body={entry.body} title={entry.title} /></div>}
         {!!entry.features?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What&apos;s included</h2><ul className="mt-5 grid gap-2.5 sm:grid-cols-2">{entry.features.map(f => <li key={f} className="flex items-start gap-2.5 text-sm leading-6 text-foreground/85"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" aria-hidden />{f}</li>)}</ul></section>}
         {!!entry.technologies?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Technologies</h2><div className="mt-5 flex flex-wrap gap-2">{entry.technologies.map(t => <span key={t} className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground/80">{t}</span>)}</div></section>}
+        {!!entry.services?.length && <section className="mt-12"><h2 className="text-xl font-semibold">Included services</h2><ul className="mt-5 grid gap-3 sm:grid-cols-2">{entry.services.map((service,index)=><li key={index} className="rounded-xl border border-border p-4 text-sm">{service}</li>)}</ul></section>}
+        {!!entry.process?.length && <section className="mt-12"><h2 className="text-xl font-semibold">How delivery works</h2><ol className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{entry.process.map((step,index)=><li key={index} className="rounded-xl border border-border p-5"><span className="mb-3 block text-sm font-semibold text-primary">Step {index+1}</span><p className="text-sm leading-6">{step}</p></li>)}</ol></section>}
         {entry.download && <a href={entry.download} className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90" rel="noopener noreferrer" data-event="download">Download {entry.title}</a>}
         {entry.links?.map(link => <a key={link} href={link} rel="noopener noreferrer" className="mt-4 mr-4 inline-block text-sm text-primary link-underline">{new URL(link).hostname}</a>)}
         <div className="mt-10"><ShareButton title={entry.title} /></div>

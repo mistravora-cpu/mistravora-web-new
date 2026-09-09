@@ -1,3 +1,6 @@
+import { TeamPortrait } from "@/components/team-portrait";
+import { contentText } from "@/lib/content-preview";
+import { ArticleBody } from "@/components/article-body";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
@@ -66,7 +69,7 @@ export default async function AboutPage() {
           {profile.name}: <span className="gradient-text-flow">{profile.headline}</span>
         </h2>
         <div className="flex flex-col gap-4 text-sm leading-7 text-muted-foreground sm:text-base">
-          <p>{profile.story}</p>
+          <div><ArticleBody body={profile.story ?? ""} title="Company story" /></div>
           <p>{profile.customers}</p>
           <p>{profile.industries} {profile.coverage}</p>
           <p>{profile.showHours !== "false" ? `${profile.availability}.` : ""} {profile.response}.</p>
@@ -110,9 +113,7 @@ export default async function AboutPage() {
                 <Icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
               <h3 className="mt-4 font-semibold">{value.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {value.description}
-              </p>
+              <div className="mt-2 text-sm leading-6 text-muted-foreground"><ArticleBody body={value.description ?? ""} title="Our values" /></div>
             </ScrollReveal>
             );
           })}
@@ -156,7 +157,7 @@ export default async function AboutPage() {
                     </p>
                   </ScrollReveal>
 
-                  <div className="mt-8 grid w-full gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="mt-8 grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),24rem))] justify-center gap-x-8 gap-y-12">
                     {group.members.map((member, i) => {
                       const initials = memberInitials(member.name);
                       const expertise = parseExpertise(member.expertise);
@@ -170,24 +171,16 @@ export default async function AboutPage() {
                           delay={Math.min(groupDelayBase + i * 90, 600)}
                           className="group relative flex h-full flex-col"
                         >
-                          <figure className="relative aspect-[4/5] overflow-hidden transition-transform duration-300 motion-safe:group-hover:-translate-y-1">
+                          <figure className="relative aspect-[4/5] overflow-hidden motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:-translate-y-1">
                             {photo ? (
-                              /* eslint-disable-next-line @next/next/no-img-element */
-                              <img
-                                src={photo}
-                                alt={`${member.name}, ${member.role} at ${profile.name}`}
-                                width={640}
-                                height={800}
-                                loading="lazy"
-                                decoding="async"
-                                className="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.04]"
-                              />
+                              <TeamPortrait src={photo} name={member.name} role={member.role} company={profile.name} />
                             ) : (
                               <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/10 via-muted/40 to-transparent">
                                 <span aria-hidden className="text-6xl font-semibold tracking-tighter text-primary/60 sm:text-7xl">{initials}</span>
                                 <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Portrait coming soon</span>
                               </div>
                             )}
+                            <figcaption className="sr-only">{member.name} — {member.role} at {profile.name}</figcaption>
                           </figure>
 
                           <div className="mt-5 flex flex-col gap-3">
@@ -227,8 +220,8 @@ export default async function AboutPage() {
                             )}
 
                             {member.bio && (
-                              <p className="text-sm leading-6 text-muted-foreground">
-                                {member.bio}
+                              <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
+                                {contentText(member.bio,200)}
                               </p>
                             )}
 

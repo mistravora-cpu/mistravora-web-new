@@ -1,3 +1,4 @@
+import { firstContent } from "@/lib/content-preview";
 import type { Metadata } from "next";
 import { getAdminSolutions as getSolutions } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
@@ -21,14 +22,12 @@ const fields: FieldDef[] = [
   { name: "icon", label: "Icon", type: "icon", placeholder: "Lucide icon name" },
   { name: "category", label: "Category", placeholder: "Web Development" },
   { name: "short_description", label: "Short Description", type: "textarea", placeholder: "Professional websites that convert visitors into customers" },
-  { name: "long_description", label: "Long Description", type: "textarea" },
-  { name: "image", label: "Solution Image", type: "image" },
+  { name: "long_description", label: "Content (HTML and internal CSS)", type: "richtext" },
+  { name: "image", label: "Primary image (catalog and detail page)", type: "image" },
   { name: "technologies", label: "Technologies (one per line)", type: "list", placeholder: "React, Next.js, Tailwind CSS" },
   { name: "features", label: "Features (one per line)", type: "list" },
   { name: "services", label: "Included Services (one per line)", type: "list" },
   { name: "process_steps", label: "Process Steps (one per line)", type: "list" },
-  { name: "summary", label: "Summary (legacy)", type: "textarea" },
-  { name: "body", label: "Body (legacy)", type: "textarea" },
   { name: "sort_order", label: "Display Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];
@@ -48,7 +47,7 @@ export default async function SolutionsAdminPage() {
         table="solutions"
         columns={columns}
         fields={fields}
-        rows={solutions as unknown as Record<string, unknown>[]}
+        rows={solutions.map(solution => ({...solution,short_description:firstContent(solution.short_description,solution.summary),long_description:firstContent(solution.long_description,solution.body)})) as unknown as Record<string, unknown>[]}
       />
     </div>
   );

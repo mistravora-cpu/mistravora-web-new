@@ -4,7 +4,7 @@ export const metadata = { title: "Knowledge base", robots: { index: false } };
 const fields: FieldDef[] = [{ name: "title", label: "Title", type: "text", required: true },
 { name: "slug", label: "Slug", type: "text", required: true },
 { name: "summary", label: "Summary", type: "textarea", required: true },
-{ name: "body", label: "Body", type: "textarea" },
+{ name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
 { name: "category", label: "Category", type: "text" },
 { name: "tags", label: "Tags", type: "list" },
 { name: "published_at", label: "Publication date (ISO 8601)", type: "text" },

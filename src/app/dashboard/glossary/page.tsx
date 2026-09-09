@@ -4,8 +4,8 @@ export const metadata = { title: "Glossary", robots: { index: false } };
 const fields: FieldDef[] = [{ name: "term", label: "Term", type: "text", required: true },
 { name: "slug", label: "Slug", type: "text", required: true },
 { name: "definition", label: "Definition", type: "textarea", required: true },
-{ name: "explanation", label: "Explanation", type: "textarea" },
-{ name: "examples", label: "Examples", type: "textarea" },
+{ name: "explanation", label: "Explanation", type: "richtext" },
+{ name: "examples", label: "Examples", type: "richtext" },
 { name: "category", label: "Category", type: "text" },
 { name: "published", label: "Published", type: "boolean" },
 { name: "sort_order", label: "Sort order", type: "number" }];

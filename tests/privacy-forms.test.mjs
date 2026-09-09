@@ -5,13 +5,13 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const require=createRequire(import.meta.url);
-function load(file){const context={exports:{},require:(name)=>{
+function load(file){const context={exports:{},URL,require:(name)=>{
  if(name==='@/lib/rate-limit')return {checkRateLimit:()=>null,RATE_LIMITS:{contact:{},newsletter:{}}};
  if(name.includes('supabase'))throw Error('Rejected requests must not access the database');
  return require(name);
 }};
 // Lazy database mocks ensure imports are safe but any write is a test failure.
-context.require=(name)=>name==='@/lib/supabase/server'?{createClient:()=>{throw Error('Database accessed');}}:name==='@/lib/supabase/admin'?{createAdminClient:()=>{throw Error('Database accessed');}}:name==='@/lib/rate-limit'?{checkRateLimit:()=>null,RATE_LIMITS:{contact:{},newsletter:{}}}:require(name);
+context.require=(name)=>name==='@/lib/supabase/server'?{createClient:()=>{throw Error('Database accessed');}}:name==='@/lib/supabase/admin'?{createAdminClient:()=>{throw Error('Database accessed');}}:name==='@/lib/rate-limit'?{checkRateLimit:()=>null,RATE_LIMITS:{contact:{},newsletter:{}}}:name.startsWith('./')?load('src/lib/'+name.slice(2)+'.ts'):require(name);
 vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true,target:ts.ScriptTarget.ES2020}}).outputText,context);return context.exports;}
 test('newsletter and booking reject submissions without affirmative form choice',async()=>{
  for(const [path,body] of [['src/app/api/newsletter/route.ts',{email:'test@example.com'}],['src/app/api/bookings/route.ts',{slot:'d4da6f74-9c16-414b-b42a-2f1a7800590a',name:'Test Person',email:'test@example.com'}]]){

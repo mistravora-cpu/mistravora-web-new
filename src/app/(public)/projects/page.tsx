@@ -1,3 +1,4 @@
+import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -87,7 +88,7 @@ export default async function CaseStudiesPage() {
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <h2 className="text-base font-semibold leading-tight tracking-tight">{cs.title}</h2>
                     {cs.outcome && (
-                      <p className="text-sm leading-6 text-muted-foreground">{cs.outcome}</p>
+                      <p className="text-sm leading-6 text-muted-foreground">{contentText(cs.outcome,200)}</p>
                     )}
                     {cs.results.length > 0 && (
                       <ul className="flex flex-col gap-1.5">

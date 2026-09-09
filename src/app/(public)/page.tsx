@@ -1,3 +1,6 @@
+import { ArticleBody } from "@/components/article-body";
+import { CatalogImage } from "@/components/catalog-image";
+import { contentText } from "@/lib/content-preview";
 import { HeroMedia } from "@/components/hero-media";
 import { getCollection } from "@/lib/content";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -106,7 +109,7 @@ export default async function Home() {
       />
 
       {/* Keep the CMS headline in the initial server-rendered content. */}
-      <RobotHeroClient hero={hero} />
+      <RobotHeroClient hero={hero} description={hero?.description ? <ArticleBody body={hero.description} title="Introduction" /> : undefined} />
       <HeroMedia page="/" />
       <ScrollIndicator />
 
@@ -197,7 +200,7 @@ async function StatsSection() {
 async function SolutionsSection() {
   const services = await getCollection("services");
   const solutions = services.map(service => ({ id: service.slug, slug: service.slug, title: service.title,
-    short_description: service.description, summary: service.description, icon: null }));
+    short_description: service.description, summary: service.description, image:service.image, icon: null }));
 
   return (
     <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-20 pt-8">
@@ -223,12 +226,13 @@ async function SolutionsSection() {
               }`}
             >
               <article>
+              <CatalogImage src={solution.image} title={solution.title} />
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                 <Icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
               <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${solution.slug}`} className="transition-colors group-hover:text-primary">{solution.title}</Link></h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {solution.short_description ?? solution.summary ?? ""}
+                {contentText(solution.short_description ?? solution.summary,200)}
               </p>
               </article>
             </ScrollReveal>

@@ -21,10 +21,10 @@ export default async function DemoAppsAdminPage() {
   const fields: FieldDef[] = [
     { name: "name", label: "App Name", required: true },
     { name: "slug", label: "Slug", required: true, placeholder: "bakery-pos" },
-    { name: "description", label: "Description", type: "textarea" },
+    { name: "description", label: "Description", type: "richtext" },
     { name: "url", label: "Demo URL", placeholder: "https://demo.mistravora.com/..." },
     { name: "image", label: "Screenshot / Preview Image", type: "image" },
-    { name: "screenshot", label: "Legacy Screenshot URL", type: "image" },
+    { name: "screenshot", label: "Primary screenshot URL", type: "image" },
     { name: "industry", label: "Industry", placeholder: "Food & Beverage" },
     { name: "features", label: "Key Features (one per line)", type: "list", placeholder: "Live ordering, Inventory, Analytics" },
     { name: "sort_order", label: "Display Order", type: "number" },

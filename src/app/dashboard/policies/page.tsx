@@ -19,7 +19,7 @@ const fields: FieldDef[] = [
   { name: "slug", label: "Slug", required: true, placeholder: "privacy-policy" },
   { name: "version", label: "Version", placeholder: "1.0" },
   { name: "status", label: "Status", type: "select", options: ["active", "draft", "archived"] },
-  { name: "body", label: "Body", type: "textarea" },
+  { name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
   { name: "sort_order", label: "Sort Order", type: "number" },
 ];
 

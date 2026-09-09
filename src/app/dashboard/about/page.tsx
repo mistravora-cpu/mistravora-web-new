@@ -17,7 +17,7 @@ const valueColumns: ColumnDef[] = [
 const valueFields: FieldDef[] = [
   { name: "icon", label: "Icon", type: "icon", required: true },
   { name: "title", label: "Title", required: true },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];
@@ -43,7 +43,7 @@ const teamFields: FieldDef[] = [
   { name: "department", label: "Department" },
   { name: "location", label: "Location" },
   { name: "expertise", label: "Expertise (comma separated)" },
-  { name: "bio", label: "Bio", type: "textarea" },
+  { name: "bio", label: "Biography (HTML and internal CSS)", type: "richtext" },
   { name: "photo", label: "Profile Image", type: "image" },
   { name: "linkedin", label: "LinkedIn Profile", placeholder: "https://www.linkedin.com/in/..." },
   { name: "x_handle", label: "X Profile (Twitter)", placeholder: "https://x.com/..." },

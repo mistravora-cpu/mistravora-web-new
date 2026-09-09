@@ -1,3 +1,6 @@
+import { TeamPortrait } from "@/components/team-portrait";
+import { contentText } from "@/lib/content-preview";
+import { ArticleBody } from "@/components/article-body";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import type { Metadata } from "next";
@@ -31,7 +34,7 @@ export async function generateMetadata({
 
   const url = `${site.url}/about/team/${memberSlug(member)}`;
   const description =
-    member.bio ??
+    contentText(member.bio,160) ||
     `${member.name} is ${member.role} at ${site.name}.`;
   const photo = safeUrl(member.photo) ?? undefined;
 
@@ -81,7 +84,7 @@ export default async function TeamMemberPage({
     "@type": "Person",
     name: member.name,
     jobTitle: member.role,
-    description: member.bio ?? undefined,
+    description: contentText(member.bio,200) || undefined,
     image: photo ?? undefined,
     url,
     worksFor: { "@type": "Organization", name: site.name, url: site.url },
@@ -116,19 +119,10 @@ export default async function TeamMemberPage({
 
           <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_1fr] lg:gap-14">
             {/* Portrait */}
-            <div className="md:sticky md:top-24 md:self-start">
+            <div className="mx-auto w-full max-w-sm md:sticky md:top-24 md:self-start">
               <div className="relative aspect-[4/5] w-full overflow-hidden">
                 {photo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={photo}
-                    alt={`${member.name}, ${member.role} at ${profile.name}`}
-                    width={640}
-                    height={800}
-                    loading="eager"
-                    decoding="async"
-                    className="h-full w-full object-cover object-top"
-                  />
+                  <TeamPortrait src={photo} name={member.name} role={member.role} company={profile.name} profile />
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/10 via-muted/40 to-transparent">
                     <span aria-hidden className="text-7xl font-semibold tracking-tighter text-primary/60 sm:text-8xl">
@@ -178,9 +172,7 @@ export default async function TeamMemberPage({
               {member.bio && (
                 <ScrollReveal animation="fade-up" delay={80}>
                   <section aria-label={`${member.name} bio`}>
-                    <p className="text-base leading-8 text-foreground/90 sm:text-lg sm:leading-9">
-                      {member.bio}
-                    </p>
+                    <div className="text-base leading-8 text-foreground/90 sm:text-lg sm:leading-9"><ArticleBody body={member.bio ?? ""} title="Biography" /></div>
                   </section>
                 </ScrollReveal>
               )}
