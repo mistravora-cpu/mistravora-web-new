@@ -1,3 +1,4 @@
+import { matchesConditions, resolveFlow } from "./flow";
 import type {
   Answer,
   Answers,
@@ -10,6 +11,7 @@ export function visible(
   project: string,
   answers: Answers,
   features: Set<string> = new Set(),
+  input?: RequirementRequest,
 ): boolean {
   if (q.projects.length && !q.projects.includes(project)) return false;
   if (q.when) {
@@ -21,7 +23,21 @@ export function visible(
     )
       return false;
   }
-  return !q.whenFeature || features.has(q.whenFeature);
+  return (
+    (!q.whenFeature || features.has(q.whenFeature)) &&
+    matchesConditions(
+      q.conditions,
+      input ?? {
+        projectType: project,
+        answers,
+        features: [],
+        design: "",
+        timeline: "",
+        maintenance: "",
+      },
+      features,
+    )
+  );
 }
 const present = (value: Answer | undefined) =>
   value !== undefined &&
@@ -31,35 +47,16 @@ export function resolveFeatures(
   config: RequirementConfig,
   input: RequirementRequest,
 ) {
-  const project = config.projectTypes.find((p) => p.id === input.projectType);
-  if (!project) throw Error("Choose a valid project type.");
-  const features = new Set([
-    ...project.included,
-    ...input.features.filter((f) => project.optional.includes(f)),
-  ]);
-  for (let pass = 0; pass <= config.features.length; pass++) {
-    const size = features.size;
-    for (const q of config.questions) {
-      if (!visible(q, project.id, input.answers, features)) continue;
-      const value = input.answers[q.id];
-      if (q.feature && value === true) features.add(q.feature);
-      for (const o of q.options)
-        if (Array.isArray(value) ? value.includes(o.id) : value === o.id)
-          o.features.forEach((f) => features.add(f));
-    }
-    for (const f of config.features)
-      if (features.has(f.id)) f.dependencies.forEach((d) => features.add(d));
-    if (features.size === size) break;
-  }
-  return { project, features };
+  return resolveFlow(config, input);
 }
+
 export function validateRequirements(
   config: RequirementConfig,
   input: RequirementRequest,
   required = false,
 ) {
   const errors: Record<string, string> = {};
-  const { features, project } = resolveFeatures(config, input);
+  const { active, project } = resolveFeatures(config, input);
   if (input.features.some((f) => !project.optional.includes(f)))
     errors.features = "Choose only applicable features.";
   for (const [field, value] of Object.entries(input.answers)) {
@@ -68,7 +65,8 @@ export function validateRequirements(
       errors[field] = "Unknown question.";
       continue;
     }
-    if (!visible(q, project.id, input.answers, features)) continue;
+    if (!active.has(q.id)) continue;
+    if (value === "" && !q.required) continue;
     if (
       q.type === "number" &&
       (typeof value !== "number" ||
@@ -116,11 +114,7 @@ export function validateRequirements(
   }
   if (required)
     for (const q of config.questions)
-      if (
-        q.required &&
-        visible(q, project.id, input.answers, features) &&
-        !present(input.answers[q.id])
-      )
+      if (q.required && active.has(q.id) && !present(input.answers[q.id]))
         errors[q.id] = "Please complete this required question.";
   if (!config.design.some((d) => d.id === input.design))
     errors.design = "Choose a design level.";
@@ -134,7 +128,11 @@ export function calculateEstimate(
   config: RequirementConfig,
   input: RequirementRequest,
 ) {
-  const { project, features } = resolveFeatures(config, input);
+  const {
+    project,
+    features,
+    active: activeIds,
+  } = resolveFeatures(config, input);
   const selected = config.features.filter((f) => features.has(f.id));
   const lines = selected.map((f) => ({
     id: f.id,
@@ -145,9 +143,7 @@ export function calculateEstimate(
   let score = selected.reduce((sum, f) => sum + f.score, 0),
     scale = 1,
     manual = false;
-  const active = config.questions.filter((q) =>
-    visible(q, project.id, input.answers, features),
-  );
+  const active = config.questions.filter((q) => activeIds.has(q.id));
   for (const q of active) {
     const value = input.answers[q.id];
     if (!present(value)) continue;
@@ -273,13 +269,9 @@ export function buildRequirementSummary(
   config: RequirementConfig,
   input: RequirementRequest,
 ) {
-  const { features } = resolveFeatures(config, input);
+  const { active } = resolveFeatures(config, input);
   return config.questions
-    .filter(
-      (q) =>
-        visible(q, input.projectType, input.answers, features) &&
-        present(input.answers[q.id]),
-    )
+    .filter((q) => active.has(q.id) && present(input.answers[q.id]))
     .map((q) => {
       const value = input.answers[q.id];
       const label = (v: string) =>

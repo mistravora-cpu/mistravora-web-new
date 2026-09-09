@@ -1,9 +1,13 @@
 import { getRequirementConfig } from "@/lib/requirements/settings";
-import { SettingsEditor } from "../settings/settings-editor";
+import { RequirementConfigEditor } from "@/components/requirements/config-editor";
+import { getQuoteRecipients } from "@/lib/requirements/notification-settings";
 import { quotationEmailConfigured } from "@/lib/requirements/email";
 import Link from "next/link";
 export default async function CalculatorAdminPage() {
-  const config = await getRequirementConfig();
+  const [config, recipients] = await Promise.all([
+    getRequirementConfig(),
+    getQuoteRecipients(),
+  ]);
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">
@@ -22,28 +26,13 @@ export default async function CalculatorAdminPage() {
           : "Not configured. Set RESEND_API_KEY and a verified EMAIL_FROM in the server environment. Visitors can still save enquiries and download the PDF."}
       </p>
       <p className="text-sm text-muted-foreground">
-        Change the version when changing prices or scope rules. Weeks and added
-        module prices are planning assumptions and should be reviewed here.
-        Questions use project IDs and optional when/whenFeature conditions.
-        Phase shares must total 1. Keep stable IDs when changing labels.
+        Saving creates a new configuration version automatically. Weeks and
+        added module prices are planning assumptions and should be reviewed
+        here. Questions use project IDs and optional when/whenFeature
+        conditions. Phase shares must total 1. Keep stable IDs when changing
+        labels.
       </p>
-      <SettingsEditor
-        groups={[
-          {
-            label: "Requirement calculator",
-            fields: [
-              {
-                key: "requirement_calculator_config",
-                label: "Complete calculator configuration (JSON)",
-                type: "textarea",
-              },
-            ],
-          },
-        ]}
-        initialData={{
-          requirement_calculator_config: JSON.stringify(config, null, 2),
-        }}
-      />
+      <RequirementConfigEditor initial={config} recipients={recipients} />
       <Link href="/tools/cost-calculator" className="underline">
         Open public requirement calculator
       </Link>

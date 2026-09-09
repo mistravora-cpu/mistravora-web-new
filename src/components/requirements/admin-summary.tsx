@@ -17,10 +17,21 @@ export function RequirementAdminSummary({
         {record.contact.name} — {e.project} — {record.reference}
       </summary>
       <div className="mt-5 space-y-5">
-        <AdminDelivery id={id} accepted={record.emailStatus === "accepted"} />
+        <AdminDelivery
+          id={id}
+          accepted={
+            record.emailStatus === "accepted" &&
+            record.notification?.status === "accepted"
+          }
+        />
         <p className="text-sm">
           {record.contact.email} · Preferred: {record.contact.preferred} · Email
           receipt: {record.emailStatus}
+        </p>
+        <p className="text-sm">
+          Team notification:{" "}
+          {record.notification?.status ?? "Not yet requested"} ·{" "}
+          {record.notification?.recipients.join(", ")}
         </p>
         <p>
           {lkr(e.low)} – {lkr(e.high)} · {e.weeksLow}–{e.weeksHigh} weeks
@@ -37,6 +48,18 @@ export function RequirementAdminSummary({
             </div>
           ))}
         </dl>
+        {!!record.insights?.length && (
+          <div className="space-y-3">
+            <h3 className="font-semibold">
+              Matching recommendations for this scope
+            </h3>
+            {record.insights.map((insight) => (
+              <p key={insight.id} className="text-sm">
+                <strong>{insight.title}</strong> — {insight.description}
+              </p>
+            ))}
+          </div>
+        )}
         <h3 className="font-semibold">Requirement summary</h3>
         <dl className="space-y-3">
           {record.summary.map((row, i) => (

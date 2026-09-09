@@ -25,7 +25,8 @@ test("quotation downloads and email retries reject unauthenticated callers befor
     },
     "@/lib/requirements/record": {},
     "@/lib/requirements/pdf": {},
-    "@/lib/requirements/email": {},
+    "@/lib/requirements/delivery": {},
+    "@/lib/requirements/notification-settings": {},
     "@/lib/rate-limit": {},
     "next/cache": {},
   };

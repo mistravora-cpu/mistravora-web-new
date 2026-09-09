@@ -3,7 +3,8 @@ import { requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseRequirementRecord } from "@/lib/requirements/record";
 import { buildQuotationPdf } from "@/lib/requirements/pdf";
-import { emailQuotation } from "@/lib/requirements/email";
+import { deliverQuotationEmails } from "@/lib/requirements/delivery";
+import { getQuoteRecipients } from "@/lib/requirements/notification-settings";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -67,15 +68,24 @@ export async function POST(
         { error: "Quotation not found." },
         { status: 404 },
       );
-    if (record.emailStatus === "accepted")
+    if (
+      record.emailStatus === "accepted" &&
+      record.notification?.status === "accepted"
+    )
       return NextResponse.json({
         message:
           "The provider already accepted this email. No duplicate was sent.",
       });
     const pdf = await buildQuotationPdf(record);
-    const result = await emailQuotation(record, pdf);
-    record.emailStatus = result.status;
-    if (result.id) record.emailId = result.id;
+    if (!record.notification)
+      record.notification = {
+        recipients: await getQuoteRecipients(),
+        status: "pending",
+      };
+    await deliverQuotationEmails(record, pdf);
+    const accepted =
+      record.emailStatus === "accepted" &&
+      record.notification.status === "accepted";
     const { error } = await createAdminClient()
       .from("inquiries")
       .update({ message: JSON.stringify(record) })
@@ -83,13 +93,16 @@ export async function POST(
     if (error) throw error;
     revalidatePath("/dashboard/inquiries");
     return NextResponse.json(
-      result.status === "accepted"
-        ? { message: "The email provider accepted the quotation for delivery." }
+      accepted
+        ? {
+            message:
+              "The provider accepted the customer quotation and team notification.",
+          }
         : {
             error:
-              "Email is not configured. Set RESEND_API_KEY and verified EMAIL_FROM in the server environment.",
+              "Some emails remain unsent. Check RESEND_API_KEY, verified EMAIL_FROM and recipient addresses, then retry. Accepted emails will not be resent.",
           },
-      { status: result.status === "accepted" ? 200 : 503 },
+      { status: accepted ? 200 : 503 },
     );
   } catch {
     return NextResponse.json(

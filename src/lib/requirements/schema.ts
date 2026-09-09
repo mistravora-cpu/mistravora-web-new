@@ -1,6 +1,35 @@
 import { z } from "zod";
+import { flowOrder } from "./flow";
 const id = z.string().regex(/^[a-z][a-z0-9_]{0,60}$/);
 const money = z.number().finite().min(0).max(100000000);
+export const conditionGroupSchema = z.object({
+  match: z.enum(["all", "any"]),
+  rules: z
+    .array(
+      z.object({
+        field: z
+          .string()
+          .regex(
+            /^(\$(project|features|design|timeline|maintenance)|[a-z][a-z0-9_]{0,60})$/,
+          ),
+        operator: z.enum([
+          "equals",
+          "not_equals",
+          "includes",
+          "not_includes",
+          "gte",
+          "lte",
+          "answered",
+        ]),
+        value: z
+          .union([z.string().max(2500), z.number().finite(), z.boolean()])
+          .optional(),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+export type ConditionGroup = z.infer<typeof conditionGroupSchema>;
 const option = z.object({
   id: z.string().min(1).max(100),
   label: z.string().min(1).max(200),
@@ -34,6 +63,8 @@ const question = z.object({
     .object({ field: id, value: z.union([z.string(), z.boolean()]) })
     .optional(),
   whenFeature: id.optional(),
+  conditions: conditionGroupSchema.optional(),
+  help: z.string().max(500).default(""),
   max: z.number().min(1).max(100000000).default(100000),
   scaleThresholds: z
     .array(
@@ -94,6 +125,19 @@ export const requirementConfigSchema = z
       )
       .max(100),
     questions: z.array(question).max(400),
+    questionsPerStep: z.number().int().min(1).max(5).default(3),
+    recommendations: z
+      .array(
+        z.object({
+          id,
+          title: z.string().min(1).max(150),
+          description: z.string().min(1).max(600),
+          conditions: conditionGroupSchema,
+          features: z.array(id).max(10).default([]),
+        }),
+      )
+      .max(60)
+      .default([]),
     design: z.array(choice).min(1),
     timelines: z.array(choice).min(1),
     maintenance: z
@@ -132,6 +176,7 @@ export const requirementConfigSchema = z
       config.design,
       config.timelines,
       config.maintenance,
+      config.recommendations,
     ])
       if (new Set(list.map((x) => x.id)).size !== list.length)
         fail("IDs must be unique in every list.");
@@ -144,6 +189,10 @@ export const requirementConfigSchema = z
         if (!features.has(f)) fail(`Unknown feature ${f}`);
     }
     for (const q of config.questions) {
+      if (q.conditions && (q.when || q.whenFeature))
+        fail(
+          "Use either combined conditions or legacy when/whenFeature rules on a question, not both.",
+        );
       for (const p of q.projects)
         if (!projects.has(p)) fail(`Unknown project ${p}`);
       if (q.feature && !features.has(q.feature))
@@ -159,6 +208,74 @@ export const requirementConfigSchema = z
       for (const o of q.options)
         for (const f of o.features)
           if (!features.has(f)) fail("Unknown option feature");
+    }
+    const checkConditions = (conditions: ConditionGroup | undefined) => {
+      for (const rule of conditions?.rules ?? []) {
+        const q = config.questions.find((q) => q.id === rule.field);
+        if (!rule.field.startsWith("$") && !q)
+          fail(`Unknown condition field ${rule.field}`);
+        if (rule.operator !== "answered" && rule.value === undefined)
+          fail("Conditions need a comparison value.");
+        const multi = rule.field === "$features" || q?.type === "multi";
+        if (["includes", "not_includes"].includes(rule.operator) && !multi)
+          fail(
+            "Includes conditions require a multiple-choice answer or feature.",
+          );
+        if (
+          multi &&
+          ["equals", "not_equals", "gte", "lte"].includes(rule.operator)
+        )
+          fail("Use includes for multiple-choice answers.");
+        if (
+          ["gte", "lte"].includes(rule.operator) &&
+          (q?.type !== "number" || typeof rule.value !== "number")
+        )
+          fail("Numeric conditions require a numeric question and value.");
+        if (
+          q?.type === "boolean" &&
+          rule.operator !== "answered" &&
+          typeof rule.value !== "boolean"
+        )
+          fail("Yes/no conditions need a boolean value.");
+        if (
+          q &&
+          ["single", "multi"].includes(q.type) &&
+          rule.operator !== "answered" &&
+          !q.options.some((o) => o.id === rule.value)
+        )
+          fail("Condition value must match an available option ID.");
+        const special =
+          rule.field === "$features"
+            ? features
+            : rule.field === "$project"
+              ? projects
+              : rule.field === "$design"
+                ? new Set(config.design.map((x) => x.id))
+                : rule.field === "$timeline"
+                  ? new Set(config.timelines.map((x) => x.id))
+                  : rule.field === "$maintenance"
+                    ? new Set(config.maintenance.map((x) => x.id))
+                    : null;
+        if (
+          special &&
+          rule.operator !== "answered" &&
+          !special.has(String(rule.value))
+        )
+          fail("Unknown condition selection.");
+        if (rule.field === "$features" && rule.operator === "answered")
+          fail("Feature conditions must name a specific feature.");
+      }
+    };
+    config.questions.forEach((q) => checkConditions(q.conditions));
+    for (const rule of config.recommendations) {
+      checkConditions(rule.conditions);
+      for (const f of rule.features)
+        if (!features.has(f)) fail("Unknown recommended feature.");
+    }
+    try {
+      flowOrder(config);
+    } catch {
+      fail("Question and feature conditions cannot cycle.");
     }
     const checkedQuestions = new Set<string>();
     const checkQuestion = (key: string, path: Set<string>) => {

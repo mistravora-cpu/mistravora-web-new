@@ -31,9 +31,14 @@ const config = local(
 ).requirementConfigSchema.parse(
   JSON.parse(readFileSync("src/lib/requirements/defaults.json", "utf8")),
 );
-function setup({ mailFailure = false, dbFailure = false } = {}) {
+function setup({
+  mailFailure = false,
+  dbFailure = false,
+  teamFailure = false,
+} = {}) {
   const rows = new Map();
-  let sent = 0;
+  let sent = 0,
+    notified = 0;
   const db = {
     from(table) {
       assert.equal(table, "inquiries");
@@ -97,17 +102,45 @@ function setup({ mailFailure = false, dbFailure = false } = {}) {
       buildQuotationPdf: async () => Buffer.from("%PDF fixture"),
     },
     "@/lib/requirements/email": {
+      emailQuoteNotification: async () => {
+        notified++;
+        if (teamFailure) throw Error("team provider failure");
+        return { status: "accepted", id: "team-receipt" };
+      },
       emailQuotation: async () => {
         sent++;
         if (mailFailure) throw Error("provider unavailable");
         return { status: "accepted", id: "receipt" };
       },
     },
+    "@/lib/requirements/notification-settings": {
+      getQuoteRecipients: async () => [
+        "mistravora@gmail.com",
+        "info@mistravora.com",
+      ],
+    },
     "@/lib/rate-limit": {
       checkRateLimit: () => null,
       RATE_LIMITS: { contact: {} },
     },
   };
+  const delivery = {};
+  new Function(
+    "exports",
+    "require",
+    ts.transpileModule(
+      readFileSync("src/lib/requirements/delivery.ts", "utf8"),
+      {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          target: ts.ScriptTarget.ES2022,
+        },
+      },
+    ).outputText,
+  )(delivery, (name) =>
+    name === "server-only" ? {} : overrides["@/lib/requirements/email"],
+  );
+  overrides["@/lib/requirements/delivery"] = delivery;
   new Function(
     "exports",
     "require",
@@ -129,7 +162,15 @@ function setup({ mailFailure = false, dbFailure = false } = {}) {
         ? local("src/lib/requirements/" + name.split("/").at(-1) + ".ts")
         : require(name)),
   );
-  return { post: exports.POST, rows, sent: () => sent };
+  return {
+    post: exports.POST,
+    rows,
+    sent: () => sent,
+    notified: () => notified,
+    recoverTeam: () => {
+      teamFailure = false;
+    },
+  };
 }
 function payload() {
   return {
@@ -183,6 +224,7 @@ test("submission recalculates prices, drops irrelevant answers and retries witho
   assert.equal((await env.post(request(data))).status, 200);
   assert.equal(env.rows.size, 1);
   assert.equal(env.sent(), 1);
+  assert.equal(env.notified(), 1);
 });
 test("email failure keeps the inquiry and PDF and never claims successful delivery", async () => {
   const env = setup({ mailFailure: true });
@@ -222,4 +264,23 @@ test("a reused ID cannot retrieve a different enquiry", async () => {
   );
   assert.equal(result.status, 409);
   assert.equal(env.sent(), 1);
+});
+
+test("team notification failures retry independently without duplicating customer email", async () => {
+  const env = setup({ teamFailure: true }),
+    data = payload();
+  assert.equal((await env.post(request(data))).status, 200);
+  let record = JSON.parse(env.rows.get(data.id).message);
+  assert.equal(record.emailStatus, "accepted");
+  assert.equal(record.notification.status, "failed");
+  assert.deepEqual(record.notification.recipients, [
+    "mistravora@gmail.com",
+    "info@mistravora.com",
+  ]);
+  env.recoverTeam();
+  assert.equal((await env.post(request(data))).status, 200);
+  record = JSON.parse(env.rows.get(data.id).message);
+  assert.equal(record.notification.status, "accepted");
+  assert.equal(env.sent(), 1);
+  assert.equal(env.notified(), 2);
 });

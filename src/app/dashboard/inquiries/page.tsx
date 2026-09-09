@@ -1,3 +1,5 @@
+import { RequirementInsights } from "@/components/requirements/admin-insights";
+import { getRequirementConfig } from "@/lib/requirements/settings";
 import { RequirementAdminSummary } from "@/components/requirements/admin-summary";
 import type { Metadata } from "next";
 import { getInquiries } from "@/lib/services";
@@ -33,7 +35,7 @@ const fields: FieldDef[] = [
 ];
 
 export default async function InquiriesAdminPage() {
-  const inquiries = await getInquiries();
+  const [inquiries, config] = await Promise.all([getInquiries(), getRequirementConfig()]);
 
   const newCount = inquiries.filter((i) => i.status === "new").length;
   const inProgressCount = inquiries.filter((i) => i.status === "read").length;
@@ -44,7 +46,7 @@ export default async function InquiriesAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Customer Inquiries</h1>
         <p className="text-sm text-muted-foreground">
-          Messages submitted through the contact form.
+          Contact messages and project quotation requests.
         </p>
       </div>
 
@@ -63,6 +65,7 @@ export default async function InquiriesAdminPage() {
         </div>
       </div>
 
+      <RequirementInsights messages={inquiries.map(i => i.message)} config={config} />
       <section aria-label="Project requirement submissions" className="space-y-3">{inquiries.map(inquiry => <RequirementAdminSummary key={inquiry.id} id={inquiry.id} message={inquiry.message} />)}</section>
       <CrudManager
         table="inquiries"

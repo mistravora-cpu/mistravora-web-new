@@ -12,7 +12,10 @@ export function QuestionField({
   error?: string;
 }) {
   const id = `req-${q.id}`,
-    hint = error ? `${id}-error` : undefined;
+    hint =
+      [q.help ? `${id}-help` : "", error ? `${id}-error` : ""]
+        .filter(Boolean)
+        .join(" ") || undefined;
   const field =
     "w-full rounded-lg border border-border bg-background p-3 text-sm focus-visible:outline-2 focus-visible:outline-primary";
   return (
@@ -21,15 +24,25 @@ export function QuestionField({
         {q.label}
         {q.required ? " *" : ""}
       </legend>
+      {q.help && (
+        <p
+          id={`${id}-help`}
+          className="text-sm leading-6 text-muted-foreground"
+        >
+          {q.help}
+        </p>
+      )}
       {q.type === "boolean" ? (
         <div className="flex gap-3">
           {[true, false].map((option) => (
             <label
               key={String(option)}
-              className="flex min-h-11 items-center gap-2 rounded-lg border border-border px-4"
+              className="flex min-h-12 flex-1 cursor-pointer items-center gap-3 rounded-xl border border-border px-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
             >
               <input
                 type="radio"
+                className="h-4 w-4 shrink-0 accent-primary"
+                aria-describedby={hint}
                 name={id}
                 checked={value === option}
                 onChange={() => onChange(option)}
@@ -43,10 +56,12 @@ export function QuestionField({
           {q.options.map((o) => (
             <label
               key={o.id}
-              className="flex min-h-11 items-center gap-3 rounded-lg border border-border p-3 text-sm"
+              className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-border p-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
             >
               <input
                 type={q.type === "multi" ? "checkbox" : "radio"}
+                className="h-4 w-4 shrink-0 accent-primary"
+                aria-describedby={hint}
                 name={id}
                 checked={
                   q.type === "multi"
@@ -114,7 +129,7 @@ export function QuestionField({
         </>
       )}
       {error && (
-        <p id={hint} role="alert" className="text-sm text-destructive">
+        <p id={`${id}-error`} role="alert" className="text-sm text-destructive">
           {error}
         </p>
       )}

@@ -16,6 +16,7 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
+    if(name === '@/lib/requirements/notification-config') return {quoteRecipientsSchema:{parse:v=>v}};
     if(name === '@/lib/requirements/schema') return {requirementConfigSchema:{parse:v=>v}};
     if(name === '@/lib/hero-media-config') return {heroMediaSchema:{parse:v=>v}};
     if(name === '@/lib/media-url') { const media = {exports:{}, URL}; vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/media-url.ts','utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText, media); return media.exports; }

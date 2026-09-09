@@ -23,6 +23,17 @@ export type RequirementRecord = {
   business: { name: string; email: string; phone: string; url: string };
   emailStatus: "pending" | "accepted" | "failed" | "not_configured";
   emailId?: string;
+  notification?: {
+    recipients: string[];
+    status: RequirementRecord["emailStatus"];
+    id?: string;
+  };
+  insights?: {
+    id: string;
+    title: string;
+    description: string;
+    features: string[];
+  }[];
 };
 export function parseRequirementRecord(
   message: string,

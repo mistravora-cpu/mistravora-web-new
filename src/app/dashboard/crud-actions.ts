@@ -1,5 +1,6 @@
 "use server";
 
+import { quoteRecipientsSchema } from "@/lib/requirements/notification-config";
 import { requirementConfigSchema } from "@/lib/requirements/schema";
 import { heroMediaSchema } from "@/lib/hero-media-config";
 import { isPublicMediaUrl } from "@/lib/media-url";
@@ -298,7 +299,7 @@ export async function deleteRow(table: string, id: string) {
 
 // Allowed setting keys — prevents arbitrary key injection.
 const ALLOWED_SETTING_KEYS = new Set([
-  "hero_media_config", "requirement_calculator_config",
+  "hero_media_config", "requirement_calculator_config", "quote_notification_recipients",
   ...publicBusinessKeys,
   "pricing_calculator_config",
   // Marketing — analytics
@@ -367,6 +368,10 @@ export async function saveSettings(data: Record<string, string>) {
   }
   for (const [key, limit] of [["site_geo_lat", 90], ["site_geo_lng", 180]] as const) {
     if (data[key] && (!Number.isFinite(Number(data[key])) || Math.abs(Number(data[key])) > limit)) return {error: "Provide valid latitude and longitude coordinates."};
+  }
+  if ("quote_notification_recipients" in data) {
+    try { quoteRecipientsSchema.parse(JSON.parse(data.quote_notification_recipients)); }
+    catch { return { error: "Provide one to five valid notification email addresses." }; }
   }
   if (data.requirement_calculator_config) {
     try { requirementConfigSchema.parse(JSON.parse(data.requirement_calculator_config)); }

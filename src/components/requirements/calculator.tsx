@@ -1,6 +1,23 @@
 "use client";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  Globe,
+  ShoppingCart,
+  PanelsTopLeft,
+  Store,
+  Smartphone,
+  Blocks,
+  Sparkles,
+  RotateCcw,
+  Download,
+  ShieldCheck,
+} from "lucide-react";
+import { requirementSteps } from "@/lib/requirements/steps";
+import { recommendationInsights } from "@/lib/requirements/flow";
 import type {
   Answer,
   RequirementConfig,
@@ -12,7 +29,6 @@ import {
   calculateEstimate,
   resolveFeatures,
   validateRequirements,
-  visible,
 } from "@/lib/requirements/engine";
 import { QuestionField } from "./question";
 import { EstimateSummary, lkr } from "./estimate";
@@ -26,8 +42,10 @@ type Receipt = {
 };
 export function RequirementCalculator({
   config,
+  preview = false,
 }: {
   config: RequirementConfig;
+  preview?: boolean;
 }) {
   const fresh = (): RequirementRequest => ({
     projectType: config.projectTypes[0].id,
@@ -40,12 +58,13 @@ export function RequirementCalculator({
     maintenance: config.maintenance[0].id,
   });
   const [input, setInput] = useState<RequirementRequest>(fresh),
-    [step, setStep] = useState(0),
+    [stepId, setStepId] = useState("project"),
     [ready, setReady] = useState(false),
     [errors, setErrors] = useState<Record<string, string>>({}),
     [busy, setBusy] = useState(false),
     [receipt, setReceipt] = useState<Receipt | null>(null),
-    [status, setStatus] = useState("");
+    [status, setStatus] = useState(""),
+    [featureSearch, setFeatureSearch] = useState("");
   const [contact, setContact] = useState({
       name: "",
       email: "",
@@ -61,7 +80,9 @@ export function RequirementCalculator({
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        const saved = JSON.parse(localStorage.getItem(draftKey) || "null");
+        const saved = preview
+          ? null
+          : JSON.parse(localStorage.getItem(draftKey) || "null");
         if (
           saved &&
           saved.version === config.version &&
@@ -74,21 +95,16 @@ export function RequirementCalculator({
             !Object.keys(validateRequirements(config, parsed.data)).length
           ) {
             setInput(parsed.data);
-            if (
-              Number.isInteger(saved.step) &&
-              saved.step >= 0 &&
-              saved.step < 100
-            )
-              setStep(saved.step);
+            if (typeof saved.stepId === "string") setStepId(saved.stepId);
           }
         }
       } catch {}
       setReady(true);
     }, 0);
     return () => clearTimeout(timer);
-  }, [config]);
+  }, [config, preview]);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || preview) return;
     try {
       const answers = Object.fromEntries(
         Object.entries(input.answers).filter(([key]) => {
@@ -101,69 +117,65 @@ export function RequirementCalculator({
         JSON.stringify({
           version: config.version,
           expires: Date.now() + 7 * 86400000,
-          step,
+          stepId,
           input: { ...input, answers },
         }),
       );
     } catch {}
-  }, [input, config, ready, step]);
+  }, [input, config, ready, stepId, preview]);
   const deferred = useDeferredValue(input),
     estimate = useMemo(
       () => calculateEstimate(config, deferred),
       [config, deferred],
     );
-  const { features, project } = resolveFeatures(config, input);
-  const derived = resolveFeatures(config, { ...input, features: [] }).features;
-  const active = config.questions.filter((q) =>
-    visible(q, input.projectType, input.answers, features),
+  const { features, project } = useMemo(
+    () => resolveFeatures(config, input),
+    [config, input],
   );
-  const groups = Array.from(new Set(active.map((q) => q.group))).flatMap(
-    (group) => {
-      const questions = active.filter((q) => q.group === group);
-      const chunks = [];
-      for (let i = 0; i < questions.length; i += 5)
-        chunks.push({
-          id: `${group}-${i}`,
-          title: group,
-          questions: questions.slice(i, i + 5),
-        });
-      return chunks;
-    },
+  const derived = useMemo(
+    () => resolveFeatures(config, { ...input, features: [] }).features,
+    [config, input],
   );
-  const before = groups.filter(
-    (g) =>
-      ![
-        "Integration and specialist details",
-        "Priorities and references",
-      ].includes(g.title),
+  const steps = useMemo(() => requirementSteps(config, input), [config, input]);
+  const insights = useMemo(
+    () => recommendationInsights(config, input),
+    [config, input],
   );
-  const after = groups.filter((g) =>
-    [
-      "Integration and specialist details",
-      "Priorities and references",
-    ].includes(g.title),
+  const effectiveStep = Math.max(
+    0,
+    steps.findIndex((s) => s.id === stepId),
   );
-  const steps = [
-    { id: "project", title: "Project", questions: [] },
-    ...before,
-    { id: "features", title: "Optional capabilities", questions: [] },
-    ...after,
-    { id: "design", title: "Design", questions: [] },
-    { id: "timeline", title: "Delivery and maintenance", questions: [] },
-    { id: "review", title: "Review your estimate", questions: [] },
-    { id: "contact", title: "Send your requirements", questions: [] },
-  ];
-  const effectiveStep = Math.min(step, steps.length - 1);
   const current = steps[effectiveStep];
+  const icons = [Globe, ShoppingCart, PanelsTopLeft, Store, Smartphone, Blocks];
+  const normalize = (next: RequirementRequest) => ({
+    ...next,
+    answers: resolveFeatures(config, next).answers,
+  });
   const change = (key: string, value: Answer) => {
-    setInput((s) => ({ ...s, answers: { ...s.answers, [key]: value } }));
+    setInput((s) =>
+      normalize({ ...s, answers: { ...s.answers, [key]: value } }),
+    );
     setErrors({});
     requestId.current = "";
   };
   function move(next: number) {
-    setStep(next);
+    setStepId(steps[next]?.id ?? "project");
     setErrors({});
     setTimeout(() => heading.current?.focus(), 0);
+  }
+  function addCapability(id: string) {
+    const next = normalize({ ...input, features: [...new Set([...input.features, id])] });
+    setInput(next);
+    requestId.current = "";
+    if (current.id === "review" || current.id === "contact") {
+      const previousQuestions = new Set(steps.flatMap(s => s.questions.map(q => q.id)));
+      const followup = requirementSteps(config, next).find(s => s.questions.some(q => !previousQuestions.has(q.id)));
+      if (followup) {
+        setStepId(followup.id);
+        setErrors({});
+        setTimeout(() => heading.current?.focus(), 0);
+      }
+    }
   }
   function next() {
     const all = validateRequirements(config, input, true);
@@ -174,16 +186,24 @@ export function RequirementCalculator({
     );
     if (Object.keys(local).length) {
       setErrors(local);
+      setTimeout(() => {
+        const first = document.getElementById(`req-${Object.keys(local)[0]}`);
+        (first ?? heading.current)?.focus();
+      }, 0);
       return;
     }
     move(Math.min(effectiveStep + 1, steps.length - 1));
   }
   async function submit() {
+    if (preview) {
+      setStatus("Preview only. No enquiry or email was sent.");
+      return;
+    }
     const all = validateRequirements(config, input, true);
     if (Object.keys(all).length) {
       setErrors(all);
       const index = steps.findIndex((s) => s.questions.some((q) => all[q.id]));
-      if (index >= 0) setStep(index);
+      if (index >= 0) move(index);
       return;
     }
     if (
@@ -240,16 +260,25 @@ export function RequirementCalculator({
   }
   if (receipt)
     return (
-      <div className="mx-auto max-w-3xl space-y-6 rounded-xl border border-border p-6">
+      <div className="mx-auto max-w-3xl space-y-6 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-10">
+        <ShieldCheck aria-hidden className="h-12 w-12 text-primary" />
         <h2 className="text-2xl font-semibold">
           Your requirements have been received
         </h2>
-        <p>Reference: {receipt.reference}</p>
+        <p className="break-all text-sm text-muted-foreground">
+          Reference: {receipt.reference}
+        </p>
         <p>{receipt.message}</p>
         <p>
           Our team will review your requirements and respond within 24 hours.
         </p>
-        <Button onClick={download}>Download preliminary quotation PDF</Button>
+        <Button
+          className="h-auto min-h-11 whitespace-normal"
+          onClick={download}
+        >
+          <Download aria-hidden />
+          Download preliminary quotation PDF
+        </Button>
         <div className="flex flex-wrap gap-5">
           <Link href="/book" className="underline">
             Book a consultation
@@ -261,18 +290,22 @@ export function RequirementCalculator({
       </div>
     );
   return (
-    <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_350px]">
       <div className="min-w-0 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm">
-            Step {Math.min(step + 1, steps.length)} of {steps.length}
+          <p
+            className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"
+            aria-live="polite"
+          >
+            Step {effectiveStep + 1} of {steps.length}
           </p>
           <Button
             variant="ghost"
+            disabled={busy}
             onClick={() => {
               if (confirm("Start over and remove saved selections?")) {
                 setInput(fresh());
-                setStep(0);
+                setStepId("project");
                 setContact({
                   name: "",
                   email: "",
@@ -284,23 +317,56 @@ export function RequirementCalculator({
                 });
                 setConsent(false);
                 setErrors({});
+                setFeatureSearch("");
                 requestId.current = "";
               }
             }}
           >
-            Start over
+            <RotateCcw aria-hidden /> Start over
           </Button>
         </div>
         <progress
           value={effectiveStep + 1}
           max={steps.length}
-          className="h-2 w-full"
+          className="h-2 w-full appearance-none overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary [&::-moz-progress-bar]:bg-primary"
           aria-label="Requirement gathering progress"
         />
         <p className="text-xs text-muted-foreground">
-          Selections are saved on this device for 7 days. Business notes and
-          contact details are not saved locally.
+          {preview
+            ? "Admin preview: selections are not saved and no emails will be sent."
+            : "Selections are saved on this device for 7 days. Business notes and contact details are not saved locally."}
         </p>
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 xl:hidden">
+          <span className="text-sm font-semibold">
+            {lkr(estimate.low)} – {lkr(estimate.high)}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {estimate.weeksLow}–{estimate.weeksHigh} weeks · 30% advance
+          </span>
+        </div>
+        <details className="rounded-xl border border-border bg-card px-4 py-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            Your steps · {project.label}
+          </summary>
+          <nav
+            aria-label="Calculator steps"
+            className="mt-3 grid gap-2 sm:grid-cols-2"
+          >
+            {steps.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                disabled={index > effectiveStep || busy}
+                aria-current={item.id === current.id ? "step" : undefined}
+                onClick={() => move(index)}
+                className="min-h-11 rounded-lg px-3 py-2 text-left text-sm hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-45"
+              >
+                {index + 1}. {item.title}
+                {item.id === current.id ? " · Current" : ""}
+              </button>
+            ))}
+          </nav>
+        </details>
         <h2
           ref={heading}
           tabIndex={-1}
@@ -308,33 +374,56 @@ export function RequirementCalculator({
         >
           {current.title}
         </h2>
-        <div className="space-y-7 rounded-xl border border-border bg-card p-5 sm:p-7">
+        <p className="text-sm leading-6 text-muted-foreground">
+          {current.id === "project"
+            ? "Choose the closest match. We’ll tailor the questions and estimate to your project."
+            : current.id === "features"
+              ? "Add only what you need. Included and answer-based capabilities are already selected."
+              : current.id === "review"
+                ? "Check your scope and costs before sharing your contact details."
+                : current.id === "contact"
+                  ? "One last step. Save your brief and get a copy of your preliminary quotation."
+                  : "Your answers shape the remaining steps. Optional questions can be skipped if you’re unsure."}
+        </p>
+        <div className="space-y-7 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-8">
           {current.id === "project" && (
             <div className="grid gap-3 sm:grid-cols-2">
-              {config.projectTypes.map((p) => (
-                <label
-                  key={p.id}
-                  className={`flex cursor-pointer flex-col gap-3 rounded-xl border p-4 ${input.projectType === p.id ? "border-primary" : "border-border"}`}
-                >
-                  <span className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="projectType"
-                      checked={input.projectType === p.id}
-                      onChange={() => {
-                        setInput({ ...fresh(), projectType: p.id });
-                        requestId.current = "";
-                      }}
-                    />
-                    <strong>{p.label}</strong>
-                  </span>
-                  <span className="text-sm">{p.description}</span>
-                  <span className="text-sm">From {lkr(p.base)}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {p.category} · {p.useCases}
-                  </span>
-                </label>
-              ))}
+              {config.projectTypes.map((p, index) => {
+                const Icon = icons[index % icons.length];
+                return (
+                  <label
+                    key={p.id}
+                    className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border p-5 transition-colors focus-within:ring-2 focus-within:ring-primary ${input.projectType === p.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <Icon
+                        aria-hidden
+                        className="h-8 w-8 shrink-0 text-primary"
+                      />
+                      <input
+                        type="radio"
+                        name="projectType"
+                        checked={input.projectType === p.id}
+                        onChange={() => {
+                          setInput({ ...fresh(), projectType: p.id });
+                          requestId.current = "";
+                        }}
+                      />
+                      <strong>{p.label}</strong>
+                    </span>
+                    <span className="text-sm">{p.description}</span>
+                    <span className="mt-auto text-sm font-semibold text-primary">
+                      Base {lkr(p.base)}{" "}
+                      <span className="font-normal text-muted-foreground">
+                        · before scope adjustments
+                      </span>
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {p.category} · {p.useCases}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           )}
           {current.questions.map((q) => (
@@ -352,54 +441,83 @@ export function RequirementCalculator({
                 Capabilities already included or required by your answers are
                 listed below and charged only once.
               </p>
-              {config.features
-                .filter((f) => project.optional.includes(f.id))
-                .map((f) => (
-                  <label
-                    key={f.id}
-                    className="flex min-h-11 items-start gap-3 rounded-lg border border-border p-3"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-1"
-                      checked={features.has(f.id)}
-                      disabled={derived.has(f.id)}
-                      onChange={(e) => {
-                        setInput((s) => ({
-                          ...s,
-                          features: e.target.checked
-                            ? [...s.features, f.id]
-                            : s.features.filter((id) => id !== f.id),
-                        }));
-                        requestId.current = "";
-                      }}
-                    />
-                    <span>
-                      {f.label}
-                      <span className="block text-xs text-muted-foreground">
-                        {project.included.includes(f.id)
-                          ? "Included in base"
-                          : derived.has(f.id)
-                            ? "Required by your answers"
-                            : lkr(f.price)}
+              <label className="block space-y-2 text-sm">
+                Find a capability
+                <input
+                  type="search"
+                  value={featureSearch}
+                  onChange={(e) => setFeatureSearch(e.target.value)}
+                  placeholder="Search features"
+                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3"
+                />
+              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {config.features
+                  .filter(
+                    (f) =>
+                      project.optional.includes(f.id) &&
+                      f.label
+                        .toLowerCase()
+                        .includes(featureSearch.toLowerCase()),
+                  )
+                  .map((f) => (
+                    <label
+                      key={f.id}
+                      className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mt-1"
+                        checked={features.has(f.id)}
+                        disabled={derived.has(f.id)}
+                        onChange={(e) => {
+                          setInput((s) =>
+                            normalize({
+                              ...s,
+                              features: e.target.checked
+                                ? [...s.features, f.id]
+                                : s.features.filter((id) => id !== f.id),
+                            }),
+                          );
+                          requestId.current = "";
+                        }}
+                      />
+                      <span>
+                        {f.label}
+                        <span className="block text-xs text-muted-foreground">
+                          {project.included.includes(f.id)
+                            ? "Included in base"
+                            : derived.has(f.id)
+                              ? "Required by your answers"
+                              : lkr(f.price)}
+                        </span>
                       </span>
-                    </span>
-                  </label>
-                ))}
+                    </label>
+                  ))}
+              </div>
+              {!config.features.some(
+                (f) =>
+                  project.optional.includes(f.id) &&
+                  f.label.toLowerCase().includes(featureSearch.toLowerCase()),
+              ) && (
+                <p className="text-sm text-muted-foreground">
+                  No matching capabilities. Try another search.
+                </p>
+              )}
             </>
           )}
           {current.id === "design" &&
             config.design.map((d) => (
               <label
                 key={d.id}
-                className="flex min-h-11 items-start gap-3 rounded-lg border border-border p-4"
+                className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
               >
                 <input
                   type="radio"
                   name="design"
                   checked={input.design === d.id}
                   onChange={() => {
-                    setInput((s) => ({ ...s, design: d.id }));
+                    setInput((s) => normalize({ ...s, design: d.id }));
                     requestId.current = "";
                   }}
                 />
@@ -417,14 +535,14 @@ export function RequirementCalculator({
               {config.timelines.map((t) => (
                 <label
                   key={t.id}
-                  className="flex min-h-11 gap-3 rounded-lg border border-border p-3"
+                  className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
                 >
                   <input
                     type="radio"
                     name="timeline"
                     checked={input.timeline === t.id}
                     onChange={() => {
-                      setInput((s) => ({ ...s, timeline: t.id }));
+                      setInput((s) => normalize({ ...s, timeline: t.id }));
                       requestId.current = "";
                     }}
                   />
@@ -440,14 +558,14 @@ export function RequirementCalculator({
               {config.maintenance.map((m) => (
                 <label
                   key={m.id}
-                  className="flex min-h-11 gap-3 rounded-lg border border-border p-3"
+                  className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
                 >
                   <input
                     type="radio"
                     name="maintenance"
                     checked={input.maintenance === m.id}
                     onChange={() => {
-                      setInput((s) => ({ ...s, maintenance: m.id }));
+                      setInput((s) => normalize({ ...s, maintenance: m.id }));
                       requestId.current = "";
                     }}
                   />
@@ -529,6 +647,7 @@ export function RequirementCalculator({
                   </label>
                   <input
                     id={`req-contact-${key}`}
+                    disabled={busy}
                     type={
                       key === "email"
                         ? "email"
@@ -563,6 +682,7 @@ export function RequirementCalculator({
                 Preferred contact method
                 <select
                   id="req-preferred"
+                  disabled={busy}
                   value={contact.preferred}
                   onChange={(e) => {
                     setContact((s) => ({ ...s, preferred: e.target.value }));
@@ -579,6 +699,7 @@ export function RequirementCalculator({
                 <input
                   type="checkbox"
                   checked={consent}
+                  disabled={busy}
                   onChange={(e) => setConsent(e.target.checked)}
                   className="mt-1"
                 />
@@ -596,7 +717,11 @@ export function RequirementCalculator({
                 Do not include passwords, customer records, or sensitive system
                 access.
               </p>
-              <Button disabled={busy} onClick={submit}>
+              <Button
+                className="h-auto min-h-12 w-full whitespace-normal py-3"
+                disabled={busy}
+                onClick={submit}
+              >
                 {busy
                   ? "Preparing your quotation…"
                   : "Send requirements and email my PDF"}
@@ -607,24 +732,83 @@ export function RequirementCalculator({
             </>
           )}
         </div>
-        <div className="flex justify-between gap-3">
+        <div className="sticky bottom-3 z-10 flex justify-between gap-3 rounded-2xl border border-border bg-background p-3 shadow-lg">
           <Button
             variant="outline"
-            disabled={step === 0 || busy}
+            disabled={effectiveStep === 0 || busy}
             onClick={() => move(Math.max(0, effectiveStep - 1))}
           >
-            Back
+            <ArrowLeft aria-hidden /> Back
           </Button>
-          {current.id !== "contact" && <Button onClick={next}>Continue</Button>}
+          {current.id !== "contact" && (
+            <Button className="min-h-11" onClick={next}>
+              Continue <ArrowRight aria-hidden />
+            </Button>
+          )}
         </div>
       </div>
-      <aside className="lg:sticky lg:top-24">
-        <details open className="rounded-xl border border-border bg-card p-5">
+      <aside className="space-y-4 xl:sticky xl:top-24">
+        <details
+          open
+          className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-card p-5 sm:p-6"
+        >
           <summary className="mb-4 cursor-pointer font-medium">
             Your planning estimate
           </summary>
           <EstimateSummary estimate={estimate} config={config} />
         </details>
+        {insights.length > 0 && (
+          <section
+            aria-label="Suggestions based on your answers"
+            className="space-y-4 rounded-3xl border border-border bg-card p-5"
+          >
+            <h3 className="flex items-center gap-2 font-semibold">
+              <Sparkles aria-hidden className="h-4 w-4 text-primary" />
+              Based on your answers
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Suggestions for your scope. Extras are added only when you select
+              them.
+            </p>
+            {insights.slice(0, 4).map((insight) => (
+              <div
+                key={insight.id}
+                className="space-y-2 border-t border-border pt-4"
+              >
+                <p className="text-sm font-semibold">{insight.title}</p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {insight.description}
+                </p>
+                {insight.features
+                  .filter((id) => project.optional.includes(id))
+                  .map((id) => {
+                    const feature = config.features.find((f) => f.id === id)!;
+                    return features.has(id) ? (
+                      <p
+                        key={id}
+                        className="flex items-center gap-2 text-xs text-primary"
+                      >
+                        <Check aria-hidden className="h-3 w-3" />
+                        {feature.label} in your scope
+                      </p>
+                    ) : (
+                      <Button
+                        key={id}
+                        variant="outline"
+                        size="sm"
+                        className="h-auto min-h-11 whitespace-normal text-left"
+                        disabled={busy}
+                        onClick={() => addCapability(id)}
+                      >
+                        Add {feature.label} · {lkr(feature.price)} before
+                        adjustments
+                      </Button>
+                    );
+                  })}
+              </div>
+            ))}
+          </section>
+        )}
       </aside>
     </div>
   );

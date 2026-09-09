@@ -42,3 +42,35 @@ Verification completed locally on 2026-09-08:
 - A sample multi-page PDF was generated and parsed successfully.
 
 Admin → Inquiries includes protected PDF download and email-retry controls. Existing provider-accepted emails are not resent. Email credentials were absent from the local environment; configure them on Vercel and retry unsent quotations from the admin panel. Live inbox delivery has not been tested. Font licensing is included in `src/assets/fonts/OFL.txt`.
+
+## Adaptive flow and team notifications — 2026-09-09
+
+Admin → Pricing Calculator now includes visual controls for notification recipients, questions per step, question labels/help, required answers, project applicability, answer labels, combined visibility conditions, and recommendations. Advanced JSON remains available for adding questions/options and changing prices or dependencies. Saving generates a new configuration version. The local preview never saves a device draft or submits an enquiry.
+
+Notification recipients default to `mistravora@gmail.com` and `info@mistravora.com`. They are stored separately in `settings.quote_notification_recipients`, validated on the server, and snapshotted into each new quotation. A separate staff email contains the PDF and contact/scope summary; replying addresses the visitor. Customer delivery and team notification have independent acceptance statuses and stable provider idempotency keys. Retrying an unsent channel does not resend an accepted channel. Existing quotes retain their recipient snapshot. Notifications are limited to calculator submissions; the separate contact form and booking flow were not changed.
+
+To activate emails in Vercel:
+
+1. Verify a sending domain in Resend and complete its required DNS records.
+2. In the Vercel project's Settings → Environment Variables, set `RESEND_API_KEY` and `EMAIL_FROM` (for example, `Mistravora <info@mistravora.com>` once that domain is verified) for Production. Never paste the key into website content, Git, or chat.
+3. Redeploy after changing environment variables. The calculator admin shows whether both variables are present; this does not verify the sender domain or inbox delivery.
+4. Use a genuine quotation and inspect customer and staff acceptance statuses in Admin → Inquiries. Retry unsent emails there after correcting configuration.
+
+Resend documents the [sending API](https://resend.com/docs/api-reference/emails/send-email) and its [24-hour idempotency window](https://resend.com/docs/dashboard/emails/idempotency-keys). Persisted accepted statuses prevent later resends; an unconfirmed send retried after the provider's idempotency window can still produce a duplicate. The existing rate limiter remains instance-local.
+
+### Conditions and recommendations
+
+A question can use `conditions: { match: "all" | "any", rules: [...] }`. Each rule specifies `field`, `operator` and a comparison `value` (not needed for `answered`). Fields are question IDs or `$project`, `$features`, `$design`, `$timeline`, `$maintenance`. Operators support equality, inequality, multi-select membership/non-membership, numeric minimum/maximum and answered checks. Unanswered or hidden values never satisfy negative comparisons. Use combined conditions instead of mixing them with legacy `when`/`whenFeature`. The editor converts legacy rules when edited.
+
+The engine resolves question and feature dependencies in order, rejects cycles and unknown references, and excludes hidden answers from required checks, prices, PDFs and stored summaries. Step IDs stay stable when conditional questions appear/disappear. Defaults include physical/digital store branches, existing-system questions, booking follow-ups, and suggestions for payments, leads, migration, automation and multi-branch operations. Recommendations explain the reason and expose an explicit Add button for applicable extras; matching a recommendation never adds a cost.
+
+Admin → Inquiries includes a descriptive requirement-analysis tool: project counts, capability frequency, per-question choice counts, and pairwise association support/confidence. It operates on the quotations loaded in that admin view, not on visitor tracking. Associations require three matching quotes and are limited to the most frequent capabilities. Included/dependent features also count and can explain high associations. These are observations, not predictive or causal claims, and do not automatically train rules or change pricing. Free-text notes/contact details are excluded from the aggregate report. Historical option IDs absent from the current configuration are omitted from choice counts.
+
+Verification for the September 9 update:
+
+- 77 automated tests passed, including hidden-answer chains, numeric/combined rules, stable steps, association counts, and independent customer/team email retries.
+- Lint and TypeScript passed; the production build completed without warnings.
+- All six project flows completed in Chromium at alternating 390px/1440px widths, with no runtime errors or horizontal overflow. Submissions were intercepted; no live enquiries or emails were created.
+- The isolated admin fixture successfully edited and saved a question and opened the preview without writing a local draft. Saving was mocked and did not touch production settings.
+- Axe reported no violations in the tested calculator section and isolated admin editor states. This is a scoped automated check, not a claim of complete accessibility conformance.
+- Live email delivery remains untested pending provider configuration.

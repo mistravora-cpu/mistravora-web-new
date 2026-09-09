@@ -170,6 +170,30 @@ test("email adapter attaches the PDF, uses stable idempotency, and checks provid
     calls[0].options.headers["Idempotency-Key"],
     "requirement-MST-REQ-2026-test",
   );
+  const teamRecord = {
+    ...record,
+    notification: {
+      recipients: ["mistravora@gmail.com", "info@mistravora.com"],
+      status: "pending",
+    },
+  };
+  assert.equal(
+    (await sender.emailQuoteNotification(teamRecord, Buffer.from("pdf")))
+      .status,
+    "accepted",
+  );
+  const teamBody = JSON.parse(calls[1].options.body);
+  assert.deepEqual(teamBody.to, [
+    "mistravora@gmail.com",
+    "info@mistravora.com",
+  ]);
+  assert.equal(teamBody.reply_to, "client@example.com");
+  assert.equal(teamBody.cc, undefined);
+  assert.equal(
+    calls[1].options.headers["Idempotency-Key"],
+    "requirement-team-MST-REQ-2026-test",
+  );
+  assert.ok(!body.text.includes("mistravora@gmail.com"));
   await assert.rejects(() =>
     adapter(
       { RESEND_API_KEY: "test-key", EMAIL_FROM: "info@example.com" },

@@ -40,7 +40,7 @@ export function AdminDelivery({
             }
           }}
         >
-          {busy ? "Sending…" : "Retry quotation email"}
+          {busy ? "Sending…" : "Retry unsent emails"}
         </Button>
       )}
       <p role="status" className="text-sm">

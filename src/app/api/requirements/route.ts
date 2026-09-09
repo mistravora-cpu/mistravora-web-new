@@ -1,3 +1,4 @@
+import { recommendationInsights } from "@/lib/requirements/flow";
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -11,10 +12,10 @@ import {
   qualify,
   resolveFeatures,
   validateRequirements,
-  visible,
 } from "@/lib/requirements/engine";
 import { buildQuotationPdf } from "@/lib/requirements/pdf";
-import { emailQuotation } from "@/lib/requirements/email";
+import { deliverQuotationEmails } from "@/lib/requirements/delivery";
+import { getQuoteRecipients } from "@/lib/requirements/notification-settings";
 import {
   parseRequirementRecord,
   type RequirementRecord,
@@ -116,24 +117,8 @@ export async function POST(request: Request) {
           },
           { status: 400 },
         );
-      const { features } = resolveFeatures(config, input.requirements);
-      const requirements = {
-        ...input.requirements,
-        answers: Object.fromEntries(
-          Object.entries(input.requirements.answers).filter(([key]) => {
-            const q = config.questions.find((q) => q.id === key);
-            return (
-              q &&
-              visible(
-                q,
-                input.requirements.projectType,
-                input.requirements.answers,
-                features,
-              )
-            );
-          }),
-        ),
-      };
+      const { answers } = resolveFeatures(config, input.requirements);
+      const requirements = { ...input.requirements, answers };
       const estimate = calculateEstimate(config, requirements),
         profile = await getBusinessProfile();
       record = {
@@ -148,6 +133,14 @@ export async function POST(request: Request) {
         estimate,
         summary: buildRequirementSummary(config, requirements),
         qualification: qualify(requirements, estimate),
+        insights: recommendationInsights(config, requirements).map(
+          ({ id, title, description, features }) => ({
+            id,
+            title,
+            description,
+            features,
+          }),
+        ),
         terms: {
           notice: config.notice,
           exclusions: config.exclusions,
@@ -160,18 +153,20 @@ export async function POST(request: Request) {
           url: profile.url,
         },
         emailStatus: "pending",
+        notification: {
+          recipients: await getQuoteRecipients(),
+          status: "pending",
+        },
       };
-      const { error } = await db
-        .from("inquiries")
-        .insert({
-          id: input.id,
-          name: input.contact.name,
-          email: input.contact.email,
-          phone: input.contact.phone || null,
-          company: input.contact.company || null,
-          message: JSON.stringify(record),
-          status: "new",
-        });
+      const { error } = await db.from("inquiries").insert({
+        id: input.id,
+        name: input.contact.name,
+        email: input.contact.email,
+        phone: input.contact.phone || null,
+        company: input.contact.company || null,
+        message: JSON.stringify(record),
+        status: "new",
+      });
       if (error) {
         if (error.code === "23505")
           return NextResponse.json(
@@ -185,14 +180,16 @@ export async function POST(request: Request) {
       }
     }
     const pdf = await buildQuotationPdf(record);
-    if (record.emailStatus !== "accepted") {
-      try {
-        const sent = await emailQuotation(record, pdf);
-        record.emailStatus = sent.status;
-        if (sent.id) record.emailId = sent.id;
-      } catch {
-        record.emailStatus = "failed";
-      }
+    if (!record.notification)
+      record.notification = {
+        recipients: await getQuoteRecipients(),
+        status: "pending",
+      };
+    if (
+      record.emailStatus !== "accepted" ||
+      record.notification.status !== "accepted"
+    ) {
+      await deliverQuotationEmails(record, pdf);
       const { error } = await db
         .from("inquiries")
         .update({ message: JSON.stringify(record) })
