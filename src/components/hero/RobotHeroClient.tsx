@@ -31,33 +31,30 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
   const glowRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Defer 3D bundle download until after first paint is complete.
-  // Strategy: wait for requestIdleCallback (or a 1.5s fallback) so the
-  // HTML/CSS paints and the LCP element (h1) renders before the
-  // multi-hundred-KB Three.js chunk starts downloading.
+  // Let the headline's fonts and layout finish before starting the 3D bundle.
+  // Idle callbacks alone can run before that first content paint.
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const trigger = () => setIsVisible(true);
-
-    // Priority 1: use requestIdleCallback if available — fires when the
-    // browser is idle after paint, minimizing main-thread contention.
-    if (typeof requestIdleCallback !== "undefined") {
-      const id = requestIdleCallback(trigger, { timeout: 2000 });
-      return () => cancelIdleCallback(id);
-    }
-
-    // Priority 2: fallback to a double-RAF + setTimeout to ensure paint.
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    let rafId = requestAnimationFrame(() => {
+    let cancelled = false;
+    let rafId = 0;
+    let idleId: number | undefined;
+    const afterFonts = () => {
+      if (cancelled) return;
       rafId = requestAnimationFrame(() => {
-        timeoutId = setTimeout(trigger, 800);
+        rafId = requestAnimationFrame(() => {
+          if (cancelled) return;
+          if (typeof requestIdleCallback === "function") {
+            idleId = requestIdleCallback(() => setIsVisible(true), { timeout: 2000 });
+          } else setIsVisible(true);
+        });
       });
-    });
+    };
+    // Font loading errors settle this promise as well; the robot still starts
+    // automatically with the browser's fallback font on every connection.
+    void (document.fonts?.ready ?? Promise.resolve()).then(afterFonts, afterFonts);
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafId);
-      clearTimeout(timeoutId);
+      if (idleId !== undefined) cancelIdleCallback(idleId);
     };
   }, []);
 

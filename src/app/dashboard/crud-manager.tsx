@@ -321,10 +321,11 @@ export function CrudManager({
     }
   }
 
+  const EditorHeading = title ? "h3" : "h2";
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        {title ? <h3 className="text-sm font-semibold">{title}</h3> : <span />}
+        {title ? <h2 className="text-sm font-semibold">{title}</h2> : <span />}
         {!showForm ? (
           <Button size="sm" onClick={startCreate}>
             <Plus aria-hidden className="h-4 w-4" />
@@ -345,9 +346,9 @@ export function CrudManager({
           className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5"
         >
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold">
+            <EditorHeading className="text-sm font-semibold">
               {editingId ? "Edit" : "Add New"}
-            </h4>
+            </EditorHeading>
             <Button type="button" size="icon" variant="ghost" onClick={cancelForm} aria-label="Close editor">
               <X aria-hidden className="h-4 w-4" />
             </Button>

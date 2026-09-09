@@ -6,6 +6,7 @@ const fields: FieldDef[] = [{ name: "title", label: "Title", type: "text", requi
 { name: "tagline", label: "Tagline", type: "text" },
 { name: "description", label: "Description", type: "richtext" },
 { name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
+{ name: "cover_image", label: "Primary image (catalog and detail page)", type: "image" },
 { name: "category", label: "Category", type: "text" },
 { name: "features", label: "Features", type: "list" },
 { name: "technologies", label: "Technologies", type: "list" },
