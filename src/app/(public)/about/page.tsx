@@ -157,7 +157,7 @@ export default async function AboutPage() {
                     </p>
                   </ScrollReveal>
 
-                  <div className="mt-8 grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),24rem))] justify-center gap-x-8 gap-y-12">
+                  <div className="team-grid mt-12">
                     {group.members.map((member, i) => {
                       const initials = memberInitials(member.name);
                       const expertise = parseExpertise(member.expertise);
@@ -169,9 +169,9 @@ export default async function AboutPage() {
                           key={member.id}
                           animation="fade-up"
                           delay={Math.min(groupDelayBase + i * 90, 600)}
-                          className="group relative flex h-full flex-col"
+                          className="team-member group relative flex flex-col"
                         >
-                          <figure className="relative aspect-[4/5] overflow-hidden motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:-translate-y-1">
+                          <figure className="relative aspect-[4/5] w-full">
                             {photo ? (
                               <TeamPortrait src={photo} name={member.name} role={member.role} company={profile.name} />
                             ) : (
@@ -183,23 +183,24 @@ export default async function AboutPage() {
                             <figcaption className="sr-only">{member.name} — {member.role} at {profile.name}</figcaption>
                           </figure>
 
-                          <div className="mt-5 flex flex-col gap-3">
-                            <div>
-                              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary">
-                                {member.role}
-                              </p>
-                              <h4 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
-                                <Link
-                                  href={profileHref}
-                                  className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                                >
-                                  <span className="transition-colors group-hover:text-primary">{member.name}</span>
-                                  <ArrowUpRight
-                                    aria-hidden
-                                    className="ml-1 inline h-4 w-4 -translate-y-0.5 text-primary opacity-0 transition-all duration-300 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:opacity-100"
-                                  />
-                                </Link>
-                              </h4>
+                          <div className="team-member-content flex flex-1 flex-col gap-4 pt-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="text-xs font-medium uppercase leading-5 tracking-[0.14em] text-primary">
+                                  {member.role}
+                                </p>
+                                <h4 className="mt-2 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
+                                  <Link
+                                    href={profileHref}
+                                    className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                                  >
+                                    <span className="transition-colors group-hover:text-primary">{member.name}</span>
+                                  </Link>
+                                </h4>
+                              </div>
+                              <span aria-hidden className="team-profile-arrow mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border text-primary">
+                                <ArrowUpRight className="h-5 w-5" />
+                              </span>
                             </div>
 
                             {(member.department || member.location) && (
@@ -220,8 +221,8 @@ export default async function AboutPage() {
                             )}
 
                             {member.bio && (
-                              <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
-                                {contentText(member.bio,200)}
+                              <p className="line-clamp-4 text-sm leading-7 text-muted-foreground sm:text-base">
+                                {contentText(member.bio, 280)}
                               </p>
                             )}
 
@@ -256,8 +257,8 @@ export default async function AboutPage() {
                               </ul>
                             )}
 
-                            <p className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary/80 transition-colors group-hover:text-primary">
-                              View profile
+                            <p className="mt-auto inline-flex min-h-11 items-center gap-2 pt-2 text-sm font-medium text-primary">
+                              Read full profile
                               <ArrowRight aria-hidden className="h-3.5 w-3.5 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5" />
                             </p>
                           </div>

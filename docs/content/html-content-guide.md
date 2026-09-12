@@ -41,7 +41,7 @@ Executable scripts, forms, embeds, remote stylesheets, font imports and remote C
 - For images inside content, place the cursor between HTML blocks, use **Add an image**, supply the upload or URL and a meaningful description/caption, then select **Insert image into content**. Repeat for additional images. Avoid placing the cursor inside an HTML tag or CSS rule.
 - The image description supplies both its alt text and visible caption. Describe what is shown; avoid keyword repetition. Publish only images you are permitted to use.
 - Uploaded R2 catalog images and team portraits use responsive cached image sizes. Arbitrary external URLs are displayed directly, so their source file size and availability still affect loading.
-- Team portraits use consistent 4:5 frames without an outer card, with a name, role, descriptive alt text and subtle hover/focus motion. The full editable biography appears on the person's profile.
+- Team portraits use consistent 4:5 compositions without an outer card. Mouse movement shifts the portrait, background orbit and light at different depths. Names, roles, descriptive alt text and captions remain server-rendered, and the full editable biography appears on the person's profile. Touch devices keep normal scrolling; reduced-motion preferences are respected. See [team design verification](team-design-verification.md) for the current sizing and checks.
 
 Solution content has one editor. Saves also synchronize its older fallback fields so edits and intentional clearing stay consistent. These improvements use existing Supabase fields and the existing public-content cache invalidation; no content migration or replacement is required.
 

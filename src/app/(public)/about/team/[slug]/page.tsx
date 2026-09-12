@@ -101,7 +101,7 @@ export default async function TeamMemberPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(personLd) }}
       />
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full max-w-6xl">
         <Breadcrumbs
           items={[
             { label: "About", href: "/about" },
@@ -117,9 +117,9 @@ export default async function TeamMemberPage({
             </Link>
           </Button>
 
-          <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_1fr] lg:gap-14">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-14">
             {/* Portrait */}
-            <div className="mx-auto w-full max-w-sm md:sticky md:top-24 md:self-start">
+            <div className="mx-auto w-full max-w-[26rem] md:sticky md:top-24 md:self-start">
               <div className="relative aspect-[4/5] w-full overflow-hidden">
                 {photo ? (
                   <TeamPortrait src={photo} name={member.name} role={member.role} company={profile.name} profile />

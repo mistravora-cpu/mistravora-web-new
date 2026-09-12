@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { publicImageUrl } from "@/lib/content-preview";
+import { PortraitMotion } from "./portrait-motion";
 const r2Base = process.env.R2_PUBLIC_URL;
 export function TeamPortrait({
   src,
@@ -22,19 +23,21 @@ export function TeamPortrait({
     !!r2Base &&
     new URL(photo, "https://mistravora.com").origin === new URL(r2Base).origin;
   return (
-    <Image
-      src={photo}
-      alt={`${name}, ${role} at ${company}`}
-      width={640}
-      height={800}
-      sizes={
-        profile
-          ? "(max-width: 768px) min(100vw - 32px, 384px), 320px"
-          : "(max-width: 640px) min(100vw - 32px, 384px), (max-width: 1024px) 45vw, 384px"
-      }
-      unoptimized={!hosted}
-      loading={profile ? "eager" : "lazy"}
-      className="aspect-[4/5] h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.025] motion-safe:group-focus-within:scale-[1.025]"
-    />
+    <PortraitMotion>
+      <Image
+        src={photo}
+        alt={`${name}, ${role} at ${company}`}
+        width={640}
+        height={800}
+        sizes={
+          profile
+            ? "(min-width: 1024px) 384px, (min-width: 768px) 40vw, min(calc(100vw - 32px), 416px)"
+            : "(min-width: 1920px) 25vw, (min-width: 768px) min(calc(50vw - 64px), 480px), min(calc(100vw - 32px), 480px)"
+        }
+        unoptimized={!hosted}
+        loading={profile ? "eager" : "lazy"}
+        className="aspect-[4/5] h-full w-full object-contain object-bottom"
+      />
+    </PortraitMotion>
   );
 }

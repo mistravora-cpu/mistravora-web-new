@@ -117,7 +117,7 @@ export function SiteHeader() {
             {mobileOpen ? (
               <nav
                 aria-label="Mobile"
-                className="animate-fade-in-up absolute right-0 top-11 flex w-60 flex-col gap-0.5 rounded-xl border border-border bg-card p-2 shadow-lg"
+                className="animate-fade-in-up absolute right-0 top-12 flex w-60 max-w-[calc(100vw-2rem)] max-h-[calc(100svh-6rem)] flex-col gap-0.5 overflow-y-auto overscroll-contain rounded-xl border border-border bg-card p-2 shadow-lg"
               >
                 {mainNav.map((item, i) => (
                   <Link
@@ -126,7 +126,7 @@ export function SiteHeader() {
                     onClick={() => setMobileOpen(false)}
                     aria-current={isActive(item.href) ? "page" : undefined}
                     className={cn(
-                      "animate-fade-in-up rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      "animate-fade-in-up flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       isActive(item.href)
                         ? "text-primary"
                         : "text-foreground hover:bg-muted"
@@ -139,7 +139,7 @@ export function SiteHeader() {
                 <Link
                   href="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="ripple-click mt-1.5 rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
+                  className="ripple-click mt-1.5 flex min-h-11 items-center justify-center rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
                 >
                   Get in touch
                 </Link>
