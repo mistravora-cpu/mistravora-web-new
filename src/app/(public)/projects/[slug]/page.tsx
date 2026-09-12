@@ -59,8 +59,8 @@ export default async function CaseStudyPage({
 
   return (
     <article className="w-full site-gutter py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: contentText(cs.problem_statement,200), url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto max-w-4xl w-full">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "CreativeWork", headline: cs.title, name: cs.title, description: contentText(cs.problem_statement,200), image: cs.cover_image || undefined, mainEntityOfPage: `${site.url}/projects/${cs.slug}`, url: `${site.url}/projects/${cs.slug}`, dateModified: cs.updated_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
+      <div className="w-full min-w-0">
         <Breadcrumbs items={[{ label: "Projects", href: "/projects" }, { label: cs.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -114,7 +114,7 @@ export default async function CaseStudyPage({
                 src={cs.cover_image}
                 alt={`${cs.title} — ${cs.client}`}
                 fill
-                sizes="(max-width: 1024px) 100vw, 1024px"
+                sizes="(max-width: 640px) calc(100vw - 32px), calc(100vw - 64px)"
                 className="object-contain"
                 priority
               />
@@ -124,14 +124,14 @@ export default async function CaseStudyPage({
           {cs.problem_statement && (
             <section className="mt-12">
               <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">The challenge</h2>
-              <div className="mt-4 max-w-3xl text-base leading-7 text-foreground/85"><ArticleBody body={cs.problem_statement ?? ""} title="Project challenge" /></div>
+              <div className="mt-4 w-full text-base leading-7 text-foreground/85"><ArticleBody body={cs.problem_statement ?? ""} title="Project challenge" /></div>
             </section>
           )}
 
           {cs.solution && (
             <section className="mt-10">
               <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What we built</h2>
-              <div className="mt-4 max-w-3xl text-base leading-7 text-foreground/85"><ArticleBody body={cs.solution ?? ""} title="Project solution" /></div>
+              <div className="mt-4 w-full text-base leading-7 text-foreground/85"><ArticleBody body={cs.solution ?? ""} title="Project solution" /></div>
             </section>
           )}
 
@@ -189,7 +189,7 @@ export default async function CaseStudyPage({
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto max-w-4xl mt-10"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
+      <div className="mt-10 w-full"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
     </article>
   );
 }

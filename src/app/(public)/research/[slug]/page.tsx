@@ -1,4 +1,6 @@
 import { ArticleBody } from "@/components/article-body";
+import Image from "@/components/content-image";
+import { contentText } from "@/lib/content-preview";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { ShareButton } from "@/components/share-button";
@@ -34,6 +36,9 @@ export async function generateMetadata({
       description: research.summary,
       url,
       type: "article",
+      publishedTime: research.published_at ?? undefined,
+      modifiedTime: research.updated_at,
+      authors: research.author ? [research.author] : undefined,
       images: research.cover_image ? [{ url: research.cover_image }] : undefined,
     },
     twitter: {
@@ -56,7 +61,7 @@ export default async function ResearchDetailPage({
 
   return (
     <article className="flex flex-1 flex-col">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "Article", headline: research.title, name: research.title, description: research.summary, image: research.cover_image || undefined, url: `${site.url}/research/${research.slug}`, dateModified: research.updated_at, datePublished: research.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "Article", headline: research.title, name: research.title, description: contentText(research.summary, 200), image: research.cover_image || undefined, mainEntityOfPage: `${site.url}/research/${research.slug}`, url: `${site.url}/research/${research.slug}`, dateModified: research.updated_at, datePublished: research.published_at ?? undefined, publisher: { "@id": `${site.url}/#organization` }, author: research.author ? { "@type": research.author === site.name ? "Organization" : "Person", name: research.author } : undefined }) }} />
       {/* Header */}
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="aurora-bg absolute inset-0" />
@@ -101,7 +106,7 @@ export default async function ResearchDetailPage({
             {research.published_at && (
               <span className="flex items-center gap-1.5">
                 <Calendar aria-hidden className="h-3.5 w-3.5" />
-                {new Date(research.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                <time dateTime={research.published_at}>{new Date(research.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
               </span>
             )}
           </div>
@@ -121,11 +126,13 @@ export default async function ResearchDetailPage({
       {/* Body */}
       <section className="mx-auto w-full  site-gutter py-12">
         {research.cover_image && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
+          <Image
             src={research.cover_image}
             alt={research.title}
-            className="mb-8 aspect-video w-full rounded-2xl object-cover"
+            width={1600}
+            height={900}
+            sizes="(max-width: 640px) calc(100vw - 32px), calc(100vw - 64px)"
+            className="mb-8 aspect-video max-h-[36rem] w-full rounded-2xl object-contain"
           />
         )}
 

@@ -53,6 +53,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "api.iconify.design" },
     ],
     formats: ["image/avif", "image/webp"],
+    qualities: [75, 85],
   },
   outputFileTracingIncludes: { "/api/requirements": ["./src/assets/fonts/*.ttf"], "/api/requirements/*": ["./src/assets/fonts/*.ttf"] },
   poweredByHeader: false,

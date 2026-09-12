@@ -13,7 +13,7 @@ const initialState: InquiryState = null;
 const inputClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40";
 
-export function ContactForm() {
+export function ContactForm({ selectedService = "" }: { selectedService?: string }) {
   const profile = useBusinessProfile();
   const [state, formAction, pending] = useActionState(
     submitInquiry,
@@ -100,10 +100,10 @@ export function ContactForm() {
         />
       </div>
 
-      <details className="rounded-lg border border-border p-4 transition-colors hover:border-primary/20">
+      <details open={!!selectedService} className="rounded-lg border border-border p-4 transition-colors hover:border-primary/20">
         <summary className="cursor-pointer text-sm font-medium">Add project details (optional)</summary>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {[["company", "Company", "organization"], ["service", "Service or project type", "off"], ["budget", "Budget range (LKR)", "off"], ["timeline", "Desired timeline", "off"]].map(([name, label, autoComplete]) => <label key={name} className="flex flex-col gap-2 text-sm">{label}<input name={name} maxLength={100} autoComplete={autoComplete} className={inputClass} /></label>)}
+          {[["company", "Company", "organization"], ["service", "Service or project type", "off"], ["budget", "Budget range (LKR)", "off"], ["timeline", "Desired timeline", "off"]].map(([name, label, autoComplete]) => <label key={name} className="flex flex-col gap-2 text-sm">{label}<input name={name} defaultValue={name === "service" ? selectedService : undefined} maxLength={100} autoComplete={autoComplete} className={inputClass} /></label>)}
         </div>
       </details>
 

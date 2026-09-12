@@ -23,7 +23,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
       <main className="mx-auto w-full site-gutter py-16">
         <ScrollReveal animation="fade-up">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Policies &amp; Terms</h1>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
+          <p className="mt-4 w-full text-lg leading-8 text-muted-foreground">
             Read Mistravora&apos;s published policies and service terms. These documents
             govern how we work with clients and handle your data.
           </p>

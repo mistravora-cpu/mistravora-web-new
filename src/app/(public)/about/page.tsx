@@ -3,7 +3,7 @@ import { contentText } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { applySeoOverrides } from "@/lib/seo-overrides";
-import { withSocialMetadata } from "@/lib/seo";
+import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "@/components/content-image";
 import Link from "next/link";
@@ -49,6 +49,24 @@ export default async function AboutPage() {
 
   return (
     <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "@id": `${site.url}/about#page`,
+      url: `${site.url}/about`,
+      name: `About ${profile.name}`,
+      description: profile.intro,
+      about: { "@id": `${site.url}/#organization` },
+      isPartOf: { "@id": `${site.url}/#website` },
+      mainEntity: {
+        "@type": "ItemList",
+        name: `The ${profile.name} team`,
+        itemListElement: team.map((member, index) => ({
+          "@type": "ListItem", position: index + 1,
+          item: { "@type": "Person", "@id": `${site.url}/about/team/${memberSlug(member)}#person`, name: member.name, jobTitle: member.role, url: `${site.url}/about/team/${memberSlug(member)}`, image: safeUrl(member.photo) ?? undefined },
+        })),
+      },
+    }) }} />
     <AnimatedHero hero={hero} page="about" />
     <section className="w-full site-gutter py-16">
 
@@ -186,19 +204,19 @@ export default async function AboutPage() {
                           <div className="team-member-content flex flex-1 flex-col gap-4 pt-6">
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
-                                <p className="text-xs font-medium uppercase leading-5 tracking-[0.14em] text-primary">
-                                  {member.role}
-                                </p>
-                                <h4 className="mt-2 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
+                                <h4 className="text-2xl font-semibold leading-tight tracking-tight">
                                   <Link
                                     href={profileHref}
                                     className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                                   >
-                                    <span className="transition-colors group-hover:text-primary">{member.name}</span>
+                                    {member.name}
                                   </Link>
                                 </h4>
+                                <p className="mt-2 text-sm font-medium leading-6 text-muted-foreground">
+                                  {member.role}
+                                </p>
                               </div>
-                              <span aria-hidden className="team-profile-arrow mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border text-primary">
+                              <span aria-hidden className="team-profile-arrow -mt-2 inline-flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground">
                                 <ArrowUpRight className="h-5 w-5" />
                               </span>
                             </div>

@@ -10,14 +10,14 @@ export function PageHeader({
   as?: "h1" | "h2";
 }) {
   return (
-    <div className="relative mx-auto max-w-3xl animate-fade-in-up text-center">
+    <div className="relative w-full min-w-0 animate-fade-in-up text-center">
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-grid [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]"
       />
       <div
         aria-hidden
-        className="absolute -top-12 left-1/2 -z-10 h-40 w-80 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl animate-pulse-soft"
+        className="absolute -top-12 left-1/2 -z-10 h-40 w-full max-w-80 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl animate-pulse-soft"
       />
       <div
         aria-hidden

@@ -10,6 +10,7 @@ import { ServiceWorker } from "@/components/service-worker";
 import { SiteBackground } from "@/components/site-background";
 import { SeoVerification } from "@/components/seo-verification";
 import { ScrollProgress } from "@/components/scroll-progress";
+import { site } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,7 @@ const geistSans = Geist({
   adjustFontFallback: true,
 });
 
-const siteUrl = "https://mistravora.com";
+const siteUrl = site.url;
 
 const baseMetadata: Metadata = {
   metadataBase: new URL(siteUrl),

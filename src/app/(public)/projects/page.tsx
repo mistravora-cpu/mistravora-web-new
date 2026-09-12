@@ -32,7 +32,7 @@ export default async function CaseStudiesPage() {
     <section className="w-full site-gutter py-16">
       <PageHeader
         title="Our Projects"
-        description="Every project we ship includes real metrics: speed gains, conversion lifts, and business outcomes."
+        description="Explore our published projects, the work delivered, and the outcomes shared by each client."
       />
 
       {published.length > 0 ? (

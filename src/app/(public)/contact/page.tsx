@@ -20,7 +20,9 @@ const baseMetadata: Metadata = withSocialMetadata({
   alternates: { canonical: `${site.url}/contact` },
 });
 
-export default async function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ service?: string | string[] }> }) {
+  const query = await searchParams;
+  const selectedService = typeof query.service === "string" ? query.service.trim().slice(0, 100) : "";
   const [hero, site, faqs, contactRows, socials] = await Promise.all([getHeroSection("contact"), getBusinessProfile(), getFaqs("contact", true), getContactInfo(), getSocialMedia(true)]);
   const contact = contactRows;
   const whatsappMessage = encodeURIComponent(
@@ -98,7 +100,7 @@ export default async function ContactPage() {
       <ScrollReveal animation="fade-up" delay={200} className="mt-14 grid w-full gap-8 lg:grid-cols-2">
         <div>
           {contact && <div className="mb-6"><h2 className="text-xl font-semibold tracking-tight">{contact.headline}</h2><div className="mt-2 text-sm text-muted-foreground"><ArticleBody body={contact.description ?? ""} title="Contact information" /></div></div>}
-          <ContactForm />
+          <ContactForm selectedService={selectedService} />
           <nav aria-label="Social profiles" className="mt-6 flex flex-wrap gap-4">{socials.filter(s=>/^https:\/\//.test(s.url)).map(s=><a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary link-underline">{s.platform}</a>)}</nav>
         </div>
         <ContactMap />

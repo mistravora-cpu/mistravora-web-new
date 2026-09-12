@@ -2,6 +2,8 @@
 
 Updated 12 September 2026.
 
+This report records the verified `83d46f4` deployment. A subsequent local revision changes sizing and image quality; its verification status is tracked in [portrait and search review](portrait-responsive-search-review.md).
+
 ## Design and editing
 
 - About uses large, open portraits with a background orbit, soft light and a short biography beneath a dividing line. The portrait and name both lead to the full profile; separate social links remain usable.

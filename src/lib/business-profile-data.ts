@@ -8,7 +8,7 @@ export const businessDefaults = {
   latitude: "",
   longitude: "",
   name: "Mistravora",
-  url: "https://mistravora.com",
+  url: "https://www.mistravora.com",
   description: "Mistravora is a digital solutions company founded in May 2025 by Husni and co-founded by Shakeel, delivering mobile applications, custom software, websites and end-to-end digital solutions for businesses of all sizes and industries. With no restriction to a single market or sector, Mistravora focuses on building practical, scalable and modern digital solutions around each client's requirements.",
   intro: "Mobile applications, custom software, websites and end-to-end digital solutions for individuals and businesses of all sizes, across industries and markets.",
   email: "info@mistravora.com",

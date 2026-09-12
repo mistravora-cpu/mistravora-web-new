@@ -76,7 +76,7 @@ export function StatsCounter({ stats }: { stats?: Stat[] }) {
         <div className="aurora-bg absolute inset-0 opacity-30" />
       </div>
 
-      <div className="relative mx-auto max-w-5xl site-gutter">
+      <div className="relative w-full site-gutter">
         <ScrollReveal animation="fade-up" className="mb-12 flex flex-col items-center gap-2 text-center">
           <p className="eyebrow">
             By the numbers

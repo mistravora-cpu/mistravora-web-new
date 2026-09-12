@@ -2,6 +2,7 @@ import { getIndexablePaths } from "@/lib/seo-overrides";
 import type { MetadataRoute } from "next";
 import { collections, getCollection, type Collection } from "@/lib/content";
 import { site } from "@/lib/site";
+import { canonicalUrl, sitemapImages } from "@/lib/seo";
 import {
   getPublishedPosts,
   getCaseStudies,
@@ -62,6 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes — published blog posts
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${site.url}/blog/${post.slug}`,
+    images: sitemapImages(post.cover_image),
     lastModified: post.updated_at ? new Date(post.updated_at) : undefined,
     changeFrequency: "monthly",
     priority: 0.6,
@@ -70,6 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes — case studies
   const caseStudyEntries: MetadataRoute.Sitemap = caseStudies.map((cs) => ({
     url: `${site.url}/projects/${cs.slug}`,
+    images: sitemapImages(cs.cover_image),
     lastModified: cs.updated_at ? new Date(cs.updated_at) : undefined,
     changeFrequency: "monthly",
     priority: 0.6,
@@ -78,6 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes — industries
   const industryEntries: MetadataRoute.Sitemap = industries.map((ind) => ({
     url: `${site.url}/industries/${ind.slug}`,
+    images: sitemapImages(ind.image),
     lastModified: ind.updated_at ? new Date(ind.updated_at) : undefined,
     changeFrequency: "monthly",
     priority: 0.6,
@@ -86,6 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes — research articles
   const researchEntries: MetadataRoute.Sitemap = research.map((r) => ({
     url: `${site.url}/research/${r.slug}`,
+    images: sitemapImages(r.cover_image),
     lastModified: r.updated_at ? new Date(r.updated_at) : undefined,
     changeFrequency: "monthly",
     priority: 0.6,
@@ -104,6 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes — team member profiles
   const teamEntries: MetadataRoute.Sitemap = team.map((m) => ({
     url: `${site.url}/about/team/${memberSlug(m)}`,
+    images: sitemapImages(m.photo),
     lastModified: m.updated_at ? new Date(m.updated_at) : undefined,
     changeFrequency: "monthly",
     priority: 0.5,
@@ -118,6 +124,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...researchEntries,
     ...policyEntries,
     ...teamEntries,
-    ...contentGroups.flatMap(({ key, entries }) => entries.map(e => ({ url: `${site.url}/${key}/${e.slug}`, lastModified: e.updated ? new Date(e.updated) : undefined }))),
-  ].filter(entry => !overrides.some(setting => setting.path === new URL(entry.url).pathname && (setting.noindex || (setting.canonical && setting.canonical !== entry.url))));
+    ...contentGroups.flatMap(({ key, entries }) => entries.map(e => ({ url: `${site.url}/${key}/${e.slug}`, images: sitemapImages(e.image), lastModified: e.updated ? new Date(e.updated) : undefined }))),
+  ].filter(entry => !overrides.some(setting => {
+    if (setting.path !== new URL(entry.url).pathname) return false;
+    const canonical = setting.canonical?.trim() ? canonicalUrl(setting.canonical) : null;
+    return setting.noindex || (canonical !== null && canonical !== canonicalUrl(entry.url));
+  }));
 }

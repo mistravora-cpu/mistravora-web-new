@@ -81,18 +81,27 @@ export default async function TeamMemberPage({
 
   const personLd = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    name: member.name,
-    jobTitle: member.role,
-    description: contentText(member.bio,200) || undefined,
-    image: photo ?? undefined,
+    "@type": "ProfilePage",
+    "@id": `${url}#profile`,
     url,
-    worksFor: { "@type": "Organization", name: site.name, url: site.url },
-    ...(member.department ? { department: member.department } : {}),
-    ...(member.location ? { address: { "@type": "PostalAddress", addressLocality: member.location } } : {}),
-    ...(socials.length > 0
-      ? { sameAs: socials.filter((s) => s.external).map((s) => s.href) }
-      : {}),
+    name: `${member.name} — ${member.role}`,
+    dateModified: member.updated_at,
+    isPartOf: { "@id": `${site.url}/#website` },
+    mainEntity: {
+      "@type": "Person",
+      "@id": `${url}#person`,
+      name: member.name,
+      jobTitle: member.role,
+      description: contentText(member.bio, 200) || undefined,
+      image: photo ?? undefined,
+      url,
+      worksFor: { "@id": `${site.url}/#organization` },
+      ...(expertise.length ? { knowsAbout: expertise } : {}),
+      ...(member.location ? { address: { "@type": "PostalAddress", addressLocality: member.location } } : {}),
+      ...(socials.length > 0
+        ? { sameAs: socials.filter((s) => s.external).map((s) => s.href) }
+        : {}),
+    },
   };
 
   return (
@@ -101,7 +110,7 @@ export default async function TeamMemberPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(personLd) }}
       />
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="w-full min-w-0">
         <Breadcrumbs
           items={[
             { label: "About", href: "/about" },
@@ -117,9 +126,9 @@ export default async function TeamMemberPage({
             </Link>
           </Button>
 
-          <div className="grid gap-10 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-14">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] lg:gap-14">
             {/* Portrait */}
-            <div className="mx-auto w-full max-w-[26rem] md:sticky md:top-24 md:self-start">
+            <div className="mx-auto w-full max-w-[27rem] md:sticky md:top-24 md:self-start">
               <div className="relative aspect-[4/5] w-full overflow-hidden">
                 {photo ? (
                   <TeamPortrait src={photo} name={member.name} role={member.role} company={profile.name} profile />

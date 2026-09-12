@@ -72,7 +72,7 @@ export function RoiCalculator() {
             className="w-full accent-[var(--primary)]"
           />
           <p className="text-xs text-muted-foreground">
-            Typical uplifts from speed + conversion work range 15–40%.
+            Adjust the assumptions to match your business. This estimate is for planning and does not predict actual results.
           </p>
         </div>
 

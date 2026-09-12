@@ -1,4 +1,6 @@
 import { ArticleBody } from "@/components/article-body";
+import Image from "@/components/content-image";
+import { contentText } from "@/lib/content-preview";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -37,6 +39,7 @@ export async function generateMetadata({
       description: post.excerpt ?? undefined,
       images: post.cover_image ? [{ url: post.cover_image }] : undefined,
       publishedTime: post.published_at ?? undefined,
+      modifiedTime: post.updated_at,
       authors: post.author ? [post.author] : undefined,
     },
     twitter: {
@@ -60,8 +63,8 @@ export default async function BlogPostPage({
 
   return (
     <article className="w-full site-gutter py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, name: post.title, description: post.excerpt, url: `${site.url}/blog/${post.slug}`, dateModified: post.updated_at, datePublished: post.published_at, publisher: { "@id": `${site.url}/#organization` }, author: { "@type": "Organization", name: site.name } }) }} />
-      <div className="mx-auto max-w-3xl w-full">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, name: post.title, description: contentText(post.excerpt, 200), image: post.cover_image || undefined, mainEntityOfPage: `${site.url}/blog/${post.slug}`, url: `${site.url}/blog/${post.slug}`, dateModified: post.updated_at, datePublished: post.published_at ?? undefined, publisher: { "@id": `${site.url}/#organization` }, author: post.author ? { "@type": post.author === profile.name ? "Organization" : "Person", name: post.author } : undefined }) }} />
+      <div className="w-full min-w-0">
         <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: post.title }]} />
         <ScrollReveal animation="fade-up">
           <Button asChild variant="ghost" size="sm" className="mb-6">
@@ -91,11 +94,11 @@ export default async function BlogPostPage({
             {post.published_at && (
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" />
-                {new Date(post.published_at).toLocaleDateString("en-US", {
+                <time dateTime={post.published_at}>{new Date(post.published_at).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
-                })}
+                })}</time>
               </span>
             )}
             {post.read_time && (
@@ -107,11 +110,13 @@ export default async function BlogPostPage({
           </div>
 
           {post.cover_image && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
+            <Image
               src={post.cover_image}
               alt={post.title}
-              className="mt-10 h-64 w-full rounded-xl border border-border object-cover sm:h-80"
+              width={1600}
+              height={900}
+              sizes="(max-width: 640px) calc(100vw - 32px), calc(100vw - 64px)"
+              className="mt-10 aspect-video max-h-[36rem] w-full rounded-xl object-contain"
             />
           )}
 
@@ -165,7 +170,7 @@ export default async function BlogPostPage({
           </Button>
         </ScrollReveal>
       </div>
-      <div className="mx-auto max-w-3xl mt-10"><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
+      <div className="mt-10 w-full"><ShareButton title={post.title} /><RelatedContent currentPath={`/blog/${post.slug}`} title={post.title} /></div>
     </article>
   );
 }

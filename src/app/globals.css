@@ -886,36 +886,26 @@ section[data-cv="auto"] {
   overflow-wrap: anywhere;
 }
 
-/* Open portrait compositions: separate photo, light and orbit layers. */
-.team-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3.5rem; width: 100%; max-width: 30rem; margin-inline: auto; }
-.team-member { width: 100%; min-width: 0; max-width: 30rem; justify-self: center; }
+/* Natural team portraits with a restrained CSS-only hover treatment. */
+.team-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3.5rem; width: 100%; }
+.team-member { width: 100%; min-width: 0; }
+.team-member > figure { max-width: 27rem; margin-inline: auto; }
 @media (min-width: 768px) {
-  .team-grid { max-width: 64rem; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4rem; }
-  .team-member:last-child:nth-child(odd) { grid-column: 1 / -1; max-width: 30rem; justify-self: center; }
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 3vw, 3rem); row-gap: 4rem; }
 }
-@media (min-width: 1920px) {
-  .team-grid { max-width: 120rem; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 3rem; }
-  .team-member:last-child:nth-child(odd) { grid-column: auto; }
+@media (min-width: 1600px) {
+  .team-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.portrait-motion { position: relative; width: 100%; height: 100%; aspect-ratio: 4 / 5; overflow: hidden; perspective: 1000px; isolation: isolate; }
-.portrait-motion::after { content: ""; pointer-events: none; position: absolute; inset: auto 0 0; height: 9%; background: linear-gradient(transparent, var(--background)); }
-.portrait-plane { position: relative; z-index: 1; width: 100%; height: 100%; transform-origin: 50% 65%; transform: scale(.96); }
-.portrait-halo { pointer-events: none; position: absolute; inset: 16% 4% 0; border-radius: 50%; background: radial-gradient(ellipse at 50% 55%, color-mix(in oklab, var(--primary) 20%, transparent), color-mix(in oklab, var(--accent) 6%, transparent) 48%, transparent 72%); }
-.portrait-orbit { pointer-events: none; position: absolute; inset: 17% 9% 9%; border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent); border-radius: 50%; transform: rotate(-18deg) scaleX(.95); }
-.portrait-light { pointer-events: none; position: absolute; z-index: 2; inset: 9% 0 12%; opacity: 0; border-radius: 50%; background: radial-gradient(ellipse at 30% 30%, rgb(255 255 255 / .13), transparent 60%); }
-.team-member-content { border-top: 1px solid var(--border); background: linear-gradient(var(--primary), var(--primary)) top left / 2.5rem 2px no-repeat; }
+.team-portrait { width: 100%; height: 100%; aspect-ratio: 4 / 5; overflow: hidden; }
+.team-portrait-image { transform-origin: center bottom; }
+.team-member-content { width: 100%; max-width: 27rem; margin-inline: auto; border-top: 1px solid var(--border); }
+.team-member:focus-within .team-profile-arrow { color: var(--primary); }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .portrait-plane, .portrait-halo, .portrait-orbit { transition: transform 320ms cubic-bezier(.2,.7,.25,1); }
-  .portrait-light { transition: opacity 240ms ease-out, transform 320ms ease-out; }
-  .team-profile-arrow { transition: transform 250ms ease, background-color 250ms ease, color 250ms ease; }
-  .team-member-content { transition: background-size 250ms ease; }
-  .portrait-motion[data-active] .portrait-plane { will-change: transform; transform: translate3d(var(--portrait-x, 0px), calc(var(--portrait-y, 0px) - 7px), 20px) rotateX(var(--portrait-rx, 0deg)) rotateY(var(--portrait-ry, 0deg)) scale(1.015); }
-  .portrait-motion[data-active] .portrait-halo { transform: translate3d(calc(var(--portrait-x, 0px) * -2.5), calc(var(--portrait-y, 0px) * -1.5), 0) scale(1.08); }
-  .portrait-motion[data-active] .portrait-orbit { transform: translate3d(calc(var(--portrait-x, 0px) * -1.2), calc(var(--portrait-y, 0px) * -.8), 0) rotate(-12deg) scaleX(.95); }
-  .portrait-motion[data-active] .portrait-light { opacity: 1; transform: translate3d(calc(var(--portrait-x, 0px) * 2), var(--portrait-y, 0px), 0); }
-  .team-member:focus-within .portrait-plane { transform: translateY(-5px) scale(1); }
-  .team-member:is(:hover, :focus-within) .team-profile-arrow { background: var(--primary); color: var(--primary-foreground); transform: rotate(6deg); }
-  .team-member:is(:hover, :focus-within) .team-member-content { background-size: 6.25rem 2px; }
+  .team-portrait-image { transform: scale(.985); transition: transform 450ms cubic-bezier(.2,.65,.3,1); }
+  .team-member:is(:hover, :focus-within) .team-portrait-image,
+  .team-portrait:hover .team-portrait-image { transform: scale(1); }
+  .team-profile-arrow { transition: transform 220ms ease, color 220ms ease; }
+  .team-member:is(:hover, :focus-within) .team-profile-arrow { color: var(--primary); transform: translate(2px, -2px); }
 }
 
 #main-content :where(.grid, .flex) > * {

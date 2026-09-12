@@ -1,7 +1,5 @@
-import Image from "next/image";
+import Image from "./content-image";
 import { publicImageUrl } from "@/lib/content-preview";
-import { PortraitMotion } from "./portrait-motion";
-const r2Base = process.env.R2_PUBLIC_URL;
 export function TeamPortrait({
   src,
   name,
@@ -17,27 +15,22 @@ export function TeamPortrait({
 }) {
   const photo = publicImageUrl(src);
   if (!photo) return null;
-  // R2 is our configured host; responsive derivatives avoid downloading the
-  // original portrait at every screen size. Pasted external links stay direct.
-  const hosted =
-    !!r2Base &&
-    new URL(photo, "https://mistravora.com").origin === new URL(r2Base).origin;
   return (
-    <PortraitMotion>
+    <div className="team-portrait">
       <Image
         src={photo}
         alt={`${name}, ${role} at ${company}`}
-        width={640}
-        height={800}
+        width={864}
+        height={1080}
+        quality={85}
         sizes={
           profile
-            ? "(min-width: 1024px) 384px, (min-width: 768px) 40vw, min(calc(100vw - 32px), 416px)"
-            : "(min-width: 1920px) 25vw, (min-width: 768px) min(calc(50vw - 64px), 480px), min(calc(100vw - 32px), 480px)"
+            ? "(min-width: 1024px) 432px, (min-width: 768px) 38vw, min(calc(100vw - 32px), 432px)"
+            : "(min-width: 1600px) min(calc(25vw - 40px), 432px), (min-width: 768px) min(calc(50vw - 48px), 432px), min(calc(100vw - 32px), 432px)"
         }
-        unoptimized={!hosted}
         loading={profile ? "eager" : "lazy"}
-        className="aspect-[4/5] h-full w-full object-contain object-bottom"
+        className="team-portrait-image aspect-[4/5] h-full w-full object-contain object-bottom"
       />
-    </PortraitMotion>
+    </div>
   );
 }

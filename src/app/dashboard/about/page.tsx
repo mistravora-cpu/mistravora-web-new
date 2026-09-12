@@ -64,7 +64,7 @@ export default async function AboutAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">About Page Management</h1>
         <p className="text-sm text-muted-foreground">
-          Manage core values and team members.
+          Manage core values and team members. For crisp portraits, use the original photo at least 864×1080 pixels; 1728×2160 or larger is preferred for high-density displays. Keep the face inside the image with a little space above the head. Upload a file or paste its HTTPS URL.
         </p>
       </div>
 
