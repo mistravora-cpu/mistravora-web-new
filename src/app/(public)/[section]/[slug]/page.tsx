@@ -1,3 +1,4 @@
+import { quoteLink } from "@/lib/quote-links";
 import Image from "@/components/content-image";
 import { contentText } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
@@ -181,7 +182,7 @@ export default async function DetailPage({ params }: { params: Promise<{ section
         {entry.download && <a href={entry.download} className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90" rel="noopener noreferrer" data-event="download">Download {entry.title}</a>}
         {entry.links?.map(link => <a key={link} href={link} rel="noopener noreferrer" className="mt-4 mr-4 inline-block text-sm text-primary link-underline">{new URL(link).hostname}</a>)}
         <div className="mt-10"><ShareButton title={entry.title} /></div>
-        <aside className="mt-14 rounded-xl border border-border bg-card p-7"><h2 className="text-xl font-semibold tracking-tight">Discuss your project</h2><p className="mt-2 text-sm text-muted-foreground">Tell us what you need. We&apos;ll help you choose the next step.</p><div className="mt-5 flex flex-wrap gap-4"><Link className="text-sm font-medium text-primary link-underline" href={`/contact?service=${encodeURIComponent(entry.title)}`}>Get a quote</Link><Link className="text-sm font-medium text-primary link-underline" href="/book">Book a consultation</Link></div></aside>
+        <aside className="mt-14 rounded-xl border border-border bg-card p-7"><h2 className="text-xl font-semibold tracking-tight">Discuss your project</h2><p className="mt-2 text-sm text-muted-foreground">Tell us what you need. We&apos;ll help you choose the next step.</p><div className="mt-5 flex flex-wrap gap-4"><Link className="text-sm font-medium text-primary link-underline" href={quoteLink(entry.title)}>Get a quote</Link><Link className="text-sm font-medium text-primary link-underline" href="/book">Book a consultation</Link></div></aside>
         {!!related.length && <section className="mt-16"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Related {collections[section].title.toLowerCase()}</h2><ContentGrid entries={related} prefix={`/${section}`} /></section>}
       </>
     )}

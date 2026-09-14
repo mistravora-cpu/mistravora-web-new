@@ -1,0 +1,61 @@
+{
+  "testedAt": "2026-09-14",
+  "environment": "Local Next.js webpack production build; Chromium mobile Lighthouse default simulated throttling",
+  "lighthouse": {
+    "home": {
+      "scores": {
+        "performance": 83,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": "0.9\u00a0s",
+        "largest-contentful-paint": "2.1\u00a0s",
+        "total-blocking-time": "640\u00a0ms",
+        "cumulative-layout-shift": "0"
+      },
+      "runWarnings": []
+    },
+    "pricing": {
+      "scores": {
+        "performance": 95,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "metrics": {
+        "first-contentful-paint": "1.2\u00a0s",
+        "largest-contentful-paint": "2.9\u00a0s",
+        "total-blocking-time": "30\u00a0ms",
+        "cumulative-layout-shift": "0"
+      },
+      "runWarnings": []
+    }
+  },
+  "sitemapPages": 57,
+  "sitemapIssues": [],
+  "automatedTests": 95,
+  "browserMatrix": {
+    "widths": [
+      320,
+      390,
+      768,
+      1024,
+      1440,
+      1920
+    ],
+    "pages": [
+      "/pricing",
+      "/tools",
+      "/about",
+      "/projects",
+      "/services"
+    ]
+  },
+  "limitations": [
+    "Homepage mobile performance remains below the earlier 85+ target.",
+    "No real quotation emails were sent; delivery was mocked.",
+    "Scores vary with hardware, browser, network and live content."
+  ]
+}

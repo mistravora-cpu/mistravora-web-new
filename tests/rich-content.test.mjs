@@ -31,6 +31,14 @@ function load(file, overrides = {}) {
   return exports;
 }
 const { renderArticleHtml } = load("src/lib/article-html.ts");
+test("embedded documents preserve main styling without nesting page landmarks", () => {
+  const { html, css } = renderArticleHtml('<style>main { padding: 12px } main h1 { color: red }</style><main><h1>Project details</h1></main>');
+  assert.doesNotMatch(html, /<main\b/);
+  assert.match(html, /data-article-main/);
+  assert.match(html, /<h2>Project details<\/h2>/);
+  assert.match(css, /\[data-article-main\] h2/);
+  assert.match(css, /padding: 12px/);
+});
 const { primaryContentImage, contentText, firstContent } = load(
   "src/lib/content-preview.ts",
 );

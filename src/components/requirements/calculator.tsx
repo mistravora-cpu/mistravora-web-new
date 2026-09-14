@@ -1,5 +1,13 @@
 "use client";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -24,6 +32,7 @@ import type {
   RequirementRequest,
 } from "@/lib/requirements/schema";
 import { requestSchema } from "@/lib/requirements/schema";
+import { submissionSchema } from "@/lib/requirements/submission";
 import {
   buildRequirementSummary,
   calculateEstimate,
@@ -33,6 +42,7 @@ import {
 import { QuestionField } from "./question";
 import { EstimateSummary, lkr } from "./estimate";
 import { Button } from "@/components/ui/button";
+import { RequirementEntryContext } from "./entry-context";
 const draftKey = "mistravora-requirements-v1";
 type Receipt = {
   reference: string;
@@ -65,6 +75,10 @@ export function RequirementCalculator({
     [receipt, setReceipt] = useState<Receipt | null>(null),
     [status, setStatus] = useState(""),
     [featureSearch, setFeatureSearch] = useState("");
+  const [reviewed, setReviewed] = useState(false);
+  const [contactErrors, setContactErrors] = useState<Record<string, string>>(
+    {},
+  );
   const [contact, setContact] = useState({
       name: "",
       email: "",
@@ -77,7 +91,11 @@ export function RequirementCalculator({
     [consent, setConsent] = useState(false);
   const requestId = useRef(""),
     heading = useRef<HTMLHeadingElement>(null);
+  const restoredVersion = useRef<string | null>(null);
   useEffect(() => {
+    // Same-page package links can refresh server props. Do not restore an old
+    // device draft over the visitor's current answers or new package selection.
+    if (restoredVersion.current === config.version) return;
     const timer = setTimeout(() => {
       try {
         const saved = preview
@@ -99,6 +117,7 @@ export function RequirementCalculator({
           }
         }
       } catch {}
+      restoredVersion.current = config.version;
       setReady(true);
     }, 0);
     return () => clearTimeout(timer);
@@ -118,7 +137,7 @@ export function RequirementCalculator({
           version: config.version,
           expires: Date.now() + 7 * 86400000,
           stepId,
-          input: { ...input, answers },
+          input: { ...input, context: undefined, answers },
         }),
       );
     } catch {}
@@ -158,18 +177,26 @@ export function RequirementCalculator({
     setErrors({});
     requestId.current = "";
   };
-  function move(next: number) {
+  function move(next: number, issues: Record<string, string> = {}) {
     setStepId(steps[next]?.id ?? "project");
-    setErrors({});
+    setErrors(issues);
+    if (steps[next]?.id === "review") setReviewed(true);
     setTimeout(() => heading.current?.focus(), 0);
   }
   function addCapability(id: string) {
-    const next = normalize({ ...input, features: [...new Set([...input.features, id])] });
+    const next = normalize({
+      ...input,
+      features: [...new Set([...input.features, id])],
+    });
     setInput(next);
     requestId.current = "";
     if (current.id === "review" || current.id === "contact") {
-      const previousQuestions = new Set(steps.flatMap(s => s.questions.map(q => q.id)));
-      const followup = requirementSteps(config, next).find(s => s.questions.some(q => !previousQuestions.has(q.id)));
+      const previousQuestions = new Set(
+        steps.flatMap((s) => s.questions.map((q) => q.id)),
+      );
+      const followup = requirementSteps(config, next).find((s) =>
+        s.questions.some((q) => !previousQuestions.has(q.id)),
+      );
       if (followup) {
         setStepId(followup.id);
         setErrors({});
@@ -187,7 +214,9 @@ export function RequirementCalculator({
     if (Object.keys(local).length) {
       setErrors(local);
       setTimeout(() => {
-        const first = document.getElementById(`req-${Object.keys(local)[0]}`);
+        const id = `req-${Object.keys(local)[0]}`;
+        const first =
+          document.getElementById(id) ?? document.getElementsByName(id)[0];
         (first ?? heading.current)?.focus();
       }, 0);
       return;
@@ -195,52 +224,73 @@ export function RequirementCalculator({
     move(Math.min(effectiveStep + 1, steps.length - 1));
   }
   async function submit() {
+    if (busy) return;
     if (preview) {
       setStatus("Preview only. No enquiry or email was sent.");
       return;
     }
     const all = validateRequirements(config, input, true);
     if (Object.keys(all).length) {
-      setErrors(all);
       const index = steps.findIndex((s) => s.questions.some((q) => all[q.id]));
-      if (index >= 0) move(index);
+      if (index >= 0) move(index, all);
       return;
     }
-    if (
-      !contact.name.trim() ||
-      !/^\S+@\S+\.\S+$/.test(contact.email) ||
-      !consent
-    ) {
-      setStatus("Enter your name and email, and confirm consent.");
+    requestId.current ||= crypto.randomUUID();
+    const payload = submissionSchema.safeParse({
+      id: requestId.current,
+      configVersion: config.version,
+      requirements: input,
+      contact: { ...contact, email: contact.email.trim() },
+      consent,
+    });
+    if (!payload.success) {
+      const issues: Record<string, string> = {};
+      for (const issue of payload.error.issues) {
+        const key =
+          issue.path[0] === "contact"
+            ? String(issue.path[1])
+            : String(issue.path[0]);
+        issues[key] ??=
+          key === "consent"
+            ? "Confirm permission to send and store your quotation."
+            : issue.message;
+      }
+      setContactErrors(issues);
+      setStatus("Please check the highlighted details.");
+      setTimeout(
+        () =>
+          document
+            .getElementById(`req-contact-${Object.keys(issues)[0]}`)
+            ?.focus(),
+        0,
+      );
       return;
     }
+    setContactErrors({});
     setBusy(true);
     setStatus("");
-    requestId.current ||= crypto.randomUUID();
     try {
       const response = await fetch("/api/requirements", {
         method: "POST",
+        signal: AbortSignal.timeout(65000),
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: requestId.current,
-          configVersion: config.version,
-          requirements: input,
-          contact,
-          consent,
-        }),
+        body: JSON.stringify(payload.data),
       });
       const body = await response.json();
       if (!response.ok)
         throw Error(body.error || "Could not submit. Please retry.");
       setReceipt(body);
+      setTimeout(() => heading.current?.focus(), 0);
       try {
         localStorage.removeItem(draftKey);
       } catch {}
     } catch (error) {
       setStatus(
-        error instanceof Error
-          ? error.message
-          : "Could not submit. Please retry.",
+        error instanceof DOMException && error.name === "TimeoutError"
+          ? "The request is taking longer than expected. Retry to check the same quotation; your reference is preserved."
+          : error instanceof Error
+            ? error.message
+            : "Could not submit. Please retry.",
       );
     } finally {
       setBusy(false);
@@ -258,558 +308,693 @@ export function RequirementCalculator({
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  const selectContext = useCallback((context: string) => {
+    setInput((s) => ({ ...s, context }));
+    setReceipt(null);
+    requestId.current = "";
+  }, []);
+  const entryContext = ready && !preview && (
+    <Suspense fallback={null}>
+      <RequirementEntryContext onChange={selectContext} />
+    </Suspense>
+  );
+  function reset() {
+    setInput(fresh());
+    setStepId("project");
+    setContact({
+      name: "",
+      email: "",
+      phone: "",
+      whatsapp: "",
+      company: "",
+      preferred: "Email",
+      website: "",
+    });
+    setConsent(false);
+    setErrors({});
+    setFeatureSearch("");
+    setContactErrors({});
+    setStatus("");
+    setReviewed(false);
+    setReceipt(null);
+    requestId.current = "";
+    setTimeout(() => heading.current?.focus(), 0);
+  }
   if (receipt)
     return (
-      <div className="mx-auto max-w-3xl space-y-6 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-10">
-        <ShieldCheck aria-hidden className="h-12 w-12 text-primary" />
-        <h2 className="text-2xl font-semibold">
-          Your requirements have been received
-        </h2>
-        <p className="break-all text-sm text-muted-foreground">
-          Reference: {receipt.reference}
-        </p>
-        <p>{receipt.message}</p>
-        <p>
-          Our team will review your requirements and respond within 24 hours.
-        </p>
-        <Button
-          className="h-auto min-h-11 whitespace-normal"
-          onClick={download}
-        >
-          <Download aria-hidden />
-          Download preliminary quotation PDF
-        </Button>
-        <div className="flex flex-wrap gap-5">
-          <Link href="/book" className="underline">
-            Book a consultation
-          </Link>
-          <Link href="/contact" className="underline">
-            Contact Mistravora
-          </Link>
-        </div>
-      </div>
-    );
-  return (
-    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_350px]">
-      <div className="min-w-0 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p
-            className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"
-            aria-live="polite"
+      <>
+        {entryContext}
+        <div className="mx-auto max-w-3xl space-y-6 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-10">
+          <ShieldCheck aria-hidden className="h-12 w-12 text-primary" />
+          <h2
+            ref={heading}
+            tabIndex={-1}
+            className="text-2xl font-semibold focus:outline-none"
           >
-            Step {effectiveStep + 1} of {steps.length}
+            Your requirements have been received
+          </h2>
+          <p className="break-all text-sm text-muted-foreground">
+            Reference: {receipt.reference}
+          </p>
+          <p>{receipt.message}</p>
+          <p>
+            Our team will review your requirements and respond within 24 hours.
           </p>
           <Button
-            variant="ghost"
-            disabled={busy}
-            onClick={() => {
-              if (confirm("Start over and remove saved selections?")) {
-                setInput(fresh());
-                setStepId("project");
-                setContact({
-                  name: "",
-                  email: "",
-                  phone: "",
-                  whatsapp: "",
-                  company: "",
-                  preferred: "Email",
-                  website: "",
-                });
-                setConsent(false);
-                setErrors({});
-                setFeatureSearch("");
-                requestId.current = "";
-              }
-            }}
+            className="h-auto min-h-11 whitespace-normal"
+            onClick={download}
           >
-            <RotateCcw aria-hidden /> Start over
+            <Download aria-hidden />
+            Download preliminary quotation PDF
           </Button>
+          <div className="flex flex-wrap gap-5">
+            <Button variant="outline" onClick={reset}>
+              Plan another project
+            </Button>
+            <Link href="/book" className="underline">
+              Book a consultation
+            </Link>
+            <Link href="/contact" className="underline">
+              Contact Mistravora
+            </Link>
+          </div>
         </div>
-        <progress
-          value={effectiveStep + 1}
-          max={steps.length}
-          className="h-2 w-full appearance-none overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary [&::-moz-progress-bar]:bg-primary"
-          aria-label="Requirement gathering progress"
-        />
-        <p className="text-xs text-muted-foreground">
-          {preview
-            ? "Admin preview: selections are not saved and no emails will be sent."
-            : "Selections are saved on this device for 7 days. Business notes and contact details are not saved locally."}
-        </p>
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 xl:hidden">
-          <span className="text-sm font-semibold">
-            {lkr(estimate.low)} – {lkr(estimate.high)}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {estimate.weeksLow}–{estimate.weeksHigh} weeks · 30% advance
-          </span>
-        </div>
-        <details className="rounded-xl border border-border bg-card px-4 py-3">
-          <summary className="cursor-pointer text-sm font-medium">
-            Your steps · {project.label}
-          </summary>
-          <nav
-            aria-label="Calculator steps"
-            className="mt-3 grid gap-2 sm:grid-cols-2"
+      </>
+    );
+  return (
+    <>
+      {entryContext}
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_350px]">
+        <div className="min-w-0 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p
+              className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"
+              aria-live="polite"
+            >
+              Step {effectiveStep + 1} of {steps.length}
+            </p>
+            <Button
+              variant="ghost"
+              disabled={busy}
+              onClick={() => {
+                if (confirm("Start over and remove saved selections?")) {
+                  reset();
+                }
+              }}
+            >
+              <RotateCcw aria-hidden /> Start over
+            </Button>
+          </div>
+          <progress
+            value={effectiveStep + 1}
+            max={steps.length}
+            className="h-2 w-full appearance-none overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary [&::-moz-progress-bar]:bg-primary"
+            aria-label="Requirement gathering progress"
+          />
+          <p className="text-xs text-muted-foreground">
+            {preview
+              ? "Admin preview: selections are not saved and no emails will be sent."
+              : "Selections are saved on this device for 7 days. Business notes and contact details are not saved locally."}
+          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 xl:hidden">
+            <span className="text-sm font-semibold">
+              {lkr(estimate.low)} – {lkr(estimate.high)}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {estimate.weeksLow}–{estimate.weeksHigh} weeks · 30% advance
+            </span>
+          </div>
+          <details className="rounded-xl border border-border bg-card px-4 py-3">
+            <summary className="cursor-pointer text-sm font-medium">
+              Your steps · {project.label}
+            </summary>
+            <nav
+              aria-label="Calculator steps"
+              className="mt-3 grid gap-2 sm:grid-cols-2"
+            >
+              {steps.map((item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={index > effectiveStep || busy}
+                  aria-current={item.id === current.id ? "step" : undefined}
+                  onClick={() => move(index)}
+                  className="min-h-11 rounded-lg px-3 py-2 text-left text-sm hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-45"
+                >
+                  {index + 1}. {item.title}
+                  {item.id === current.id ? " · Current" : ""}
+                </button>
+              ))}
+            </nav>
+          </details>
+          <h2
+            ref={heading}
+            tabIndex={-1}
+            className="text-2xl font-semibold focus:outline-none"
           >
-            {steps.map((item, index) => (
-              <button
-                key={item.id}
-                type="button"
-                disabled={index > effectiveStep || busy}
-                aria-current={item.id === current.id ? "step" : undefined}
-                onClick={() => move(index)}
-                className="min-h-11 rounded-lg px-3 py-2 text-left text-sm hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-45"
-              >
-                {index + 1}. {item.title}
-                {item.id === current.id ? " · Current" : ""}
-              </button>
-            ))}
-          </nav>
-        </details>
-        <h2
-          ref={heading}
-          tabIndex={-1}
-          className="text-2xl font-semibold focus:outline-none"
-        >
-          {current.title}
-        </h2>
-        <p className="text-sm leading-6 text-muted-foreground">
-          {current.id === "project"
-            ? "Choose the closest match. We’ll tailor the questions and estimate to your project."
-            : current.id === "features"
-              ? "Add only what you need. Included and answer-based capabilities are already selected."
-              : current.id === "review"
-                ? "Check your scope and costs before sharing your contact details."
-                : current.id === "contact"
-                  ? "One last step. Save your brief and get a copy of your preliminary quotation."
-                  : "Your answers shape the remaining steps. Optional questions can be skipped if you’re unsure."}
-        </p>
-        <div className="space-y-7 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-8">
-          {current.id === "project" && (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {config.projectTypes.map((p, index) => {
-                const Icon = icons[index % icons.length];
-                return (
-                  <label
-                    key={p.id}
-                    className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border p-5 transition-colors focus-within:ring-2 focus-within:ring-primary ${input.projectType === p.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
-                  >
-                    <span className="flex items-center gap-3">
-                      <Icon
-                        aria-hidden
-                        className="h-8 w-8 shrink-0 text-primary"
-                      />
-                      <input
-                        type="radio"
-                        name="projectType"
-                        checked={input.projectType === p.id}
-                        onChange={() => {
-                          setInput({ ...fresh(), projectType: p.id });
-                          requestId.current = "";
-                        }}
-                      />
-                      <strong>{p.label}</strong>
-                    </span>
-                    <span className="text-sm">{p.description}</span>
-                    <span className="mt-auto text-sm font-semibold text-primary">
-                      Base {lkr(p.base)}{" "}
-                      <span className="font-normal text-muted-foreground">
-                        · before scope adjustments
-                      </span>
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {p.category} · {p.useCases}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-          {current.questions.map((q) => (
-            <QuestionField
-              key={q.id}
-              question={q}
-              value={input.answers[q.id]}
-              error={errors[q.id]}
-              onChange={(value) => change(q.id, value)}
-            />
-          ))}
-          {current.id === "features" && (
-            <>
-              <p className="text-sm">
-                Capabilities already included or required by your answers are
-                listed below and charged only once.
-              </p>
-              <label className="block space-y-2 text-sm">
-                Find a capability
-                <input
-                  type="search"
-                  value={featureSearch}
-                  onChange={(e) => setFeatureSearch(e.target.value)}
-                  placeholder="Search features"
-                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3"
-                />
-              </label>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {config.features
-                  .filter(
-                    (f) =>
-                      project.optional.includes(f.id) &&
-                      f.label
-                        .toLowerCase()
-                        .includes(featureSearch.toLowerCase()),
-                  )
-                  .map((f) => (
-                    <label
-                      key={f.id}
-                      className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mt-1"
-                        checked={features.has(f.id)}
-                        disabled={derived.has(f.id)}
-                        onChange={(e) => {
-                          setInput((s) =>
-                            normalize({
-                              ...s,
-                              features: e.target.checked
-                                ? [...s.features, f.id]
-                                : s.features.filter((id) => id !== f.id),
-                            }),
-                          );
-                          requestId.current = "";
-                        }}
-                      />
-                      <span>
-                        {f.label}
-                        <span className="block text-xs text-muted-foreground">
-                          {project.included.includes(f.id)
-                            ? "Included in base"
-                            : derived.has(f.id)
-                              ? "Required by your answers"
-                              : lkr(f.price)}
-                        </span>
-                      </span>
-                    </label>
-                  ))}
-              </div>
-              {!config.features.some(
-                (f) =>
-                  project.optional.includes(f.id) &&
-                  f.label.toLowerCase().includes(featureSearch.toLowerCase()),
-              ) && (
-                <p className="text-sm text-muted-foreground">
-                  No matching capabilities. Try another search.
-                </p>
-              )}
-            </>
-          )}
-          {current.id === "design" &&
-            config.design.map((d) => (
-              <label
-                key={d.id}
-                className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
-              >
-                <input
-                  type="radio"
-                  name="design"
-                  checked={input.design === d.id}
-                  onChange={() => {
-                    setInput((s) => normalize({ ...s, design: d.id }));
-                    requestId.current = "";
-                  }}
-                />
-                <span>
-                  {d.label}
-                  <span className="block text-sm text-muted-foreground">
-                    {d.description}
-                  </span>
-                </span>
-              </label>
-            ))}
-          {current.id === "timeline" && (
-            <>
-              <h3 className="font-semibold">Delivery preference</h3>
-              {config.timelines.map((t) => (
-                <label
-                  key={t.id}
-                  className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
-                >
-                  <input
-                    type="radio"
-                    name="timeline"
-                    checked={input.timeline === t.id}
-                    onChange={() => {
-                      setInput((s) => normalize({ ...s, timeline: t.id }));
-                      requestId.current = "";
-                    }}
-                  />
-                  <span>
-                    {t.label}
-                    <span className="block text-sm text-muted-foreground">
-                      {t.description}
-                    </span>
-                  </span>
-                </label>
-              ))}
-              <h3 className="font-semibold">Ongoing maintenance (separate)</h3>
-              {config.maintenance.map((m) => (
-                <label
-                  key={m.id}
-                  className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
-                >
-                  <input
-                    type="radio"
-                    name="maintenance"
-                    checked={input.maintenance === m.id}
-                    onChange={() => {
-                      setInput((s) => normalize({ ...s, maintenance: m.id }));
-                      requestId.current = "";
-                    }}
-                  />
-                  <span>
-                    {m.label} — {lkr(m.monthly)}/month
-                    <span className="block text-xs text-muted-foreground">
-                      {m.description}
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </>
-          )}
-          {current.id === "review" && (
-            <>
-              <EstimateSummary
-                estimate={calculateEstimate(config, input)}
-                config={config}
-                full
-              />
-              <h3 className="font-semibold">Requirement summary</h3>
-              <dl className="space-y-4">
-                {buildRequirementSummary(config, input).map((row) => (
-                  <div key={row.label}>
-                    <dt className="text-sm font-medium">{row.label}</dt>
-                    <dd className="whitespace-pre-wrap break-words text-sm text-muted-foreground">
-                      {row.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="flex flex-wrap gap-2">
-                {steps
-                  .filter((s) => s.id !== "review" && s.id !== "contact")
-                  .map((s) => (
-                    <Button
-                      key={s.id}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => move(steps.indexOf(s))}
-                    >
-                      Edit {s.title}
-                    </Button>
-                  ))}
-              </div>
-            </>
-          )}
-          {current.id === "contact" && (
-            <>
-              <p>
-                Enter your email at this final step to receive your preliminary
-                quotation PDF and send the requirements to Mistravora.
-              </p>
-              {(
-                [
-                  "name",
-                  "company",
-                  "email",
-                  "phone",
-                  "whatsapp",
-                  "website",
-                ] as const
-              ).map((key) => (
-                <div key={key} className="space-y-2">
-                  <label
-                    htmlFor={`req-contact-${key}`}
-                    className="text-sm font-medium"
-                  >
-                    {
-                      {
-                        name: "Full name *",
-                        company: "Business / organization",
-                        email: "Email *",
-                        phone: "Phone (optional)",
-                        whatsapp: "WhatsApp (optional)",
-                        website: "Company website (optional)",
-                      }[key]
-                    }
+            {current.title}
+          </h2>
+          <p className="text-sm leading-6 text-muted-foreground">
+            {current.id === "project"
+              ? "Choose the closest match. We’ll tailor the questions and estimate to your project."
+              : current.id === "features"
+                ? "Add only what you need. Included and answer-based capabilities are already selected."
+                : current.id === "review"
+                  ? "Check your scope and costs before sharing your contact details."
+                  : current.id === "contact"
+                    ? "One last step. Save your brief and get a copy of your preliminary quotation."
+                    : "Your answers shape the remaining steps. Optional questions can be skipped if you’re unsure."}
+          </p>
+          <div className="space-y-7 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-8">
+            {current.id === "project" && (
+              <>
+                <div className="space-y-2">
+                  <label htmlFor="req-context" className="text-sm font-medium">
+                    Service or package of interest (optional)
                   </label>
                   <input
-                    id={`req-contact-${key}`}
-                    disabled={busy}
-                    type={
-                      key === "email"
-                        ? "email"
-                        : key === "phone" || key === "whatsapp"
-                          ? "tel"
-                          : key === "website"
-                            ? "url"
-                            : "text"
-                    }
-                    autoComplete={
-                      key === "name"
-                        ? "name"
-                        : key === "email"
-                          ? "email"
-                          : key === "company"
-                            ? "organization"
-                            : key === "phone"
-                              ? "tel"
-                              : "off"
-                    }
-                    value={contact[key]}
-                    maxLength={key === "website" ? 500 : 200}
+                    id="req-context"
+                    value={input.context ?? ""}
+                    maxLength={120}
                     onChange={(e) => {
-                      setContact((s) => ({ ...s, [key]: e.target.value }));
+                      setInput((s) => ({ ...s, context: e.target.value }));
                       requestId.current = "";
                     }}
                     className="w-full rounded-lg border border-border bg-background p-3"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Included in your brief. Choose the closest project type
+                    below to calculate the estimate.
+                  </p>
                 </div>
-              ))}
-              <label className="flex flex-col gap-2" htmlFor="req-preferred">
-                Preferred contact method
-                <select
-                  id="req-preferred"
-                  disabled={busy}
-                  value={contact.preferred}
-                  onChange={(e) => {
-                    setContact((s) => ({ ...s, preferred: e.target.value }));
-                    requestId.current = "";
-                  }}
-                  className="rounded-lg border border-border bg-background p-3"
-                >
-                  <option>Email</option>
-                  <option>Phone</option>
-                  <option>WhatsApp</option>
-                </select>
-              </label>
-              <label className="flex items-start gap-3 text-sm">
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  disabled={busy}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  className="mt-1"
-                />
-                <span>
-                  I agree that Mistravora may store these requirements, email my
-                  preliminary quotation, and contact me about this project under
-                  the{" "}
-                  <Link href="/policies/privacy-policy" className="underline">
-                    privacy policy
-                  </Link>
-                  . This does not subscribe me to marketing.
-                </span>
-              </label>
-              <p className="text-xs text-muted-foreground">
-                Do not include passwords, customer records, or sensitive system
-                access.
-              </p>
-              <Button
-                className="h-auto min-h-12 w-full whitespace-normal py-3"
-                disabled={busy}
-                onClick={submit}
-              >
-                {busy
-                  ? "Preparing your quotation…"
-                  : "Send requirements and email my PDF"}
-              </Button>
-              <p role="status" className="text-sm">
-                {status}
-              </p>
-            </>
-          )}
-        </div>
-        <div className="sticky bottom-3 z-10 flex justify-between gap-3 rounded-2xl border border-border bg-background p-3 shadow-lg">
-          <Button
-            variant="outline"
-            disabled={effectiveStep === 0 || busy}
-            onClick={() => move(Math.max(0, effectiveStep - 1))}
-          >
-            <ArrowLeft aria-hidden /> Back
-          </Button>
-          {current.id !== "contact" && (
-            <Button className="min-h-11" onClick={next}>
-              Continue <ArrowRight aria-hidden />
-            </Button>
-          )}
-        </div>
-      </div>
-      <aside className="space-y-4 xl:sticky xl:top-24">
-        <details
-          open
-          className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-card p-5 sm:p-6"
-        >
-          <summary className="mb-4 cursor-pointer font-medium">
-            Your planning estimate
-          </summary>
-          <EstimateSummary estimate={estimate} config={config} />
-        </details>
-        {insights.length > 0 && (
-          <section
-            aria-label="Suggestions based on your answers"
-            className="space-y-4 rounded-3xl border border-border bg-card p-5"
-          >
-            <h3 className="flex items-center gap-2 font-semibold">
-              <Sparkles aria-hidden className="h-4 w-4 text-primary" />
-              Based on your answers
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Suggestions for your scope. Extras are added only when you select
-              them.
-            </p>
-            {insights.slice(0, 4).map((insight) => (
-              <div
-                key={insight.id}
-                className="space-y-2 border-t border-border pt-4"
-              >
-                <p className="text-sm font-semibold">{insight.title}</p>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {insight.description}
-                </p>
-                {insight.features
-                  .filter((id) => project.optional.includes(id))
-                  .map((id) => {
-                    const feature = config.features.find((f) => f.id === id)!;
-                    return features.has(id) ? (
-                      <p
-                        key={id}
-                        className="flex items-center gap-2 text-xs text-primary"
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {config.projectTypes.map((p, index) => {
+                    const Icon = icons[index % icons.length];
+                    return (
+                      <label
+                        key={p.id}
+                        className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border p-5 transition-colors focus-within:ring-2 focus-within:ring-primary ${
+                          input.projectType === p.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
                       >
-                        <Check aria-hidden className="h-3 w-3" />
-                        {feature.label} in your scope
-                      </p>
-                    ) : (
-                      <Button
-                        key={id}
-                        variant="outline"
-                        size="sm"
-                        className="h-auto min-h-11 whitespace-normal text-left"
-                        disabled={busy}
-                        onClick={() => addCapability(id)}
-                      >
-                        Add {feature.label} · {lkr(feature.price)} before
-                        adjustments
-                      </Button>
+                        <span className="flex items-center gap-3">
+                          <Icon
+                            aria-hidden
+                            className="h-8 w-8 shrink-0 text-primary"
+                          />
+                          <input
+                            type="radio"
+                            name="projectType"
+                            checked={input.projectType === p.id}
+                            onChange={() => {
+                              setInput({
+                                ...fresh(),
+                                context: input.context,
+                                projectType: p.id,
+                              });
+                              setReviewed(false);
+                              requestId.current = "";
+                            }}
+                          />
+                          <strong>{p.label}</strong>
+                        </span>
+                        <span className="text-sm">{p.description}</span>
+                        <span className="mt-auto text-sm font-semibold text-primary">
+                          Base {lkr(p.base)}{" "}
+                          <span className="font-normal text-muted-foreground">
+                            · before scope adjustments
+                          </span>
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {p.category} · {p.useCases}
+                        </span>
+                      </label>
                     );
                   })}
-              </div>
+                </div>
+              </>
+            )}
+            {current.questions.map((q) => (
+              <QuestionField
+                key={q.id}
+                question={q}
+                value={input.answers[q.id]}
+                error={errors[q.id]}
+                onChange={(value) => change(q.id, value)}
+              />
             ))}
-          </section>
-        )}
-      </aside>
-    </div>
+            {current.id === "features" && (
+              <>
+                <p className="text-sm">
+                  Capabilities already included or required by your answers are
+                  listed below and charged only once.
+                </p>
+                <label className="block space-y-2 text-sm">
+                  Find a capability
+                  <input
+                    type="search"
+                    value={featureSearch}
+                    onChange={(e) => setFeatureSearch(e.target.value)}
+                    placeholder="Search features"
+                    className="min-h-11 w-full rounded-xl border border-border bg-background px-3"
+                  />
+                </label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {config.features
+                    .filter(
+                      (f) =>
+                        project.optional.includes(f.id) &&
+                        f.label
+                          .toLowerCase()
+                          .includes(featureSearch.toLowerCase()),
+                    )
+                    .map((f) => (
+                      <label
+                        key={f.id}
+                        className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mt-1"
+                          checked={features.has(f.id)}
+                          disabled={derived.has(f.id)}
+                          onChange={(e) => {
+                            setInput((s) =>
+                              normalize({
+                                ...s,
+                                features: e.target.checked
+                                  ? [...s.features, f.id]
+                                  : s.features.filter((id) => id !== f.id),
+                              }),
+                            );
+                            requestId.current = "";
+                          }}
+                        />
+                        <span>
+                          {f.label}
+                          <span className="block text-xs text-muted-foreground">
+                            {project.included.includes(f.id)
+                              ? "Included in base"
+                              : derived.has(f.id)
+                                ? "Required by your answers"
+                                : lkr(f.price)}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                </div>
+                {!config.features.some(
+                  (f) =>
+                    project.optional.includes(f.id) &&
+                    f.label.toLowerCase().includes(featureSearch.toLowerCase()),
+                ) && (
+                  <p className="text-sm text-muted-foreground">
+                    No matching capabilities. Try another search.
+                  </p>
+                )}
+              </>
+            )}
+            {current.id === "design" &&
+              config.design.map((d) => (
+                <label
+                  key={d.id}
+                  className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
+                >
+                  <input
+                    type="radio"
+                    name="design"
+                    checked={input.design === d.id}
+                    onChange={() => {
+                      setInput((s) => normalize({ ...s, design: d.id }));
+                      requestId.current = "";
+                    }}
+                  />
+                  <span>
+                    {d.label}
+                    <span className="block text-sm text-muted-foreground">
+                      {d.description}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            {current.id === "timeline" && (
+              <>
+                <h3 className="font-semibold">Delivery preference</h3>
+                {config.timelines.map((t) => (
+                  <label
+                    key={t.id}
+                    className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
+                  >
+                    <input
+                      type="radio"
+                      name="timeline"
+                      checked={input.timeline === t.id}
+                      onChange={() => {
+                        setInput((s) => normalize({ ...s, timeline: t.id }));
+                        requestId.current = "";
+                      }}
+                    />
+                    <span>
+                      {t.label}
+                      <span className="block text-sm text-muted-foreground">
+                        {t.description}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+                <h3 className="font-semibold">
+                  Ongoing maintenance (separate)
+                </h3>
+                {config.maintenance.map((m) => (
+                  <label
+                    key={m.id}
+                    className="flex min-h-14 cursor-pointer gap-3 rounded-xl border border-border p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary"
+                  >
+                    <input
+                      type="radio"
+                      name="maintenance"
+                      checked={input.maintenance === m.id}
+                      onChange={() => {
+                        setInput((s) => normalize({ ...s, maintenance: m.id }));
+                        requestId.current = "";
+                      }}
+                    />
+                    <span>
+                      {m.label} — {lkr(m.monthly)}/month
+                      <span className="block text-xs text-muted-foreground">
+                        {m.description}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </>
+            )}
+            {current.id === "review" && (
+              <>
+                <EstimateSummary
+                  estimate={calculateEstimate(config, input)}
+                  config={config}
+                  full
+                />
+                <h3 className="font-semibold">Requirement summary</h3>
+                <dl className="space-y-4">
+                  {buildRequirementSummary(config, input).map((row) => (
+                    <div key={row.label}>
+                      <dt className="text-sm font-medium">{row.label}</dt>
+                      <dd className="whitespace-pre-wrap break-words text-sm text-muted-foreground">
+                        {row.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="flex flex-wrap gap-2">
+                  {steps
+                    .filter((s) => s.id !== "review" && s.id !== "contact")
+                    .map((s) => (
+                      <Button
+                        key={s.id}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => move(steps.indexOf(s))}
+                      >
+                        Edit {s.title}
+                      </Button>
+                    ))}
+                </div>
+              </>
+            )}
+            {current.id === "contact" && (
+              <form
+                noValidate
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void submit();
+                }}
+                className="space-y-7"
+                aria-busy={busy}
+              >
+                <p>
+                  Enter your email at this final step to receive your
+                  preliminary quotation PDF and send the requirements to
+                  Mistravora.
+                </p>
+                {(
+                  [
+                    "name",
+                    "company",
+                    "email",
+                    "phone",
+                    "whatsapp",
+                    "website",
+                  ] as const
+                ).map((key) => (
+                  <div key={key} className="space-y-2">
+                    <label
+                      htmlFor={`req-contact-${key}`}
+                      className="text-sm font-medium"
+                    >
+                      {
+                        {
+                          name: "Full name *",
+                          company: "Business / organization",
+                          email: "Email *",
+                          phone: "Phone (optional)",
+                          whatsapp: "WhatsApp (optional)",
+                          website: "Company website (optional)",
+                        }[key]
+                      }
+                    </label>
+                    <input
+                      id={`req-contact-${key}`}
+                      name={key}
+                      required={key === "name" || key === "email"}
+                      aria-invalid={!!contactErrors[key]}
+                      aria-describedby={
+                        contactErrors[key]
+                          ? `req-contact-${key}-error`
+                          : undefined
+                      }
+                      disabled={busy}
+                      type={
+                        key === "email"
+                          ? "email"
+                          : key === "phone" || key === "whatsapp"
+                            ? "tel"
+                            : key === "website"
+                              ? "url"
+                              : "text"
+                      }
+                      autoComplete={
+                        key === "name"
+                          ? "name"
+                          : key === "email"
+                            ? "email"
+                            : key === "company"
+                              ? "organization"
+                              : key === "phone"
+                                ? "tel"
+                                : "off"
+                      }
+                      value={contact[key]}
+                      maxLength={
+                        key === "website"
+                          ? 500
+                          : key === "name"
+                            ? 100
+                            : key === "company"
+                              ? 150
+                              : key === "phone" || key === "whatsapp"
+                                ? 30
+                                : 200
+                      }
+                      onChange={(e) => {
+                        setContact((s) => ({ ...s, [key]: e.target.value }));
+                        setContactErrors((s) => ({ ...s, [key]: "" }));
+                        requestId.current = "";
+                      }}
+                      className="w-full rounded-lg border border-border bg-background p-3"
+                    />
+                    {contactErrors[key] && (
+                      <p
+                        id={`req-contact-${key}-error`}
+                        className="text-sm text-destructive"
+                      >
+                        {contactErrors[key]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+                <label className="flex flex-col gap-2" htmlFor="req-preferred">
+                  Preferred contact method
+                  <select
+                    id="req-preferred"
+                    disabled={busy}
+                    value={contact.preferred}
+                    onChange={(e) => {
+                      setContact((s) => ({ ...s, preferred: e.target.value }));
+                      setContactErrors((s) => ({
+                        ...s,
+                        phone: "",
+                        whatsapp: "",
+                      }));
+                      requestId.current = "";
+                    }}
+                    className="rounded-lg border border-border bg-background p-3"
+                  >
+                    <option>Email</option>
+                    <option>Phone</option>
+                    <option>WhatsApp</option>
+                  </select>
+                </label>
+                <label className="flex items-start gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    id="req-contact-consent"
+                    required
+                    aria-invalid={!!contactErrors.consent}
+                    aria-describedby={
+                      contactErrors.consent
+                        ? "req-contact-consent-error"
+                        : undefined
+                    }
+                    checked={consent}
+                    disabled={busy}
+                    onChange={(e) => {
+                      setConsent(e.target.checked);
+                      setContactErrors((s) => ({ ...s, consent: "" }));
+                    }}
+                    className="mt-1"
+                  />
+                  <span>
+                    I agree that Mistravora may store these requirements, email
+                    my preliminary quotation, and contact me about this project
+                    under the{" "}
+                    <Link href="/policies/privacy-policy" className="underline">
+                      privacy policy
+                    </Link>
+                    . This does not subscribe me to marketing.
+                  </span>
+                </label>
+                {contactErrors.consent && (
+                  <p
+                    id="req-contact-consent-error"
+                    className="text-sm text-destructive"
+                  >
+                    {contactErrors.consent}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Do not include passwords, customer records, or sensitive
+                  system access.
+                </p>
+                <Button
+                  type="submit"
+                  className="h-auto min-h-12 w-full whitespace-normal py-3"
+                  disabled={busy}
+                >
+                  {busy
+                    ? "Preparing your quotation…"
+                    : "Send requirements and email my PDF"}
+                </Button>
+                <p role="status" className="text-sm">
+                  {status}
+                </p>
+              </form>
+            )}
+          </div>
+          <div className="sticky bottom-3 z-10 flex flex-wrap justify-between gap-3 rounded-2xl border border-border bg-background p-3 shadow-lg">
+            <Button
+              variant="outline"
+              disabled={effectiveStep === 0 || busy}
+              onClick={() => move(Math.max(0, effectiveStep - 1))}
+            >
+              <ArrowLeft aria-hidden /> Back
+            </Button>
+            {reviewed && !["review", "contact"].includes(current.id) && (
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() => move(steps.findIndex((s) => s.id === "review"))}
+              >
+                Return to review
+              </Button>
+            )}
+            {current.id !== "contact" && (
+              <Button className="min-h-11" onClick={next}>
+                Continue <ArrowRight aria-hidden />
+              </Button>
+            )}
+          </div>
+        </div>
+        <aside
+          aria-busy={input !== deferred}
+          className="space-y-4 xl:sticky xl:top-24"
+        >
+          <details
+            open
+            className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-card p-5 sm:p-6"
+          >
+            <summary className="mb-4 cursor-pointer font-medium">
+              Your planning estimate
+            </summary>
+            <EstimateSummary estimate={estimate} config={config} />
+          </details>
+          {insights.length > 0 && (
+            <section
+              aria-label="Suggestions based on your answers"
+              className="space-y-4 rounded-3xl border border-border bg-card p-5"
+            >
+              <h3 className="flex items-center gap-2 font-semibold">
+                <Sparkles aria-hidden className="h-4 w-4 text-primary" />
+                Based on your answers
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Suggestions for your scope. Extras are added only when you
+                select them.
+              </p>
+              {insights.slice(0, 4).map((insight) => (
+                <div
+                  key={insight.id}
+                  className="space-y-2 border-t border-border pt-4"
+                >
+                  <p className="text-sm font-semibold">{insight.title}</p>
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    {insight.description}
+                  </p>
+                  {insight.features
+                    .filter((id) => project.optional.includes(id))
+                    .map((id) => {
+                      const feature = config.features.find((f) => f.id === id)!;
+                      return features.has(id) ? (
+                        <p
+                          key={id}
+                          className="flex items-center gap-2 text-xs text-primary"
+                        >
+                          <Check aria-hidden className="h-3 w-3" />
+                          {feature.label} in your scope
+                        </p>
+                      ) : (
+                        <Button
+                          key={id}
+                          variant="outline"
+                          size="sm"
+                          className="h-auto min-h-11 whitespace-normal text-left"
+                          disabled={busy}
+                          onClick={() => addCapability(id)}
+                        >
+                          Add {feature.label} · {lkr(feature.price)} before
+                          adjustments
+                        </Button>
+                      );
+                    })}
+                </div>
+              ))}
+            </section>
+          )}
+        </aside>
+      </div>
+    </>
   );
 }

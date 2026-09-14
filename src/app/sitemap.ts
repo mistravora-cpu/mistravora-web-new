@@ -43,7 +43,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/resources",
     "/policies",
     "/book",
-    "/tools/cost-calculator",
     "/tools/roi-calculator",
     "/tools/website-audit",
   ];

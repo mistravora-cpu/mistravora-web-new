@@ -18,9 +18,11 @@ export function EstimateSummary({
         {lkr(e.low)} – {lkr(e.high)}
       </p>
       <p className="text-sm">{e.project}</p>
-      <p className="text-xs text-muted-foreground">
-        Requirements completed: {e.completeness}%
-      </p>
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">Requirements completed: {e.completeness}%</p>
+        <progress value={e.completeness} max={100} aria-label="Required answers completed"
+          className="h-1.5 w-full appearance-none overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary [&::-moz-progress-bar]:bg-primary" />
+      </div>
       <p className="text-sm">
         Estimated build: {e.weeksLow}–{e.weeksHigh} weeks
       </p>
@@ -54,10 +56,11 @@ export function EstimateSummary({
             adjustments.
           </p>
           <h3 className="font-semibold">Indicative delivery plan</h3>
-          <ol className="space-y-2">
-            {e.phases.map((p) => (
-              <li key={p.label} className="text-sm">
-                Weeks {p.startWeek}–{p.endWeek}: {p.label}
+          <ol className="space-y-3">
+            {e.phases.map((p, index) => (
+              <li key={p.label} className="flex items-start gap-3 rounded-xl border border-border p-3 text-sm">
+                <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">{index + 1}</span>
+                <span><span className="block font-medium">{p.label}</span><span className="text-muted-foreground">Weeks {p.startWeek}–{p.endWeek}</span></span>
               </li>
             ))}
           </ol>

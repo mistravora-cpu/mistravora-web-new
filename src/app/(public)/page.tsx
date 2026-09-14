@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { ArticleBody } from "@/components/article-body";
 import { CatalogImage } from "@/components/catalog-image";
 import { contentText } from "@/lib/content-preview";
@@ -87,7 +88,7 @@ const fallbackIcons = [
 export default async function Home() {
   const hero = await getHeroSection("home");
   return (
-    <main className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col">
       {/* JSON-LD structured data for rich search results */}
       <script
         type="application/ld+json"
@@ -152,7 +153,7 @@ export default async function Home() {
             </p>
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Button size="lg" asChild className="w-full sm:w-auto">
-                <Link href="/contact">Get a free quote</Link>
+                <Link href={estimatePath}>Get a free quote</Link>
               </Button>
               <Button
                 size="lg"
@@ -169,7 +170,7 @@ export default async function Home() {
           </div>
         </ScrollReveal>
       </section>
-    </main>
+    </div>
   );
 }
 

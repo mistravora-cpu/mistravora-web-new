@@ -203,6 +203,13 @@ export async function getSearchEntries(): Promise<SearchEntry[]> {
   ]);
   return [
     ...groups.flat(),
+    {
+      slug: "pricing",
+      title: "Project Requirements & Estimate",
+      description: "Compare pricing, build your requirement brief, explore cost and delivery ranges, and request a preliminary quotation PDF.",
+      href: "/pricing#estimate",
+      kind: "Project planning",
+    },
     ...posts.map((p) => ({
       slug: p.slug,
       title: p.title,

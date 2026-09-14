@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { estimatePath, resolveQuoteLink } from "@/lib/quote-links";
 
-// Lazy-load the 3D robot only when the hero is visible — defers the
-// entire Three.js/R3F bundle download until needed.
+// Load the 3D bundle after the headline paints; it starts automatically.
 const RobotHero = dynamic(
   () => import("@/components/ui/robot-hero").then((m) => m.RobotHero),
   {
@@ -70,9 +70,13 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
     let targetY = 0.7; // biased toward bottom where text sits
     let currentX = 0.5;
     let currentY = 0.7;
+    let width = section.clientWidth;
+    let height = section.clientHeight;
 
     const handleMove = (e: MouseEvent) => {
       const rect = section.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
       targetX = (e.clientX - rect.left) / rect.width;
       targetY = (e.clientY - rect.top) / rect.height;
       if (!rafId) rafId = requestAnimationFrame(animate);
@@ -83,7 +87,7 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
       // Smooth lerp toward cursor for fluid motion
       currentX += (targetX - currentX) * 0.12;
       currentY += (targetY - currentY) * 0.12;
-      glow.style.transform = `translate(${currentX * 100}%, ${currentY * 100}%) translate(-50%, -50%)`;
+      glow.style.transform = `translate(${currentX * width}px, ${currentY * height}px) translate(-50%, -50%)`;
       if (Math.abs(targetX - currentX) > 0.0001 || Math.abs(targetY - currentY) > 0.0001) {
         rafId = requestAnimationFrame(animate);
       }
@@ -104,11 +108,10 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
       aria-label="Mistravora hero — custom software and digital products"
       className="relative flex min-h-[max(560px,75svh)] w-full flex-col justify-end overflow-hidden"
     >
-      {/* 3D robot canvas — only mounts when hero is visible to defer
-          the Three.js bundle download. */}
+      {/* The shared hero event source keeps movement working over the text. */}
       <div className="absolute inset-0 z-0">
         {isVisible ? (
-          <RobotHero />
+          <RobotHero eventSource={sectionRef} />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center"
@@ -123,22 +126,19 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
       <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
         <div
           ref={glowRef}
-          className="absolute h-[420px] w-[640px] rounded-full opacity-80 blur-[90px]"
+          className="absolute h-[420px] w-[640px] rounded-full opacity-80 sm:blur-[60px]"
           style={{
             left: 0,
             top: 0,
             background:
-              "radial-gradient(circle, hsl(var(--background) / 0.95) 0%, hsl(var(--background) / 0.7) 45%, transparent 75%)",
+              "radial-gradient(circle, color-mix(in oklab, var(--background) 95%, transparent) 0%, color-mix(in oklab, var(--background) 70%, transparent) 45%, transparent 75%)",
             transform: "translate(50%, 70%) translate(-50%, -50%)",
           }}
           aria-hidden
         />
       </div>
 
-      {/* Company info — overlaid at the bottom of the canvas area.
-          pointer-events-none lets mouse events pass through to the canvas
-          below so the robot tracks the cursor across the entire hero.
-          Interactive elements re-enable pointer-events-auto. */}
+      {/* Company information and native links share the hero's pointer events. */}
       <div className="pointer-events-none relative z-10 flex flex-col items-center gap-4 site-gutter pb-12 pt-40 text-center sm:gap-5 sm:pb-16">
         {/* Badge */}
         <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-4 py-1.5 text-xs font-medium text-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/30">
@@ -159,7 +159,7 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         {/* CTAs */}
         <div className="pointer-events-auto flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Button size="lg" asChild className="w-full sm:w-auto">
-            <Link prefetch={false} href={hero?.primary_button_link || "/contact"}>
+            <Link prefetch={false} href={resolveQuoteLink(hero?.primary_button_link || estimatePath, hero?.primary_button_text || "Start your project")}>
               {hero?.primary_button_text || "Start your project"}
               <ArrowRight aria-hidden className="h-4 w-4" />
             </Link>
@@ -170,7 +170,7 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
             asChild
             className="w-full bg-card/95 backdrop-blur-sm sm:w-auto"
           >
-            <Link prefetch={false} href={hero?.secondary_button_link || "/assistant"}>
+            <Link prefetch={false} href={resolveQuoteLink(hero?.secondary_button_link || "/assistant", hero?.secondary_button_text || "Ask our assistant")}>
               <Bot aria-hidden className="h-4 w-4" />
               {hero?.secondary_button_text || "Ask our assistant"}
             </Link>

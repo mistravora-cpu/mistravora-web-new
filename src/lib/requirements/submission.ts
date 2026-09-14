@@ -22,17 +22,20 @@ export const submissionSchema = z
       ctx.addIssue({
         code: "custom",
         message: "Enter a phone number for your preferred contact method.",
+        path: ["contact", "phone"],
       });
     if (contact.preferred === "WhatsApp" && !contact.whatsapp)
       ctx.addIssue({
         code: "custom",
         message: "Enter a WhatsApp number for your preferred contact method.",
+        path: ["contact", "whatsapp"],
       });
     for (const key of ["phone", "whatsapp"] as const)
       if (contact[key] && !/^[+\d\s().-]{5,30}$/.test(contact[key]))
         ctx.addIssue({
           code: "custom",
           message: "Use a valid phone or WhatsApp number.",
+          path: ["contact", key],
         });
     if (contact.website) {
       try {
@@ -44,7 +47,7 @@ export const submissionSchema = z
         )
           throw Error();
       } catch {
-        ctx.addIssue({ code: "custom", message: "Use a public website URL." });
+        ctx.addIssue({ code: "custom", message: "Use a public website URL.", path: ["contact", "website"] });
       }
     }
   });

@@ -63,6 +63,10 @@ const nextConfig: NextConfig = {
   // and reduces transfer size. Server source maps still work for debugging.
   productionBrowserSourceMaps: false,
   experimental: {
+    // Bound simultaneous CMS reads during prerendering, especially on machines
+    // with many cores. This does not limit public request handling or animation.
+    cpus: 2,
+    staticGenerationMaxConcurrency: 2,
     optimizePackageImports: ["lucide-react"],
   },
   // Security headers applied to all routes.

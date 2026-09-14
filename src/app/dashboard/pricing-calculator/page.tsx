@@ -33,7 +33,7 @@ export default async function CalculatorAdminPage() {
         labels.
       </p>
       <RequirementConfigEditor initial={config} recipients={recipients} />
-      <Link href="/tools/cost-calculator" className="underline">
+      <Link href="/pricing#estimate" className="underline">
         Open public requirement calculator
       </Link>
     </div>

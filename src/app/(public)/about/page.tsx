@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { TeamPortrait } from "@/components/team-portrait";
 import { contentText } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
@@ -307,7 +308,7 @@ export default async function AboutPage() {
           </p>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Button size="lg" asChild className="w-full sm:w-auto">
-              <Link href="/contact">
+              <Link href={estimatePath}>
                 Start a project
                 <ArrowRight aria-hidden className="h-4 w-4" />
               </Link>

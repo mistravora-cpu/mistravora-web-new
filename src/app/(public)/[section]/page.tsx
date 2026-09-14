@@ -20,7 +20,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
   /* ── Policies: dedicated animated card grid ── */
   if (section === "policies") {
     return (
-      <main className="mx-auto w-full site-gutter py-16">
+      <div className="mx-auto w-full site-gutter py-16">
         <ScrollReveal animation="fade-up">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Policies &amp; Terms</h1>
           <p className="mt-4 w-full text-lg leading-8 text-muted-foreground">
@@ -84,7 +84,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
             </p>
           </div>
         )}
-      </main>
+      </div>
     );
   }
 

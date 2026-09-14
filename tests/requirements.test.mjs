@@ -243,3 +243,29 @@ test("config rejects a non-30% advance, duplicate IDs and cyclic dependencies", 
       false,
     );
 });
+
+
+test("service context appears in the brief without changing costs or exposing inactive answers", () => {
+  const original = input("website", { pages: "1–5" });
+  const withContext = { ...original, context: "Starter website" };
+  assert.equal(calculateEstimate(config, original).low, calculateEstimate(config, withContext).low);
+  assert.equal(buildRequirementSummary(config, withContext)[0].value, "Starter website");
+});
+
+test("quotation validation identifies the exact contact field to correct", () => {
+  const { submissionSchema } = load("src/lib/requirements/submission.ts");
+  const payload = {
+    id: "12345678-1234-4234-8234-123456789012", configVersion: config.version,
+    requirements: input("website"), consent: true,
+    contact: { name: "Example Person", email: "example@example.com", preferred: "Phone" },
+  };
+  const missing = submissionSchema.safeParse(payload);
+  assert.equal(missing.success, false);
+  assert.equal(missing.error.issues[0].path.join("."), "contact.phone");
+  payload.contact = { ...payload.contact, preferred: "WhatsApp", whatsapp: "letters" };
+  const invalid = submissionSchema.safeParse(payload);
+  assert.equal(invalid.success, false);
+  assert.equal(invalid.error.issues[0].path.join("."), "contact.whatsapp");
+  payload.contact = { ...payload.contact, preferred: "Email", whatsapp: "", website: "javascript:alert(1)" };
+  assert.equal(submissionSchema.safeParse(payload).error.issues[0].path.join("."), "contact.website");
+});

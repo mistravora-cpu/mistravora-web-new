@@ -1,5 +1,10 @@
 [
   {
+    "source": "/tools/cost-calculator",
+    "destination": "/pricing#estimate",
+    "permanent": true
+  },
+  {
     "source": "/case-studies/:path*",
     "destination": "/projects/:path*",
     "permanent": true

@@ -19,7 +19,7 @@ export default async function PublicLayout({
       <RevealObserver />
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-background focus:p-3">Skip to content</a>
       <SiteHeader />
-      <div id="main-content" tabIndex={-1} className="flex flex-1 flex-col"><HeroMedia fallback />{children}</div>
+      <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col"><HeroMedia fallback />{children}</main>
       <SiteFooter />
       {profile.chatEnabled !== "false" && <ChatWidget />}
     </BusinessProfileProvider>

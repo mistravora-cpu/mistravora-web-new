@@ -38,6 +38,8 @@ function cleanCss(css: string, scope: string | null) {
                   throw Error("Nested CSS is not supported");
                 if (node.type === "tag" && node.value.toLowerCase() === "h1")
                   node.value = "h2";
+                if (node.type === "tag" && node.value.toLowerCase() === "main")
+                  node.replaceWith(selectorParser.attribute({ attribute: "data-article-main", value: undefined, raws: {} }));
                 if (
                   (node.type === "tag" && /^(html|body)$/i.test(node.value)) ||
                   (node.type === "pseudo" && node.value === ":root")
@@ -104,7 +106,7 @@ export function renderArticleHtml(body: string, scope = defaultScope) {
       "summary",
     ],
     allowedAttributes: {
-      "*": ["id", "class", "style", "title", "lang", "dir", "aria-label"],
+      "*": ["id", "class", "style", "title", "lang", "dir", "aria-label", "data-article-main"],
       a: ["href", "title"],
       img: [
         "src",
@@ -123,6 +125,10 @@ export function renderArticleHtml(body: string, scope = defaultScope) {
     allowProtocolRelative: false,
     transformTags: {
       "*": (tagName, attribs) => {
+        if (tagName === "main") {
+          tagName = "div";
+          attribs["data-article-main"] = "";
+        }
         if (attribs.style) attribs.style = cleanCss(attribs.style, null);
         if (tagName === "img") {
           const src = publicImageUrl(attribs.src);

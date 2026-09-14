@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { flowOrder } from "./flow";
+// Browser validation must work under script-src without unsafe-eval. Skip
+// Zod's runtime compilation probe, which otherwise triggers a CSP violation.
+z.config({ jitless: true });
 const id = z.string().regex(/^[a-z][a-z0-9_]{0,60}$/);
 const money = z.number().finite().min(0).max(100000000);
 export const conditionGroupSchema = z.object({
@@ -321,6 +324,7 @@ export type Question = RequirementConfig["questions"][number];
 export type Answer = string | number | boolean | string[];
 export type Answers = Record<string, Answer>;
 export const requestSchema = z.object({
+  context: z.string().trim().max(120).optional(),
   projectType: id,
   answers: z
     .record(

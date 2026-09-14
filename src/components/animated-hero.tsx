@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HeroSection } from "@/lib/types";
+import { resolveQuoteLink } from "@/lib/quote-links";
 
 const themes: Record<
   string,
@@ -88,12 +89,15 @@ export function AnimatedHero({
 
   const badge = hero?.badge;
   const headline = hero?.headline ?? "Mistravora";
-  const highlighted = hero?.highlighted_text;
+  const highlighted = hero?.highlighted_text?.trim();
+  const headingText = highlighted && headline.trimEnd().endsWith(highlighted.trim())
+    ? headline.trimEnd().slice(0, -highlighted.trim().length).trimEnd()
+    : headline;
   const description = hero?.description;
   const primaryText = hero?.primary_button_text ?? "Get in touch";
-  const primaryLink = hero?.primary_button_link ?? "/contact";
+  const primaryLink = resolveQuoteLink(hero?.primary_button_link ?? "/contact", primaryText);
   const secondaryText = hero?.secondary_button_text;
-  const secondaryLink = hero?.secondary_button_link;
+  const secondaryLink = hero?.secondary_button_link && resolveQuoteLink(hero.secondary_button_link, secondaryText ?? "");
 
   return (
     <section className="relative overflow-hidden" aria-label="Page hero">
@@ -136,7 +140,7 @@ export function AnimatedHero({
         ) : null}
 
         <h1 className="max-w-3xl text-3xl font-bold leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
-          {headline}{" "}
+          {headingText}{" "}
           {highlighted ? (
             <span className="text-gradient">{highlighted}</span>
           ) : null}

@@ -1,6 +1,6 @@
 # Requirement calculator
 
-The public route `/tools/cost-calculator` now uses the guided requirement calculator. Admin → Pricing Calculator edits its complete JSON configuration in the `requirement_calculator_config` setting. No new database schema is required. Empty settings use the approved brief's six baseline prices and feature rates.
+The guided requirement calculator is now on `/pricing#estimate`, above the published packages. `/tools/cost-calculator` permanently redirects there and is excluded from the sitemap. Admin → Pricing Calculator edits its complete JSON configuration in the `requirement_calculator_config` setting. No new database schema is required. Empty settings use the approved brief's six baseline prices and feature rates.
 
 ## Configuration
 
@@ -74,3 +74,18 @@ Verification for the September 9 update:
 - The isolated admin fixture successfully edited and saved a question and opened the preview without writing a local draft. Saving was mocked and did not touch production settings.
 - Axe reported no violations in the tested calculator section and isolated admin editor states. This is a scoped automated check, not a claim of complete accessibility conformance.
 - Live email delivery remains untested pending provider configuration.
+
+
+## Pricing integration — 2026-09-14
+
+Quote and project-start links on the homepage, projects, articles, services/solutions, industries, team profiles and About now open the Pricing estimate. CMS hero buttons migrate old calculator destinations and quote/start-labelled contact links when rendered; genuine contact, support, booking and external destinations remain available. Package/service links carry an optional service context into the brief, inquiry summary and PDF. This context does not change the calculated price or automatically select capabilities.
+
+The calculator remains driven by Admin → Pricing Calculator and the existing `requirement_calculator_config` setting. No database migration or new dependency is required. Admin previews, search, assistant guidance and the public tools directory point to Pricing. Pricing has descriptive/social metadata, a canonical URL and WebPage structured data based on configured project types.
+
+Visitors can return directly to review after editing, see validation messages beside the field that needs correction, submit the final form with the keyboard, and plan another project after receiving a quotation. Client and server share contact validation, including the number required for the selected contact method. Required-question errors survive navigation back to an incomplete step. A retry keeps the submission reference; there is a bounded wait for stalled requests. A server-prop refresh for a package link no longer overwrites current answers with a previously saved draft.
+
+The 30% advance, server-side recomputation, hidden-answer rules, consent, customer PDF and independent staff notifications retain their existing behavior. Tests intercept submission and delivery; they do not create production inquiries or send live email. Provider configuration and actual inbox delivery still require deployment verification.
+
+Public pages now share one main landmark and the floating contact controls have a named complementary landmark. This fixes the mobile accessibility findings without adding client JavaScript.
+
+Calculator schemas use Zod’s non-compiling validation mode to avoid its `Function` capability probe under the existing CSP. The security policy was not relaxed. Free-text service context is excluded from the local draft alongside business notes and contact details. Build prerender concurrency is capped to reduce simultaneous Supabase requests; runtime request handling is unaffected.

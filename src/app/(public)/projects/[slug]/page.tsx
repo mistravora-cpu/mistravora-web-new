@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { contentText, firstContent } from "@/lib/content-preview";
 import { isPublicMediaUrl } from "@/lib/media-url";
 import { ArticleBody } from "@/components/article-body";
@@ -185,7 +186,7 @@ export default async function CaseStudyPage({
             Tell us about your business — we&apos;ll recommend the simplest thing that works.
           </p>
           <Button asChild className="mt-5">
-            <Link href="/contact">Start a project</Link>
+            <Link href={estimatePath}>Start a project</Link>
           </Button>
         </ScrollReveal>
       </div>

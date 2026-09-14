@@ -18,7 +18,7 @@ const baseMetadata: Metadata = withSocialMetadata({
 
 const tools = [
   {
-    href: "/tools/cost-calculator",
+    href: "/pricing#estimate",
     icon: Calculator,
     title: "Project Requirements & Estimate",
     description:

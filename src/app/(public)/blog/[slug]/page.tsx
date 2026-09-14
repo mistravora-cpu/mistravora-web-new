@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { ArticleBody } from "@/components/article-body";
 import Image from "@/components/content-image";
 import { contentText } from "@/lib/content-preview";
@@ -166,7 +167,7 @@ export default async function BlogPostPage({
             {profile.response}. Tell us about your requirements.
           </p>
           <Button asChild className="mt-5">
-            <Link href="/contact">Get a free quote</Link>
+            <Link href={estimatePath}>Get a free quote</Link>
           </Button>
         </ScrollReveal>
       </div>

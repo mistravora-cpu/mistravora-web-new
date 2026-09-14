@@ -22,7 +22,7 @@ type DbContext = {
   jobs: { title: string; location: string | null; type: string | null }[];
 };
 
-const pricingText = "Request a written quotation from our team. No public price or delivery guarantee is confirmed.";
+const pricingText = "Build your requirement brief and explore preliminary cost and delivery ranges at /pricing#estimate. Request a quotation PDF at the final step. A 30% advance applies to the agreed project price; final scope and dates require a written quotation.";
 
 async function loadContext(): Promise<DbContext> {
   const profile = await getBusinessProfile();
@@ -76,7 +76,7 @@ function localReply(message: string, ctx: DbContext): string {
   }
 
   if (/(price|pricing|cost|how much|quote|budget|lkr|fee)/.test(m)) {
-    return `Here's our current pricing:\n\n${pricingText}\n\nDiscuss your scope through /contact or message us on WhatsApp (${site.phone}).`;
+    return `Here's our current pricing:\n\n${pricingText}\n\nPlan your project through /pricing#estimate or message us on WhatsApp (${site.phone}).`;
   }
 
   if (/(service|solution|what do you (do|build|offer)|offer|build|develop)/.test(m)) {
@@ -118,11 +118,11 @@ function localReply(message: string, ctx: DbContext): string {
   }
 
   if (/(how long|timeline|delivery|deadline|duration)/.test(m)) {
-    return "Delivery dates depend on the agreed scope, inputs and integrations. Request a written schedule via /contact.";
+    return "Delivery dates depend on the agreed scope, inputs and integrations. Explore a preliminary delivery plan at /pricing#estimate and request a written schedule.";
   }
 
   if (/(tool|calculator|audit|roi|free)/.test(m)) {
-    return "We have free tools at /tools:\n\n• Cost planning — contact the team for a quotation\n• ROI planning — discuss assumptions; no returns are guaranteed\n• Website audit — free Lighthouse scores for your current site\n\nNo sign-up needed.";
+    return "We have free tools at /tools:\n\n• Project requirements and cost estimates — /pricing#estimate\n• ROI planning — discuss assumptions; no returns are guaranteed\n• Website audit — free Lighthouse scores for your current site\n\nNo sign-up needed.";
   }
 
   if (/(blog|article|news|insight)/.test(m)) {

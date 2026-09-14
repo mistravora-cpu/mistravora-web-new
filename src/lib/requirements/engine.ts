@@ -270,7 +270,7 @@ export function buildRequirementSummary(
   input: RequirementRequest,
 ) {
   const { active } = resolveFeatures(config, input);
-  return config.questions
+  const rows = config.questions
     .filter((q) => active.has(q.id) && present(input.answers[q.id]))
     .map((q) => {
       const value = input.answers[q.id];
@@ -288,6 +288,9 @@ export function buildRequirementSummary(
             : label(String(value)),
       };
     });
+  return input.context
+    ? [{ group: "Project", label: "Service or package of interest", value: input.context }, ...rows]
+    : rows;
 }
 export function qualify(input: RequirementRequest, estimate: Estimate) {
   const bands: Record<string, [number, number]> = {

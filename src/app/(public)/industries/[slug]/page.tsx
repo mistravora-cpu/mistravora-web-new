@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { contentText, firstContent } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
 import { withSocialMetadata } from "@/lib/seo";
@@ -156,7 +157,7 @@ export default async function IndustryPage({
             We build custom solutions tailored to your exact needs. Let&apos;s talk.
           </p>
           <Button asChild className="mt-4">
-            <Link href="/contact">Get a free quote</Link>
+            <Link href={estimatePath}>Get a free quote</Link>
           </Button>
         </ScrollReveal>
       </div>

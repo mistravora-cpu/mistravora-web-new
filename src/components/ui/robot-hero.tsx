@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { smoothTowards } from "@/lib/animation";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, events, useFrame, useThree } from "@react-three/fiber";
 import {
   AdditiveBlending,
   CanvasTexture,
@@ -136,6 +136,7 @@ const antennaTipMat = new MeshStandardMaterial({
 });
 
 function RobotEar({
+  compact = false,
   position,
   scale = 1,
   isLeft = false,
@@ -143,14 +144,21 @@ function RobotEar({
   position: [number, number, number];
   scale?: number;
   isLeft?: boolean;
+  compact?: boolean;
 }) {
   const dir = isLeft ? -1 : 1;
+  const originals = [earBaseMat, earRingMat, earCenterMat, antennaBaseMat, antennaStickMat, antennaTipMat];
+  const lightMaterials = useMemo(() => compact
+    ? ["#f0f0f0", "#ffffff", "#cccccc", "#999999", "#d0d0d0", "#ff3366"].map(color => new MeshBasicMaterial({ color }))
+    : null, [compact]);
+  useEffect(() => () => lightMaterials?.forEach(material => material.dispose()), [lightMaterials]);
+  const surfaces = lightMaterials ?? originals;
 
   return (
     <group position={position} scale={scale}>
       <mesh
         rotation={[0, 0, Math.PI / 2]}
-        material={earBaseMat}
+        material={surfaces[0]}
       >
         <cylinderGeometry args={[0.04, 0.04, 0.025, 16]} />
       </mesh>
@@ -158,7 +166,7 @@ function RobotEar({
       <mesh
         position={[dir * 0.012, 0, 0]}
         rotation={[0, 0, Math.PI / 2]}
-        material={earRingMat}
+        material={surfaces[1]}
       >
         <torusGeometry args={[0.032, 0.008, 8, 16]} />
       </mesh>
@@ -166,7 +174,7 @@ function RobotEar({
       <mesh
         position={[dir * 0.012, 0, 0]}
         rotation={[0, 0, Math.PI / 2]}
-        material={earCenterMat}
+        material={surfaces[2]}
       >
         <cylinderGeometry args={[0.03, 0.03, 0.005, 16]} />
       </mesh>
@@ -174,19 +182,19 @@ function RobotEar({
       <group position={[dir * 0.015, 0.035, 0]} rotation={[-0.4, 0, 0]}>
         <mesh
           position={[0, 0.01, 0]}
-          material={antennaBaseMat}
+          material={surfaces[3]}
         >
           <cylinderGeometry args={[0.006, 0.008, 0.02, 8]} />
         </mesh>
         <mesh
           position={[0, 0.06, 0]}
-          material={antennaStickMat}
+          material={surfaces[4]}
         >
           <cylinderGeometry args={[0.003, 0.003, 0.1, 6]} />
         </mesh>
         <mesh
           position={[0, 0.11, 0]}
-          material={antennaTipMat}
+          material={surfaces[5]}
         >
           <sphereGeometry args={[0.006, 8, 8]} />
         </mesh>
@@ -346,6 +354,7 @@ function RobotEye({
 }
 
 function RobotPrototype({
+  compact = false,
   neckParams = {
     baseR: 0.25,
     baseH: -0.01,
@@ -365,6 +374,7 @@ function RobotPrototype({
   blinkCycle = 3.0,
   metalness = 0.0,
 }: {
+  compact?: boolean;
   neckParams?: Record<string, number>;
   bodyParams?: Record<string, number>;
   color?: string;
@@ -377,7 +387,8 @@ function RobotPrototype({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const bodyRef = useRef<Group>(null);
   const headRef = useRef<Group>(null);
-  const { viewport } = useThree();
+  const { viewport, invalidate } = useThree();
+  const idleTime = useRef(0);
 
   // Compute the actual ResponsiveGroup scale so we can account for the
   // robot's real size when clamping movement to the viewport bounds.
@@ -467,6 +478,7 @@ function RobotPrototype({
     if (!bodyRef.current || !headRef.current) return;
 
     const dt = Math.min(delta, 0.1);
+    if (state.frameloop === "always") idleTime.current += dt;
 
     const tx = state.pointer.x;
     const ty = state.pointer.y;
@@ -491,7 +503,7 @@ function RobotPrototype({
     const yLowerLimit = Math.max(0, state.viewport.height / 2 - robotHalfHeight - 0.1);
     const yRange = Math.min(yUpperLimit, yLowerLimit);
     const targetPosY = MathUtils.clamp(
-      basePosY + ty * yRange * 0.7,
+      basePosY + ty * yRange * 0.7 + Math.sin(idleTime.current * 1.4) * 0.025,
       basePosY - yRange,
       basePosY + yRange,
     );
@@ -549,11 +561,15 @@ function RobotPrototype({
   const handlePointerDown = (
     e: import("@react-three/fiber").ThreeEvent<PointerEvent>,
   ) => {
+    // Hero links remain normal DOM controls even when they overlap the robot.
+    if ((e.nativeEvent.target as Element | null)?.closest("a,button,input,select,textarea")) return;
     e.stopPropagation();
     isLovedRef.current = true;
+    invalidate();
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       isLovedRef.current = false;
+      invalidate();
     }, 2000);
   };
 
@@ -584,12 +600,13 @@ function RobotPrototype({
   }, [neckParams]);
 
   const headMat = useMemo(() => {
+    if (compact) return new MeshBasicMaterial({ color: "#111111" });
     return new MeshStandardMaterial({
       color: "#111111",
       roughness: 1.0,
       metalness: 0.0,
     });
-  }, []);
+  }, [compact]);
 
   useEffect(() => {
     return () => {
@@ -607,14 +624,12 @@ function RobotPrototype({
       ref={bodyRef}
       position={[0, -0.35, 0]}
       onPointerDown={handlePointerDown}
-      onPointerOver={() => (document.body.style.cursor = "pointer")}
-      onPointerOut={() => (document.body.style.cursor = "auto")}
     >
       <mesh>
         <sphereGeometry
           args={[0.43, 32, 32, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85]}
         />
-        <meshStandardMaterial
+        {compact ? <meshLambertMaterial color={design.colorChasis} map={textures.colorMap} /> : (<meshStandardMaterial
           color={design.colorChasis}
           map={textures.colorMap || undefined}
           bumpMap={textures.bumpMap || undefined}
@@ -622,7 +637,7 @@ function RobotPrototype({
           roughness={1.0}
           metalness={metalness}
           envMapIntensity={0.0}
-        />
+        />)}
       </mesh>
 
       {bodyParams.bodyBevelT > 0 && (
@@ -633,7 +648,7 @@ function RobotPrototype({
           <torusGeometry
             args={[bodyParams.bodyBevelR, bodyParams.bodyBevelT, 16, 32]}
           />
-          <meshStandardMaterial
+          {compact ? <meshLambertMaterial color={design.colorChasis} map={textures.colorMap} /> : (<meshStandardMaterial
             color={design.colorChasis}
             map={textures.colorMap || undefined}
             bumpMap={textures.bumpMap || undefined}
@@ -641,13 +656,13 @@ function RobotPrototype({
             roughness={1.0}
             metalness={metalness}
             envMapIntensity={0.0}
-          />
+          />)}
         </mesh>
       )}
 
       <mesh position={[0, 0.38, 0]}>
         <latheGeometry args={[neckProfile, 32]} />
-        <meshStandardMaterial
+        {compact ? <meshLambertMaterial color={design.colorChasis} map={textures.colorMap} /> : (<meshStandardMaterial
           color={design.colorChasis}
           map={textures.colorMap || undefined}
           bumpMap={textures.bumpMap || undefined}
@@ -655,7 +670,7 @@ function RobotPrototype({
           roughness={1.0}
           metalness={metalness}
           envMapIntensity={0.0}
-        />
+        />)}
       </mesh>
 
       <group ref={headRef} position={[0, design.alturaCabeza, 0]}>
@@ -689,11 +704,13 @@ function RobotPrototype({
         </group>
 
         <RobotEar
+          compact={compact}
           position={[-0.29, 0, 0]}
           isLeft={true}
           scale={design.tamañoOrejas}
         />
         <RobotEar
+          compact={compact}
           position={[0.29, 0, 0]}
           isLeft={false}
           scale={design.tamañoOrejas}
@@ -704,7 +721,7 @@ function RobotPrototype({
 }
 
 function SceneLifecycle() {
-  const { gl, scene, camera, setFrameloop, invalidate } = useThree();
+  const { gl, scene, camera, setFrameloop, invalidate, pointer, events: sceneEvents } = useThree();
   useEffect(() => {
     let disposed = false;
     let ready = false;
@@ -722,6 +739,14 @@ function SceneLifecycle() {
     observer.observe(gl.domElement);
     reducedMotion.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
+    const eventTarget = sceneEvents.connected || gl.domElement;
+    const resetPointer = () => { pointer.set(0, 0); invalidate(); };
+    const releasePointer = (event: Event) => {
+      if ((event as PointerEvent).pointerType !== "mouse") resetPointer();
+    };
+    eventTarget.addEventListener("pointerleave", resetPointer);
+    eventTarget.addEventListener("pointercancel", resetPointer);
+    eventTarget.addEventListener("pointerup", releasePointer);
 
     // Handle WebGL context loss — the browser can reclaim the GPU context
     // at any time (e.g. GPU driver crash, too many contexts, tab backgrounding).
@@ -746,6 +771,7 @@ function SceneLifecycle() {
       // finish preparation normally instead of leaving the canvas stopped forever.
       startupTimer = setTimeout(resume, 3000);
       Promise.resolve().then(async () => {
+        if (disposed || generation !== preparationId || contextLost) return;
         if (gl.extensions.has("KHR_parallel_shader_compile")) await gl.compileAsync(scene, camera);
         else gl.compile(scene, camera);
       }).then(resume, resume);
@@ -765,6 +791,9 @@ function SceneLifecycle() {
     prepare();
     return () => {
       clearTimeout(startupTimer);
+      eventTarget.removeEventListener("pointerleave", resetPointer);
+      eventTarget.removeEventListener("pointercancel", resetPointer);
+      eventTarget.removeEventListener("pointerup", releasePointer);
       window.removeEventListener("pageshow", handlePageShow);
       reducedMotion.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", update);
@@ -773,11 +802,12 @@ function SceneLifecycle() {
       disposed = true;
       observer.disconnect();
     };
-  }, [gl, scene, camera, setFrameloop, invalidate]);
+  }, [gl, scene, camera, setFrameloop, invalidate, pointer, sceneEvents.connected]);
   return null;
 }
 
 export interface RobotHeroProps {
+  eventSource?: RefObject<HTMLElement | null>;
   color?: string;
   scale?: number;
   pantallaColor?: string;
@@ -787,6 +817,7 @@ export interface RobotHeroProps {
 }
 
 export function RobotHero({
+  eventSource,
   color = "#c4c4c4",
   scale = 1.2,
   pantallaColor = "#00ffc6",
@@ -794,6 +825,7 @@ export function RobotHero({
   blinkCycle = 3.0,
   metalness = 0.0,
 }: RobotHeroProps = {}) {
+  const [compact] = useState(() => window.matchMedia("(max-width: 767px), (pointer: coarse)").matches);
   const entorno = {
     luzAmbiente: 0.75,
     sombraOpacidad: 0.85,
@@ -802,10 +834,26 @@ export function RobotHero({
   return (
     <div className="relative w-full h-full">
       <Canvas
+        eventSource={eventSource as RefObject<HTMLElement> | undefined}
+        events={(store) => ({
+          ...events(store),
+          compute: (event, state) => {
+            // Coordinates must be relative to the canvas, even over a text or
+            // button child of the hero, and after the page has scrolled.
+            const rect = state.gl.domElement.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            state.pointer.set(
+              MathUtils.clamp((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1),
+              MathUtils.clamp(1 - (event.clientY - rect.top) / rect.height * 2, -1, 1),
+            );
+            state.raycaster.setFromCamera(state.pointer, state.camera);
+            state.invalidate();
+          },
+        })}
         frameloop="never"
         camera={{ position: [0, 0, 4.5], fov: 42 }}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        dpr={[1, 1.5]}
+        gl={{ alpha: true, antialias: !compact, powerPreference: "high-performance" }}
+        dpr={compact ? 1 : [1, 1.5]}
         performance={{ min: 0.5 }}
       >
         <SceneLifecycle />
@@ -823,6 +871,7 @@ export function RobotHero({
             />
           </mesh>
           <RobotPrototype
+            compact={compact}
             neckParams={{
               baseR: 0.215,
               baseH: -0.05,

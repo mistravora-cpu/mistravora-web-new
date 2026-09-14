@@ -87,7 +87,7 @@ export function ChatWidget() {
   }
 
   return (
-    <>
+    <aside aria-label="Contact and chat options">
       {/* Floating buttons — stacked vertically, above sticky CTA on mobile */}
       <div className="fixed right-3 bottom-20 z-40 flex flex-col items-center gap-2 nav:bottom-5 nav:right-5">
         <a
@@ -198,6 +198,6 @@ export function ChatWidget() {
           </form>
         </div>
       ) : null}
-    </>
+    </aside>
   );
 }

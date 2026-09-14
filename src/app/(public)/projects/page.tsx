@@ -1,3 +1,4 @@
+import { estimatePath } from "@/lib/quote-links";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
@@ -129,7 +130,7 @@ export default async function CaseStudiesPage() {
             be our next success story?
           </p>
           <Button asChild>
-            <Link href="/contact">Start a project</Link>
+            <Link href={estimatePath}>Start a project</Link>
           </Button>
         </ScrollReveal>
       )}
