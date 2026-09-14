@@ -26,7 +26,7 @@ const valueColumns: ColumnDef[] = [
 const valueFields: FieldDef[] = [
   { name: "icon", label: "Icon", type: "icon", required: true },
   { name: "title", label: "Title", required: true },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];

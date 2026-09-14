@@ -1,3 +1,5 @@
+import { Testimonials } from "@/components/testimonials";
+import { PageFaqs } from "@/components/page-faqs";
 import { estimatePath } from "@/lib/quote-links";
 import { contentText, firstContent } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
@@ -161,6 +163,8 @@ export default async function IndustryPage({
           </Button>
         </ScrollReveal>
       </div>
+    <Testimonials path={`/industries/${industry.slug}`} inset />
+      <PageFaqs path={`/industries/${industry.slug}`} inset />
     </div>
   );
 }

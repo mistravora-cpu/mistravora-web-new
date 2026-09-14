@@ -1,3 +1,5 @@
+import { PageFaqs } from "@/components/page-faqs";
+import { Testimonials } from "@/components/testimonials";
 import { CatalogImage } from "@/components/catalog-image";
 import { contentText } from "@/lib/content-preview";
 import { getBusinessProfile } from "@/lib/business-profile";
@@ -85,6 +87,8 @@ export default async function IndustriesPage() {
           </ScrollReveal>
         )}
       </section>
+    <Testimonials path="/industries" />
+    <PageFaqs path="/industries" />
     </>
   );
 }

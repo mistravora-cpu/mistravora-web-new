@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+import { trackEvent } from "@/lib/track-event";
 import {
   ArrowRight,
   ArrowLeft,
@@ -280,6 +281,7 @@ export function RequirementCalculator({
       if (!response.ok)
         throw Error(body.error || "Could not submit. Please retry.");
       setReceipt(body);
+      trackEvent("generate_lead", { form_name: "project_requirements" });
       setTimeout(() => heading.current?.focus(), 0);
       try {
         localStorage.removeItem(draftKey);

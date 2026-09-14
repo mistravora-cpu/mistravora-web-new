@@ -8,16 +8,16 @@ const r2Hostname = r2PublicUrl ? new URL(r2PublicUrl).hostname : undefined;
 
 // Content Security Policy — strict, production-ready.
 // Prevents XSS by whitelisting trusted sources only.
-// Analytics domains (GA4, Clarity) are included because they load
+// Supported Google analytics/advertising domains are included because they load
 // conditionally after user consent via the cookie banner.
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://mistravora.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://sc-static.net`,
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://mistravora.com https://www.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data:",
   "img-src 'self' data: https: blob:",
   "media-src 'self' https:",
-  "connect-src 'self' https://*.supabase.co https://mistravora.com https://www.google-analytics.com https://*.clarity.ms https://sc-static.net https://api.iconify.design",
+  "connect-src 'self' https://*.supabase.co https://mistravora.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://www.google.com https://google.com https://www.google.lk https://api.iconify.design",
   "frame-ancestors 'none'",
   "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "form-action 'self'",

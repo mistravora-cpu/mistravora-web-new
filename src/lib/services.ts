@@ -1,3 +1,4 @@
+import { attachReviewDetails, type CustomerReview } from "./reviews";
 import { primaryContentImage } from "./content-preview";
 import { attachProjectLinks } from "./project-links";
 import { memberSlug } from "./team-slug";
@@ -437,13 +438,14 @@ const _getBenefits = unstable_cache(
 );
 
 const _getTestimonials = unstable_cache(
-  async (publishedOnly: boolean): Promise<Testimonial[]> => {
+  async (publishedOnly: boolean): Promise<CustomerReview[]> => {
     const supabase = createPublicClient();
     let query = supabase.from("testimonials").select("*").order("sort_order", { ascending: true });
     if (publishedOnly) query = query.eq("published", true);
-    return queryRows(query);
+    const rows = await queryRows<Testimonial>(query);
+    return attachReviewDetails(rows, supabase, true);
   },
-  ["testimonials-privacy-review"],
+  ["testimonials-approved-v2"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -585,9 +587,10 @@ export async function getAdminBenefits(): Promise<Benefit[]> {
   const supabase = await createClient();
   return queryRows(supabase.from("benefits").select("*").order("sort_order", { ascending: true }));
 }
-export async function getAdminTestimonials(): Promise<Testimonial[]> {
+export async function getAdminTestimonials(): Promise<CustomerReview[]> {
   const supabase = await createClient();
-  return queryRows(supabase.from("testimonials").select("*").order("sort_order", { ascending: true }));
+  const rows = await queryRows<Testimonial>(supabase.from("testimonials").select("*").order("sort_order", { ascending: true }));
+  return attachReviewDetails(rows, supabase);
 }
 export async function getAdminSettings(): Promise<Setting[]> {
   const supabase = await createClient();
@@ -634,6 +637,7 @@ export async function getResearchBySlug(slug: string): Promise<Research | null> 
 }
 
 const marketingKeys: (keyof MarketingSettings)[] = [
+  "enable_optional_tracking",
   "ga4_measurement_id",
   "gtm_container_id",
   "clarity_id",
@@ -670,7 +674,7 @@ const marketingKeys: (keyof MarketingSettings)[] = [
 const _getMarketingSettings = unstable_cache(
   async (): Promise<MarketingSettings> => {
     const supabase = createPublicClient();
-    const settings = await queryRows(supabase.from("settings").select("*"));
+    const settings = await queryRows(supabase.from("settings").select("key,value").in("key", marketingKeys));
     const map = new Map(settings.map((s) => [s.key, s.value ?? ""]));
     const result = {} as MarketingSettings;
     for (const key of marketingKeys) {
@@ -678,7 +682,7 @@ const _getMarketingSettings = unstable_cache(
     }
     return result;
   },
-  ["marketing-settings-privacy-review"],
+  ["marketing-settings-supported-v2"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 

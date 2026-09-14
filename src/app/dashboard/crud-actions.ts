@@ -1,5 +1,7 @@
 "use server";
 
+import { saveReview } from "@/lib/review-save";
+import { reviewKey } from "@/lib/reviews";
 import { quoteRecipientsSchema } from "@/lib/requirements/notification-config";
 import { requirementConfigSchema } from "@/lib/requirements/schema";
 import { heroMediaSchema } from "@/lib/hero-media-config";
@@ -162,6 +164,14 @@ export async function upsertRow(
   if (!isAllowedTable(table)) return { error: "Invalid table" };
 
   const supabase = await createClient();
+  if (table === "testimonials") {
+    const result = await saveReview(supabase, data, id);
+    if (result.changed) {
+      revalidatePath("/dashboard");
+      revalidatePublicPaths();
+    }
+    return result;
+  }
 
   // Separate child table data from parent table data.
   // Child table fields (type "list" with a mapping in CHILD_TABLES) are
@@ -220,6 +230,12 @@ export async function upsertRow(
       if (!slug) return { error: "Use a team slug such as shakeel-mohamed, without spaces or query parameters." };
       parentData.slug = slug;
     }
+  }
+
+  if (table === "faqs" && "page" in parentData) {
+    const page = String(parentData.page).trim().replace(/^\//, "") || "home";
+    if (!/^(?:general|home|contact|about|pricing|careers|(?:services|solutions|projects|industries)(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)?)$/.test(page)) return { error: "Choose a supported FAQ page: general, home, contact, about, pricing, careers, services, solutions, projects, industries, or one of their supported detail paths." };
+    parentData.page = page;
   }
 
   if (table === "contact_info") {
@@ -297,6 +313,13 @@ export async function deleteRow(table: string, id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from(table).delete().eq("id", id);
   if (error) return { error: error.message };
+  if (table === "testimonials") {
+    const metadata = await supabase.from("settings").delete().eq("key", reviewKey(id));
+    revalidatePath("/dashboard");
+    revalidatePublicPaths();
+    if (metadata.error) return { error: "Review deleted. Its unused source metadata could not be removed." };
+    return { error: null };
+  }
   revalidatePath("/dashboard");
   revalidatePublicPaths();
   return { error: null };
@@ -304,6 +327,7 @@ export async function deleteRow(table: string, id: string) {
 
 // Allowed setting keys — prevents arbitrary key injection.
 const ALLOWED_SETTING_KEYS = new Set([
+  "enable_optional_tracking",
   "hero_media_config", "requirement_calculator_config", "quote_notification_recipients",
   ...publicBusinessKeys,
   "pricing_calculator_config",
@@ -368,7 +392,7 @@ export async function saveSettings(data: Record<string, string>) {
   if (Object.entries(data).some(([key, value]) => typeof value !== "string" || value.length > (["hero_media_config", "requirement_calculator_config"].includes(key) ? 300000 : 10000))) return { error: "Settings exceed their supported size limit." };
   if (data.company_founded && !/^\d{4}-(0[1-9]|1[0-2])$/.test(data.company_founded)) return { error: "Use YYYY-MM for the founding date." };
   if (data.site_email && !z.email().safeParse(data.site_email).success) return { error: "Provide a valid email address." };
-  for (const key of ["show_business_hours", "enable_newsletter", "enable_chat_widget", "enable_cookie_consent"]) {
+  for (const key of ["enable_optional_tracking", "show_business_hours", "enable_newsletter", "enable_chat_widget", "enable_cookie_consent"]) {
     if (data[key] !== undefined && !["true", "false"].includes(data[key])) return { error: "Feature switches must be true or false." };
   }
   for (const [key, limit] of [["site_geo_lat", 90], ["site_geo_lng", 180]] as const) {
@@ -389,6 +413,9 @@ export async function saveSettings(data: Record<string, string>) {
   if (data.pricing_calculator_config) {
     try { calculatorSchema.parse(JSON.parse(data.pricing_calculator_config)); }
     catch { return { error: "Invalid calculator configuration. Provide non-empty project types and timelines, unique IDs, and nonnegative prices." }; }
+  }
+  for (const [key, pattern] of [["ga4_measurement_id", /^G-[A-Z0-9]+$/], ["google_ads_conversion_id", /^AW-\d+$/], ["google_ads_conversion_label", /^[A-Za-z0-9_-]+$/]] as const) {
+    if (data[key] && !pattern.test(data[key])) return { error: `Invalid ${key.replaceAll("_", " ")}. Paste the identifier only.` };
   }
   // IDs are interpolated into scripts; reject executable punctuation at the write boundary.
   for (const [key, value] of Object.entries(data)) {

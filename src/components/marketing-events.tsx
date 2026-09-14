@@ -24,9 +24,12 @@ export function MarketingEvents() {
   useEffect(() => {
     const page = () => {
       captureAttribution();
-      if (!getConsentSnapshot()?.analytics || lastPage.current === pathname)
+      if (!getConsentSnapshot()?.analytics || !window.mistravoraAnalyticsTarget || lastPage.current === pathname)
         return;
       lastPage.current = pathname;
+      trackEvent("page_view", {
+        page_location: window.location.origin + pathname,
+      });
       trackEvent("content_view", {
         page_path: pathname,
         page_type: pathname.split("/")[1] || "home",
@@ -36,7 +39,9 @@ export function MarketingEvents() {
         trackEvent("case_study_viewed", { page_path: pathname });
     };
     page();
-    return subscribeConsent(page);
+    const unsubscribe = subscribeConsent(page);
+    window.addEventListener("mistravora:tracking-ready", page);
+    return () => { unsubscribe(); window.removeEventListener("mistravora:tracking-ready", page); };
   }, [pathname]);
   useEffect(() => {
     const started = new WeakSet<HTMLFormElement>();
@@ -63,7 +68,7 @@ export function MarketingEvents() {
               ? "whatsapp_click"
               : url.origin !== window.location.origin
                 ? "external_link"
-                : ["/contact", "/book"].includes(url.pathname)
+                : ["/contact", "/book", "/pricing"].includes(url.pathname)
                   ? "cta_click"
                   : null);
       // Do not transmit phone numbers, email addresses, search queries, or form values.

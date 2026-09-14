@@ -6,8 +6,6 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 type Stat = {
   value: string;
   label: string;
-  suffix?: string;
-  numericValue: number;
 };
 
 
@@ -95,7 +93,8 @@ export function StatsCounter({ stats }: { stats?: Stat[] }) {
               className="flex flex-col items-center gap-2 text-center"
             >
               <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl tabular-nums">
-                <AnimatedCounter target={stat.numericValue} suffix={stat.suffix} />
+                {/* Only animate plain integer counts; preserve decimals, times and other CMS values exactly. */}
+                {/^(0|[1-9]\d*)([+%])?$/.test(stat.value) ? <><span aria-hidden><AnimatedCounter target={parseInt(stat.value, 10)} suffix={stat.value.match(/[+%]$/)?.[0] ?? ""} /></span><span className="sr-only">{stat.value}</span></> : stat.value}
               </p>
               <p className="text-xs font-medium uppercase tracking-[0.1em] text-muted-foreground sm:text-sm">
                 {stat.label}

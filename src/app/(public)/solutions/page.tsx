@@ -1,3 +1,4 @@
+import { PageFaqs } from "@/components/page-faqs";
 import { CatalogImage } from "@/components/catalog-image";
 import { contentText, firstContent } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -67,7 +68,8 @@ export default async function SolutionsPage() {
       <SectionDivider className="text-surface" />
 
       {/* Testimonials */}
-      <Testimonials />
+      <Testimonials inset />
+      <PageFaqs path="/solutions" inset />
 
       <ScrollReveal animation="fade-up" delay={200} className="mt-16 flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-8 text-center sm:p-12">
         <h2 className="text-2xl font-bold tracking-tight">

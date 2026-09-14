@@ -1,0 +1,117 @@
+{
+  "verifiedAt": "2026-09-14T05:45:32.820248+00:00",
+  "supabaseProject": "ghixwjdxzrovdmdzocxj",
+  "database": {
+    "project": "ghixwjdxzrovdmdzocxj",
+    "appliedAt": "2026-09-14T05:34:37.438Z",
+    "changedRecords": 12,
+    "readBackVerified": true,
+    "customerReviewsCreated": 0,
+    "publicationFlagsChanged": 0
+  },
+  "checks": {
+    "testsPassed": 110,
+    "testsFailed": 0,
+    "lint": "passed",
+    "productionBuild": "next build --webpack passed, including TypeScript",
+    "sitemapUrls": 57,
+    "sitemapIssues": 0,
+    "browserErrors": [],
+    "browserWarnings": [],
+    "widthChecks": 40,
+    "testedWidths": [
+      320,
+      390,
+      768,
+      1440,
+      1920
+    ],
+    "accessibility": [
+      {
+        "path": "/",
+        "issues": []
+      },
+      {
+        "path": "/about",
+        "issues": []
+      },
+      {
+        "path": "/pricing",
+        "issues": []
+      },
+      {
+        "path": "/careers",
+        "issues": []
+      },
+      {
+        "path": "/contact",
+        "issues": []
+      },
+      {
+        "path": "/services",
+        "issues": []
+      },
+      {
+        "path": "/services/digital-marketing-and-related-digital-services",
+        "issues": []
+      },
+      {
+        "path": "/services/seo-and-website-optimization",
+        "issues": []
+      },
+      {
+        "path": "local review fixture",
+        "issues": []
+      }
+    ],
+    "reviewFixtureChecks": [
+      {
+        "width": 320,
+        "cards": 7,
+        "keyboardDisclosure": true
+      },
+      {
+        "width": 390,
+        "cards": 7,
+        "keyboardDisclosure": true
+      },
+      {
+        "width": 768,
+        "cards": 7,
+        "keyboardDisclosure": true
+      },
+      {
+        "width": 1440,
+        "cards": 7,
+        "keyboardDisclosure": true
+      },
+      {
+        "width": 1920,
+        "cards": 7,
+        "keyboardDisclosure": true
+      }
+    ]
+  },
+  "lighthouse": {
+    "environment": "Local production server; default mobile network and CPU throttling; automatic robot enabled",
+    "scores": {
+      "performance": 91,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": "1.2\u00a0s",
+      "largest-contentful-paint": "3.2\u00a0s",
+      "total-blocking-time": "150\u00a0ms",
+      "cumulative-layout-shift": "0"
+    },
+    "warnings": []
+  },
+  "limitations": [
+    "No real customer reviews supplied; all four old samples remain unpublished.",
+    "Optional tracking remains disabled in Supabase; no production ad conversion or email was sent for testing.",
+    "Review save failures, authorization and round trips tested using isolated database mocks; no synthetic reviews inserted into production.",
+    "Local Lighthouse is not a guarantee of live performance on every connection or of search rankings."
+  ]
+}

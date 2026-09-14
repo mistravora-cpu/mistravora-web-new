@@ -3,13 +3,6 @@
 import * as React from "react";
 import {
   Globe,
-  Monitor,
-  Music2,
-  Pin,
-  MessageSquare,
-  Camera,
-  Share2,
-  Megaphone,
   Activity,
   ShieldCheck,
   Check,
@@ -34,7 +27,7 @@ type GroupDef = {
 
 const groups: GroupDef[] = [
   {
-    label: "Analytics & Monitoring",
+    label: "Google Analytics",
     icon: Activity,
     fields: [
       {
@@ -42,48 +35,6 @@ const groups: GroupDef[] = [
         label: "GA4 Measurement ID",
         placeholder: "G-XXXXXXXXXX",
         help: "In Google Analytics → Admin → Data Streams → click your stream → find 'Measurement ID' (starts with G-). The full code block is generated automatically — just paste the ID.",
-      },
-      {
-        key: "gtm_container_id",
-        label: "GTM Container ID",
-        placeholder: "GTM-XXXXXXX",
-        help: "In Google Tag Manager → Admin → click your container → find 'Container ID' (starts with GTM-). Only use GTM if you want to manage all tags through it instead of individually.",
-      },
-      {
-        key: "clarity_id",
-        label: "Microsoft Clarity ID",
-        placeholder: "abcdef1234",
-        help: "In Clarity → your project → Setup → find the 'id' value inside the code block. It looks like: clarity('init', 'YOUR_ID_HERE'). Just paste that ID string.",
-      },
-      {
-        key: "hotjar_id",
-        label: "Hotjar Site ID",
-        placeholder: "1234567",
-        help: "In Hotjar → Settings → Site Setup → find 'Site ID' (a number). The full script is generated automatically.",
-      },
-      {
-        key: "sentry_dsn",
-        label: "Sentry DSN",
-        placeholder: "https://xxx@sentry.io/123",
-        help: "In Sentry → Project Settings → Client Keys (DSN) → copy the DSN URL.",
-      },
-      {
-        key: "logrocket_id",
-        label: "LogRocket ID",
-        placeholder: "xxxxx/yyyyy",
-        help: "In LogRocket → Settings → Setup → find your App ID (format: org/appname).",
-      },
-    ],
-  },
-  {
-    label: "Meta (Facebook)",
-    icon: Megaphone,
-    fields: [
-      {
-        key: "meta_pixel_id",
-        label: "Meta Pixel ID",
-        placeholder: "123456789012345",
-        help: "In Meta Events Manager → Data Sources → your pixel → find the Pixel ID (a long number). The full pixel code is generated automatically.",
       },
     ],
   },
@@ -102,96 +53,6 @@ const groups: GroupDef[] = [
         label: "Conversion Label",
         placeholder: "abcDEF123",
         help: "In Google Ads → Tools → Conversions → your conversion → find 'Label' (a string like abcDEF123). Optional — only needed for specific conversion tracking.",
-      },
-      {
-        key: "google_remarketing_tag_id",
-        label: "Remarketing Tag ID",
-        placeholder: "AW-XXXXXXXXX",
-        help: "In Google Ads → Tools → Audience Manager → your audience source → find the Tag ID (starts with AW-).",
-      },
-    ],
-  },
-  {
-    label: "Microsoft",
-    icon: Monitor,
-    fields: [
-      {
-        key: "microsoft_uet_tag_id",
-        label: "UET Tag ID",
-        placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        help: "In Microsoft Ads → Tools → UET tags → find your tag's 'Tag ID' (a UUID). The full UET script is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "LinkedIn",
-    icon: Share2,
-    fields: [
-      {
-        key: "linkedin_insight_tag_id",
-        label: "Insight Tag Partner ID",
-        placeholder: "1234567",
-        help: "In LinkedIn Campaign Manager → Account Assets → Insight Tag → find 'Partner ID' (a number). The full script is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "TikTok",
-    icon: Music2,
-    fields: [
-      {
-        key: "tiktok_pixel_id",
-        label: "TikTok Pixel ID",
-        placeholder: "XXXXXXXXXXXXXXX",
-        help: "In TikTok Ads Manager → Assets → Events → Web Events → find your Pixel ID. The full pixel code is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "Pinterest",
-    icon: Pin,
-    fields: [
-      {
-        key: "pinterest_tag_id",
-        label: "Pinterest Tag ID",
-        placeholder: "1234567890123",
-        help: "In Pinterest Ads → Ads Manager → Conversions → find your Tag ID (a long number). The full tag code is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "Reddit",
-    icon: MessageSquare,
-    fields: [
-      {
-        key: "reddit_pixel_id",
-        label: "Reddit Pixel ID",
-        placeholder: "t2_xxxxx",
-        help: "In Reddit Ads → Account → Events → Pixel → find your Pixel ID (starts with t2_). The full pixel code is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "Snapchat",
-    icon: Camera,
-    fields: [
-      {
-        key: "snap_pixel_id",
-        label: "Snap Pixel ID",
-        placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        help: "In Snapchat Ads Manager → Events Manager → find your Pixel ID (a UUID). The full pixel code is generated automatically.",
-      },
-    ],
-  },
-  {
-    label: "X (Twitter)",
-    icon: Share2,
-    fields: [
-      {
-        key: "x_pixel_id",
-        label: "X Pixel ID",
-        placeholder: "xxxxx",
-        help: "In X Ads → Tools → Events Manager → find your Pixel ID. The full pixel code is generated automatically.",
       },
     ],
   },
@@ -245,8 +106,6 @@ const groups: GroupDef[] = [
       { key: "twitter_handle", label: "Twitter Handle", placeholder: "@mistravora" },
       { key: "twitter_creator", label: "Twitter Creator", placeholder: "@username" },
       { key: "facebook_app_id", label: "Facebook App ID", placeholder: "1234567890" },
-      { key: "telegram_url", label: "Telegram URL", placeholder: "https://t.me/..." },
-      { key: "messenger_url", label: "Messenger URL", placeholder: "https://m.me/..." },
     ],
   },
 ];
@@ -298,14 +157,17 @@ export function MarketingEditor({ initialData }: Props) {
           <p className="font-medium text-foreground">You only need to paste the ID — not the full code block.</p>
           <p className="mt-1">
             Each platform gives you a code snippet, but inside that snippet is an ID.
-            Extract just the ID and paste it here. Search verification is active; analytics, advertising and external integrations remain paused pending privacy review. Saving an ID does not activate tracking. Click the{" "}
+            Extract just the ID and paste it here. Search verification is active. Google Analytics and Google Ads load only when enabled below and after visitor consent. Click the{" "}
             <HelpCircle className="inline h-3.5 w-3.5" /> icon next to each field for
             step-by-step instructions.
           </p>
         </div>
       </div>
 
-      <p className="rounded-lg border border-border p-4 text-sm">Search-engine verification IDs are live. Analytics, advertising scripts, external chat integrations and session recording remain paused after the privacy review; saving their IDs does not activate them.</p>
+      <div className="rounded-lg border border-border p-4">
+        <label className="flex items-start gap-3 text-sm font-medium"><input type="checkbox" checked={values.enable_optional_tracking === "true"} onChange={event => update("enable_optional_tracking", String(event.target.checked))} className="mt-0.5 h-5 w-5 shrink-0" />Enable configured Google Analytics and Google Ads on public pages</label>
+        <p className="mt-3 text-sm text-muted-foreground">Keep this off until the provider IDs and privacy/cookie disclosures are ready. Analytics requires analytics consent; Ads requires marketing consent. Leads are recorded after successful contact or quotation submission. Configure the matching conversion in your advertising account. No form text, email or phone number is sent in conversion events.</p>
+      </div>
       {error ? (
         <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-500">
           {error}
@@ -356,7 +218,7 @@ export function MarketingEditor({ initialData }: Props) {
                                 : "rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
                             }
                           >
-                            {isSet ? "Active" : "Not set"}
+                            {isSet ? "Configured" : "Not set"}
                           </span>
                         </div>
                       </div>

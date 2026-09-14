@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { CONSENT_VERSION, saveConsent, setConsentValue, subscribeConsent, getConsentSnapshot, getConsentSSR } from "@/lib/consent";
 
-export function Analytics({ showBanner = true }: { showBanner?: boolean }) {
+export function Analytics({ showBanner = true, trackingEnabled = false }: { showBanner?: boolean; trackingEnabled?: boolean }) {
   const consent = useSyncExternalStore(subscribeConsent, getConsentSnapshot, getConsentSSR);
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [analytics, setAnalytics] = useState(false);
@@ -36,7 +36,7 @@ export function Analytics({ showBanner = true }: { showBanner?: boolean }) {
     </section>}
     <dialog ref={dialog} aria-labelledby="cookie-title" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-6 text-foreground shadow-xl backdrop:bg-black/60">
       <h2 id="cookie-title" className="text-xl font-bold">Cookie preferences</h2>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">You can change your choice at any time from the footer. Optional tracking is currently paused while provider settings are reviewed.</p>
+      <p className="mt-3 text-sm leading-6 text-muted-foreground">You can change your choice at any time from the footer. {trackingEnabled ? "Configured analytics and advertising tools only load after your consent for that category." : "Optional tracking is currently paused."}</p>
       <p className="mt-4 text-sm">Necessary storage: always available for requested features.</p>
       <label className="mt-4 flex items-center gap-3"><input type="checkbox" checked={analytics} onChange={e => setAnalytics(e.target.checked)} className="h-5 w-5" />Allow optional analytics</label>
       <label className="mt-4 flex items-center gap-3"><input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)} className="h-5 w-5" />Allow optional marketing</label>

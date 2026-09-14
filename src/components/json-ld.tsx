@@ -1,8 +1,11 @@
+import { getCollection } from "@/lib/content";
+import { getSocialMedia } from "@/lib/services";
+import { isPublicMediaUrl } from "@/lib/media-url";
 import { jsonLd } from "@/lib/seo";
 import { getBusinessProfile } from "@/lib/business-profile";
 
 export async function OrganizationJsonLd() {
-  const site = await getBusinessProfile();
+  const [site, services, socials] = await Promise.all([getBusinessProfile(), getCollection("services"), getSocialMedia(true)]);
   const data = {
     "@context": "https://schema.org",
     "@graph": [
@@ -27,6 +30,16 @@ export async function OrganizationJsonLd() {
         foundingDate: site.founded,
         founder: [{ "@type": "Person", name: site.founder }, { "@type": "Person", name: site.cofounder }],
         areaServed: site.coverage,
+        sameAs: [...new Set(socials.map(social => social.url).filter(url => url.startsWith("https://") && isPublicMediaUrl(url)))],
+        hasOfferCatalog: services.length ? {
+          "@type": "OfferCatalog", name: "Mistravora services",
+          itemListElement: services.map(service => ({
+            "@type": "Offer", itemOffered: {
+              "@type": "Service", name: service.title, url: `${site.url}/services/${service.slug}`,
+              provider: { "@id": `${site.url}/#organization` },
+            },
+          })),
+        } : undefined,
         knowsAbout: site.offering.split("\n").filter(Boolean),
         contactPoint: {
           "@type": "ContactPoint",

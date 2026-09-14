@@ -1,3 +1,5 @@
+import { Testimonials } from "@/components/testimonials";
+import { PageFaqs } from "@/components/page-faqs";
 import { quoteLink } from "@/lib/quote-links";
 import Image from "@/components/content-image";
 import { contentText } from "@/lib/content-preview";
@@ -186,5 +188,6 @@ export default async function DetailPage({ params }: { params: Promise<{ section
         {!!related.length && <section className="mt-16"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Related {collections[section].title.toLowerCase()}</h2><ContentGrid entries={related} prefix={`/${section}`} /></section>}
       </>
     )}
+    {["services", "solutions"].includes(section) && <><Testimonials path={`/${section}/${entry.slug}`} inset /><PageFaqs path={`/${section}/${entry.slug}`} inset /></>}
   </ContentShell>;
 }

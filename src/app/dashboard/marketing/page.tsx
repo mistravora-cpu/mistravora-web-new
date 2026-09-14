@@ -12,7 +12,7 @@ export default async function MarketingAdminPage() {
   const m = await getMarketingSettings();
   const initialData: Record<string, string> = {};
   for (const key of marketingKeys) {
-    initialData[key] = (m as Record<string, string>)[key] ?? "";
+    initialData[key] = (m as Record<string, string>)[key] || (key === "enable_optional_tracking" ? "false" : "");
   }
 
   return (
@@ -21,7 +21,7 @@ export default async function MarketingAdminPage() {
         <h1 className="text-2xl font-bold">Marketing & SEO</h1>
         <p className="text-sm text-muted-foreground">
           Manage advertising pixels, analytics, search engine verification, and SEO defaults.
-          Enter values and save — tags are injected automatically into the site.
+          Search verification is live. Supported analytics and advertising tags require the enable switch and visitor consent.
         </p>
       </div>
       <MarketingEditor initialData={initialData} />

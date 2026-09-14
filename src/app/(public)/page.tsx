@@ -5,7 +5,11 @@ import { contentText } from "@/lib/content-preview";
 import { HeroMedia } from "@/components/hero-media";
 import { getCollection } from "@/lib/content";
 import { applySeoOverrides } from "@/lib/seo-overrides";
-import { jsonLd } from "@/lib/seo";
+import { getBusinessProfile } from "@/lib/business-profile";
+import { site } from "@/lib/site";
+import { Testimonials } from "@/components/testimonials";
+import { PageFaqs } from "@/components/page-faqs";
+import { ValueCards } from "@/components/value-cards";
 import { withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -30,52 +34,6 @@ import { ClientsMarquee } from "@/components/clients-marquee";
 import { getStatistics, getHeroSection } from "@/lib/services";
 import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
-const siteUrl = "https://mistravora.com";
-
-const baseMetadata: Metadata = withSocialMetadata({
-  title: "Mistravora — Custom Software, Web Platforms & AI Tools",
-  description:
-    "Mistravora builds high-performance web apps, custom dashboards, and AI-powered tools for ambitious businesses in Sri Lanka and worldwide. Ship faster, scale smarter.",
-  alternates: {
-    canonical: siteUrl,
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteUrl,
-    title: "Mistravora — Custom Software, Web Platforms & AI Tools",
-    description:
-      "We build intelligent software that grows your business. High-performance web platforms, custom dashboards, and AI-driven tools.",
-    siteName: "Mistravora",
-    images: [
-      {
-        url: "/android-chrome-512x512.png",
-        secureUrl: `${siteUrl}/android-chrome-512x512.png`,
-        width: 512,
-        height: 512,
-        alt: "Mistravora — Custom Software and Digital Products",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Mistravora — Custom Software, Web Platforms & AI Tools",
-    description:
-      "We build intelligent software that grows your business. Web platforms, dashboards, and AI tools for ambitious companies.",
-    images: ["/android-chrome-512x512.png"],
-  },
-  keywords: [
-    "custom software development Sri Lanka",
-    "web application development",
-    "AI-powered tools",
-    "Next.js development",
-    "Supabase development",
-    "custom dashboards",
-    "digital products Sri Lanka",
-    "Mistravora",
-  ],
-});
-
 const fallbackIcons = [
   Globe,
   LayoutDashboard,
@@ -86,29 +44,9 @@ const fallbackIcons = [
 ] as const;
 
 export default async function Home() {
-  const hero = await getHeroSection("home");
+  const [hero, profile] = await Promise.all([getHeroSection("home"), getBusinessProfile()]);
   return (
     <div className="flex flex-1 flex-col">
-      {/* JSON-LD structured data for rich search results */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Mistravora",
-            url: siteUrl,
-            description:
-              "Custom software, web platforms, and AI-powered tools for ambitious businesses.",
-            potentialAction: {
-              "@type": "SearchAction",
-              target: `${siteUrl}/search?q={search_term_string}`,
-              "query-input": "required name=search_term_string",
-            },
-          }),
-        }}
-      />
-
       {/* Keep the CMS headline in the initial server-rendered content. */}
       <RobotHeroClient hero={hero} description={hero?.description ? <ArticleBody body={hero.description} title="Introduction" /> : undefined} />
       <HeroMedia page="/" />
@@ -130,7 +68,10 @@ export default async function Home() {
         <ClientsMarquee />
       </Suspense>
 
+      <Suspense fallback={null}><Testimonials path="/" /></Suspense>
+      <Suspense fallback={null}><ValueCards /></Suspense>
       <Process />
+      <Suspense fallback={null}><PageFaqs path="/" /></Suspense>
 
       {/* CTA band */}
       <section data-cv="auto" className="w-full site-gutter pb-24">
@@ -148,8 +89,7 @@ export default async function Home() {
               Have a project in mind?
             </h2>
             <p className="max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
-              Tell us what you&apos;re building — we reply within one business
-              day with honest advice and a clear quote.
+              Tell us about your software or digital marketing requirements. {profile.response}.
             </p>
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Button size="lg" asChild className="w-full sm:w-auto">
@@ -182,20 +122,7 @@ async function StatsSection() {
   const dbStats = await getStatistics(true);
   if (!dbStats.length) return null;
 
-  const stats = dbStats.length > 0
-    ? dbStats.map((s) => {
-        const numeric = parseInt(s.value.replace(/[^0-9]/g, ""), 10) || 0;
-        const suffix = s.value.replace(/[0-9]/g, "").trim();
-        return {
-          value: s.value,
-          label: s.label,
-          numericValue: numeric || 50,
-          suffix: suffix || (numeric >= 100 ? "%" : ""),
-        };
-      })
-    : undefined;
-
-  return <StatsCounter stats={stats} />;
+  return <StatsCounter stats={dbStats.map(({ value, label }) => ({ value, label }))} />;
 }
 
 async function SolutionsSection() {
@@ -253,4 +180,11 @@ async function SolutionsSection() {
   );
 }
 
-export async function generateMetadata() { return applySeoOverrides(baseMetadata); }
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getBusinessProfile();
+  return applySeoOverrides(withSocialMetadata({
+    title: profile.seoTitle || `${profile.name} — Software & Digital Marketing in Sri Lanka`,
+    description: contentText(profile.intro, 160),
+    alternates: { canonical: site.url },
+  }));
+}

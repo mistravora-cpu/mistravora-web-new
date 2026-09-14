@@ -1,3 +1,5 @@
+import { Testimonials } from "@/components/testimonials";
+import { PageFaqs } from "@/components/page-faqs";
 import { estimatePath } from "@/lib/quote-links";
 import { contentText, firstContent } from "@/lib/content-preview";
 import { isPublicMediaUrl } from "@/lib/media-url";
@@ -191,6 +193,8 @@ export default async function CaseStudyPage({
         </ScrollReveal>
       </div>
       <div className="mt-10 w-full"><ShareButton title={cs.title} /><RelatedContent currentPath={`/projects/${cs.slug}`} title={cs.title} /></div>
+    <Testimonials path={`/projects/${cs.slug}`} inset />
+      <PageFaqs path={`/projects/${cs.slug}`} inset />
     </article>
   );
 }

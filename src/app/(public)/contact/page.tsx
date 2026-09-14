@@ -9,9 +9,10 @@ import { AnimatedHero } from "@/components/animated-hero";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { ContactMap } from "@/components/contact-map";
 import { ContactForm } from "./contact-form";
-import { Faq } from "@/components/faq";
+import { PageFaqs } from "@/components/page-faqs";
+import { Testimonials } from "@/components/testimonials";
 import { site } from "@/lib/site";
-import { getHeroSection, getFaqs, getContactInfo, getSocialMedia } from "@/lib/services";
+import { getHeroSection, getContactInfo, getSocialMedia } from "@/lib/services";
 
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Contact",
@@ -23,7 +24,7 @@ const baseMetadata: Metadata = withSocialMetadata({
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ service?: string | string[] }> }) {
   const query = await searchParams;
   const selectedService = typeof query.service === "string" ? query.service.trim().slice(0, 100) : "";
-  const [hero, site, faqs, contactRows, socials] = await Promise.all([getHeroSection("contact"), getBusinessProfile(), getFaqs("contact", true), getContactInfo(), getSocialMedia(true)]);
+  const [hero, site, contactRows, socials] = await Promise.all([getHeroSection("contact"), getBusinessProfile(), getContactInfo(), getSocialMedia(true)]);
   const contact = contactRows;
   const whatsappMessage = encodeURIComponent(
     "Hi Mistravora! I'd like to discuss a project."
@@ -106,14 +107,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         <ContactMap />
       </ScrollReveal>
 
-      <ScrollReveal animation="fade-up" className="mx-auto mt-16 w-full">
-        <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-          Before you ask
-        </h2>
-        <div className="mt-8">
-          <Faq items={faqs.map(faq => ({q:faq.question,a:faq.answer}))} />
-        </div>
-      </ScrollReveal>
+      <PageFaqs path="/contact" inset />
+      <Testimonials path="/contact" inset />
     </section>
     </>
   );

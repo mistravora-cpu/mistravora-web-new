@@ -335,6 +335,7 @@ export type Testimonial = {
 };
 
 export type MarketingSettings = {
+  enable_optional_tracking: string;
   ga4_measurement_id: string;
   gtm_container_id: string;
   clarity_id: string;

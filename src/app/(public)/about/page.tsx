@@ -1,3 +1,6 @@
+import { TechStack } from "@/components/tech-stack";
+import { PageFaqs } from "@/components/page-faqs";
+import { Testimonials } from "@/components/testimonials";
 import { estimatePath } from "@/lib/quote-links";
 import { TeamPortrait } from "@/components/team-portrait";
 import { contentText } from "@/lib/content-preview";
@@ -326,6 +329,9 @@ export default async function AboutPage() {
       </ScrollReveal>
     </section>
 
+    <Testimonials path="/about" />
+    <PageFaqs path="/about" />
+    <TechStack />
     </>
   );
 }

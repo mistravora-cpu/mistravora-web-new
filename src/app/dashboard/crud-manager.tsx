@@ -288,12 +288,18 @@ export function CrudManager({
       }
     }
 
-    const result = await upsertRow(table, data, editingId ?? undefined);
-    setSaving(false);
-    if (result.error) {
-      setError(result.error);
-    } else {
-      cancelForm();
+    try {
+      const result = await upsertRow(table, data, editingId ?? undefined);
+      if (result.error) {
+        if ("savedId" in result && typeof result.savedId === "string") setEditingId(result.savedId);
+        setError(result.error);
+      } else {
+        cancelForm();
+      }
+    } catch {
+      setError("Could not save. Your entries are still here; please retry.");
+    } finally {
+      setSaving(false);
     }
   }
 

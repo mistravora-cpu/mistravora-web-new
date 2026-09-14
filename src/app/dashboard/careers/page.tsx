@@ -18,7 +18,7 @@ const jobFields: FieldDef[] = [
   { name: "title", label: "Title", required: true },
   { name: "location", label: "Location", placeholder: "Colombo, Sri Lanka" },
   { name: "type", label: "Type", placeholder: "Full-time / Part-time / Contract" },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "published", label: "Active", type: "boolean" },
 ];
 
@@ -31,7 +31,7 @@ const benefitColumns: ColumnDef[] = [
 const benefitFields: FieldDef[] = [
   { name: "icon", label: "Icon", type: "icon", required: true },
   { name: "title", label: "Title", required: true },
-  { name: "description", label: "Description", type: "textarea" },
+  { name: "description", label: "Description", type: "richtext" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Active", type: "boolean" },
 ];

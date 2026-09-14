@@ -1,3 +1,5 @@
+import { Testimonials } from "@/components/testimonials";
+import { PageFaqs } from "@/components/page-faqs";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { notFound } from "next/navigation";
 import { collections, isCollection, getCollection } from "@/lib/content";
@@ -89,5 +91,5 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
   }
 
   /* ── Other sections: standard content grid ── */
-  return <ContentShell {...collections[section]}><ContentGrid entries={entries} prefix={`/${section}`} /></ContentShell>;
+  return <ContentShell {...collections[section]}><ContentGrid entries={entries} prefix={`/${section}`} />{section === "services" && <><Testimonials path="/services" inset /><PageFaqs path="/services" inset /></>}</ContentShell>;
 }

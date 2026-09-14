@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAdminContactInfo as getContactInfo, getAdminSocialMedia as getSocialMedia, getAdminFaqs as getFaqs } from "@/lib/services";
+import { getAdminContactInfo as getContactInfo, getAdminSocialMedia as getSocialMedia } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
 
 export const metadata: Metadata = {
@@ -37,24 +37,10 @@ const socialFields: FieldDef[] = [
   { name: "published", label: "Active", type: "boolean" },
 ];
 
-const faqColumns: ColumnDef[] = [
-  { name: "question", label: "Question" },
-  { name: "published", label: "Active" },
-];
-
-const faqFields: FieldDef[] = [
-  { name: "page", label: "Page", required: true, placeholder: "contact" },
-  { name: "question", label: "Question", required: true },
-  { name: "answer", label: "Answer", type: "richtext", required: true },
-  { name: "sort_order", label: "Sort Order", type: "number" },
-  { name: "published", label: "Active", type: "boolean" },
-];
-
 export default async function ContactAdminPage() {
-  const [contactInfo, socialMedia, faqs] = await Promise.all([
+  const [contactInfo, socialMedia] = await Promise.all([
     getContactInfo(),
     getSocialMedia(),
-    getFaqs("contact"),
   ]);
 
   return (
@@ -86,15 +72,7 @@ export default async function ContactAdminPage() {
         rows={socialMedia as unknown as Record<string, unknown>[]}
       />
 
-      <CrudManager
-        table="faqs"
-        title="FAQs"
-        columns={faqColumns}
-        fields={faqFields}
-        rows={faqs as unknown as Record<string, unknown>[]}
-        filterColumn="page"
-        filterValue="contact"
-      />
+      <Link href="/dashboard/faqs" className="text-sm font-medium text-primary underline">Manage questions and answers across the website</Link>
     </div>
   );
 }

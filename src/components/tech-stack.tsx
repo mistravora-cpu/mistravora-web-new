@@ -1,97 +1,54 @@
+import Image from "@/components/content-image";
 import { getTechStack } from "@/lib/services";
-
-type TechItem = { name: string; icon: string };
-
-const rowCount = 3;
-
-// Duplicate items enough times so the row always fills the screen width.
-// 2x is the minimum for seamless -50% loop. For short rows, use 4x with -25% loop.
-function buildLoopItems(items: TechItem[]): TechItem[] {
-  if (items.length >= 10) return [...items, ...items];
-  if (items.length >= 5) return [...items, ...items, ...items, ...items];
-  return [...items, ...items, ...items, ...items, ...items, ...items];
-}
-
-function loopPercent(items: TechItem[]): string {
-  const copies = items.length >= 10 ? 2 : items.length >= 5 ? 4 : 6;
-  return `${-100 / copies}%`;
-}
-
-function TechChip({ item }: { item: TechItem }) {
-  return <>{item.icon && /^(https:\/\/|\/(?!\/))/.test(item.icon) ? (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img src={item.icon} alt="" width={24} height={24} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-6 w-6 object-contain" />
-  ) : <span aria-hidden className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{item.name.charAt(0)}</span>}<span className="text-xs font-medium">{item.name}</span></>;
-}
+import { isPublicMediaUrl } from "@/lib/media-url";
 
 export async function TechStack() {
-  const dbTech = await getTechStack(true);
-
-  let rows: { items: TechItem[]; reverse?: boolean }[];
-
-  if (dbTech.length > 0) {
-    // Deduplicate, flatten, and split evenly into 3 rows
-    const seen = new Set<string>();
-    const flat: TechItem[] = [];
-    for (const t of dbTech) {
-      const key = t.name.toLowerCase().trim();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      flat.push({ name: t.name, icon: t.logo ?? "" });
-    }
-    const dbPerRow = Math.ceil(flat.length / rowCount);
-    rows = Array.from({ length: rowCount }, (_, i) => ({
-      items: flat.slice(i * dbPerRow, (i + 1) * dbPerRow),
-      reverse: i % 2 === 1,
-    })).filter((r) => r.items.length > 0);
-  } else {
-    return null;
-  }
-
+  const rows = await getTechStack(true);
+  const items = rows.filter(
+    (row, index) =>
+      rows.findIndex(
+        (other) =>
+          other.name.trim().toLowerCase() === row.name.trim().toLowerCase(),
+      ) === index,
+  );
+  if (!items.length) return null;
   return (
-    <section className="w-full overflow-hidden bg-surface site-gutter section-py">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <p className="eyebrow">
-          Technology options
-        </p>
-        <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          Tools and platforms to discuss for your project
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          Frontend · Backend · Databases · Cloud · Mobile · AI · Design · Marketing
-        </p>
-      </div>
-
-      <div className="mt-12 flex flex-col gap-3">
-        {rows.map((row, rowIndex) => {
-          const loopItems = buildLoopItems(row.items);
-          const originalCount = row.items.length;
-          return (
-            <div
-              key={rowIndex}
-              className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
-            >
-              <ul
-                className="flex w-max gap-3 will-change-transform"
-                style={{
-                  animation: `marquee-var 40s linear infinite${row.reverse ? " reverse" : ""}`,
-                  ["--marquee-end" as string]: loopPercent(row.items),
-                }}
-              >
-                {loopItems.map((item, index) => (
-                  <li
-                    key={`${item.name}-${index}`}
-                    aria-hidden={index >= originalCount}
-                    className="group flex items-center gap-2 rounded-full border border-border bg-card py-2 pl-2.5 pr-4 transition-colors duration-200 hover:border-primary/30"
-                  >
-                    <TechChip item={item} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
+    <section
+      className="w-full site-gutter section-py"
+      aria-labelledby="technology-heading"
+    >
+      <p className="eyebrow">Technology options</p>
+      <h2
+        id="technology-heading"
+        className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl"
+      >
+        Tools and platforms for your project
+      </h2>
+      <p className="mt-3 text-sm text-muted-foreground">
+        We agree the technology choices with you based on scope, budget and
+        maintenance needs.
+      </p>
+      <ul className="mt-8 flex flex-wrap gap-3">
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3"
+          >
+            {item.logo && isPublicMediaUrl(item.logo) && (
+              <Image
+                src={item.logo}
+                alt=""
+                width={24}
+                height={24}
+                sizes="24px"
+                loading="lazy"
+                className="h-6 w-6 object-contain"
+              />
+            )}
+            <span className="text-sm font-medium">{item.name}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

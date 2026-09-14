@@ -1,3 +1,5 @@
+import { PageFaqs } from "@/components/page-faqs";
+import { Testimonials } from "@/components/testimonials";
 import { ArticleBody } from "@/components/article-body";
 import Link from "next/link";
 import {
@@ -211,6 +213,8 @@ export default async function PricingPage() {
           </Link>
         </nav>
       </section>
+    <Testimonials path="/pricing" />
+    <PageFaqs path="/pricing" />
     </>
   );
 }

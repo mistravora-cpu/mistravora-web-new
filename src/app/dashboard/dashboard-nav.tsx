@@ -54,6 +54,7 @@ const navGroups = [
   {
     label: "Engagement",
     items: [
+      { href: "/dashboard/faqs", label: "Questions & answers", icon: BookOpen },
       { href: "/dashboard/contact", label: "Contact", icon: Mail },
       { href: "/dashboard/bookings", label: "Bookings", icon: BookOpen },
       { href: "/dashboard/booking-slots", label: "Availability", icon: Layout },
@@ -63,7 +64,7 @@ const navGroups = [
       { href: "/dashboard/seo", label: "Page SEO", icon: FileText },
       { href: "/dashboard/inquiries", label: "Inquiries", icon: Mail },
       { href: "/dashboard/trusted-companies", label: "Trusted Companies", icon: Building2 },
-      { href: "/dashboard/testimonials", label: "Testimonials", icon: Star },
+      { href: "/dashboard/testimonials", label: "Customer reviews", icon: Star },
       { href: "/dashboard/newsletter", label: "Newsletter", icon: Send },
       { href: "/dashboard/resources", label: "Resources", icon: BookOpen },
     ],

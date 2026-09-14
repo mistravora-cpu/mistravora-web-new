@@ -1,3 +1,4 @@
+import { getCollection } from "@/lib/content";
 import { getBusinessProfile } from "@/lib/business-profile";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +7,8 @@ import { CookieSettingsButton } from "@/components/cookie-settings-button";
 import { mainNav } from "@/lib/site";
 
 export async function SiteFooter() {
-  const [site, policies] = await Promise.all([getBusinessProfile(), getPolicies(true)]);
+  const [site, policies, services] = await Promise.all([getBusinessProfile(), getPolicies(true), getCollection("services")]);
+  const highlightedServices = services.filter(service => ["custom-software-development", "seo-and-website-optimization", "digital-marketing-and-related-digital-services"].includes(service.slug));
   return (
     <footer className="[&_a]:inline-flex [&_a]:min-h-6 [&_a]:items-center [&_button]:min-h-11 border-t border-border bg-surface">
       <div className="grid w-full gap-12 site-gutter py-14 lg:grid-cols-2">
@@ -49,6 +51,7 @@ export async function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 sm:gap-10">
           <nav aria-label="Footer" className="flex flex-col gap-2.5">
             <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/80">Company</h2>
+            {highlightedServices.map(service => <Link key={service.slug} href={`/services/${service.slug}`} className="text-sm text-muted-foreground hover:text-foreground">{service.title}</Link>)}
             {mainNav.slice(0, 5).map((item) => (
               <Link
                 key={item.href}

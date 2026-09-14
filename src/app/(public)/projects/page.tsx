@@ -1,3 +1,5 @@
+import { PageFaqs } from "@/components/page-faqs";
+import { Testimonials } from "@/components/testimonials";
 import { estimatePath } from "@/lib/quote-links";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -135,6 +137,8 @@ export default async function CaseStudiesPage() {
         </ScrollReveal>
       )}
     </section>
+    <Testimonials path="/projects" />
+    <PageFaqs path="/projects" />
     </>
   );
 }

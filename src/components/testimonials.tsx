@@ -1,105 +1,120 @@
-import { Star, Quote } from "lucide-react";
+import { Quote, Star, ArrowUpRight } from "lucide-react";
+import Image from "@/components/content-image";
 import { getTestimonials } from "@/lib/services";
-import type { Testimonial } from "@/lib/types";
+import type { CustomerReview } from "@/lib/reviews";
 
-
-function buildLoopItems<T>(items: T[]): T[] {
-  if (items.length >= 6) return [...items, ...items];
-  if (items.length >= 3) return [...items, ...items, ...items, ...items];
-  return [...items, ...items, ...items, ...items, ...items, ...items];
-}
-
-function loopPercent(len: number): string {
-  const copies = len >= 6 ? 2 : len >= 3 ? 4 : 6;
-  return `${-100 / copies}%`;
-}
-
-function TestimonialCard({ t }: { t: Testimonial }) {
-  const initials = t.name
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
+export function ReviewCard({ review }: { review: CustomerReview }) {
   return (
-    <figure className="group/card relative flex w-[20rem] shrink-0 flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-6 transition-colors duration-200 hover:border-primary/30 sm:w-[24rem]">
-      <div className="flex items-center justify-between">
-        <div
-          role="img"
-          aria-label={`${t.rating} out of 5 stars`}
-          className="flex gap-0.5 text-primary"
-        >
-          {Array.from({ length: t.rating }).map((_, i) => (
-            <Star key={i} aria-hidden className="h-4 w-4 fill-current" />
-          ))}
-        </div>
-        <Quote aria-hidden className="h-6 w-6 text-primary/15" />
-      </div>
-      <blockquote className="flex-1 text-sm leading-6 text-muted-foreground">
-        &ldquo;{t.quote}&rdquo;
-      </blockquote>
-      <figcaption className="flex items-center gap-3 border-t border-border pt-4">
-        {t.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={t.avatar} alt={t.name} className="h-9 w-9 rounded-full object-cover" />
-        ) : (
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-            {initials}
+    <figure className="flex min-w-0 flex-col gap-5 rounded-2xl border border-border bg-card p-6 motion-safe:transition-colors hover:border-primary/40 sm:p-8">
+      <div className="flex items-center justify-between gap-3">
+        <Quote aria-hidden className="h-7 w-7 text-primary" />
+        {review.rating > 0 && review.rating <= 5 && (
+          <span
+            role="img"
+            aria-label={`${review.rating} out of 5 stars`}
+            className="flex gap-1 text-primary"
+          >
+            {Array.from({ length: review.rating }, (_, i) => (
+              <Star key={i} aria-hidden className="h-4 w-4 fill-current" />
+            ))}
           </span>
         )}
-        <div>
-          <p className="text-sm font-semibold">{t.name}</p>
-          <p className="text-xs text-muted-foreground">{t.role}</p>
+      </div>
+      <blockquote className="flex-1 whitespace-pre-line break-words text-base leading-7">
+        {review.quote}
+      </blockquote>
+      <figcaption className="border-t border-border pt-5">
+        <div className="flex items-center gap-3">
+          {review.avatar && (
+            <Image
+              src={review.avatar}
+              alt=""
+              width={48}
+              height={48}
+              sizes="48px"
+              loading="lazy"
+              className="h-12 w-12 shrink-0 rounded-full object-cover"
+            />
+          )}
+          <div className="min-w-0 break-words">
+            <p className="font-semibold">{review.name}</p>
+            {review.role && (
+              <p className="text-sm text-muted-foreground">{review.role}</p>
+            )}
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+          {review.source_url ? (
+            <a
+              href={review.source_url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="inline-flex min-h-8 items-center gap-1 font-medium text-primary underline underline-offset-4"
+              aria-label={`Read ${review.name}'s original review on ${review.source_name} (opens in a new tab)`}
+            >
+              {review.source_name}
+              <ArrowUpRight aria-hidden className="h-3 w-3" />
+            </a>
+          ) : (
+            <span>{review.source_name}</span>
+          )}
+          {review.review_date && (
+            <time dateTime={review.review_date}>
+              {new Intl.DateTimeFormat("en", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+                timeZone: "UTC",
+              }).format(new Date(review.review_date))}
+            </time>
+          )}
         </div>
       </figcaption>
     </figure>
   );
 }
 
-export async function Testimonials() {
-  const testimonials = await getTestimonials(true);
-  if (testimonials.length === 0) return null;
-
-  const half = Math.ceil(testimonials.length / 2);
-  const row1Items = testimonials.slice(0, half);
-  const row2Items = testimonials.slice(half);
-  const row1 = buildLoopItems(row1Items);
-  const row2 = buildLoopItems(row2Items);
-
+/** Server rendered: no review widgets, third-party embeds or carousel bundle. */
+export async function Testimonials({
+  path = "/solutions",
+  inset = false,
+}: {
+  path?: string;
+  inset?: boolean;
+}) {
+  const reviews = (await getTestimonials(true)).filter((review) =>
+    review.display_paths.includes(path),
+  );
+  if (!reviews.length) return null;
   return (
-    <section className="w-full overflow-hidden bg-surface section-py">
-      <div className="flex flex-col items-center gap-3 px-4 text-center">
-        <p className="eyebrow">
-          Client love
-        </p>
-        <h2 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          What our <span className="text-gradient">clients</span> say
-        </h2>
+    <section
+      aria-labelledby="customer-reviews-heading"
+      className={`w-full section-py ${inset ? "" : "site-gutter"}`}
+    >
+      <p className="eyebrow">Customer feedback</p>
+      <h2
+        id="customer-reviews-heading"
+        className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl"
+      >
+        What our customers say
+      </h2>
+      <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {reviews.slice(0, 6).map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
       </div>
-
-      <div className="mt-12 flex flex-col gap-4">
-        <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-          <div
-            className="flex w-max gap-4 will-change-transform"
-            style={{ animation: "marquee-var 50s linear infinite", ["--marquee-end" as string]: loopPercent(row1Items.length) }}
-          >
-            {row1.map((t, i) => (
-              <TestimonialCard key={`r1-${i}`} t={t} />
+      {reviews.length > 6 && (
+        <details className="mt-6">
+          <summary className="w-fit cursor-pointer rounded-lg border border-border px-5 py-3 text-sm font-semibold">
+            More customer reviews ({reviews.length - 6})
+          </summary>
+          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {reviews.slice(6).map((review) => (
+              <ReviewCard key={review.id} review={review} />
             ))}
           </div>
-        </div>
-        <div className="group/row relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-          <div
-            className="flex w-max gap-4 will-change-transform"
-            style={{ animation: "marquee-var 50s linear infinite reverse", ["--marquee-end" as string]: loopPercent(row2Items.length) }}
-          >
-            {row2.map((t, i) => (
-              <TestimonialCard key={`r2-${i}`} t={t} />
-            ))}
-          </div>
-        </div>
-      </div>
+        </details>
+      )}
     </section>
   );
 }

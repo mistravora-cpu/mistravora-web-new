@@ -5,6 +5,11 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
 const require = createRequire(import.meta.url);
+function loadReviewModule(file) {
+  const context = {exports:{},URL,AbortSignal,require: name => name.startsWith('./') ? loadReviewModule(`src/lib/${name.slice(2)}.ts`) : require(name)};
+  vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText, context);
+  return context.exports;
+}
 function load({authorized = true, fail = false} = {}) {
   const calls = [];
   const writes = [];
@@ -16,6 +21,8 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
+    if(name === '@/lib/review-save') return loadReviewModule('src/lib/review-save.ts');
+    if(name === '@/lib/reviews') return loadReviewModule('src/lib/reviews.ts');
     if(name === '@/lib/requirements/notification-config') return {quoteRecipientsSchema:{parse:v=>v}};
     if(name === '@/lib/requirements/schema') return {requirementConfigSchema:{parse:v=>v}};
     if(name === '@/lib/hero-media-config') return {heroMediaSchema:{parse:v=>v}};
@@ -82,4 +89,24 @@ test('public project links save and clear without requiring a project-table colu
   const {actions,writes}=load();
   assert.ok((await actions.upsertRow('case_studies',{website_url:'javascript:alert(1)'},'id')).error);
   assert.equal(writes.length,0);
+});
+
+
+test('review mutations require admin authorization before reading or writing review data', async () => {
+  const {actions,writes,calls}=load({authorized:false});
+  assert.equal((await actions.upsertRow('testimonials',{quote:'Test',name:'Test'})).error,'Unauthorized');
+  assert.equal(writes.length,0);assert.equal(calls.length,0);
+});
+
+test('FAQ paths normalize public locations and reject disconnected pages', async () => {
+  const {actions,writes}=load();
+  assert.equal((await actions.upsertRow('faqs',{page:'/pricing'})).error,null);
+  assert.equal(writes[0].data.page,'pricing');
+  assert.ok((await actions.upsertRow('faqs',{page:'dashboard/secrets'})).error);
+});
+
+test('optional tracking settings require a deliberate switch and valid provider IDs',async()=>{
+ const {actions}=load();
+ assert.equal((await actions.saveSettings({enable_optional_tracking:'false',ga4_measurement_id:'G-ABC123',google_ads_conversion_id:'AW-12345',google_ads_conversion_label:'Lead_123'})).error,null);
+ for(const data of [{enable_optional_tracking:'yes'},{ga4_measurement_id:'G-test<script>'},{google_ads_conversion_id:'AW-text'},{google_ads_conversion_label:'bad/target'}])assert.ok((await actions.saveSettings(data)).error);
 });

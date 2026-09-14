@@ -14,7 +14,7 @@ export const collections = {
   services: {
     title: "Services",
     description:
-      "Explore how Mistravora builds software, web platforms, and AI features for your business.",
+      "Explore software development, websites, mobile apps, SEO and digital marketing services from Mistravora in Sri Lanka, serving businesses worldwide.",
   },
   solutions: {
     title: "Solutions",

@@ -1,3 +1,4 @@
+import { getMarketingSettings } from "@/lib/services";
 import { getBusinessProfile } from "@/lib/business-profile";
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
@@ -125,7 +126,7 @@ export default function RootLayout({
             <SeoVerification />
           </Suspense>
           <OrganizationJsonLd />
-          {/* Optional tracking paused pending provider and consent review. */}
+          {/* Public-only tracking is controlled in the public layout. */}
           <ScrollProgress />
           <SiteBackground />
           {children}
@@ -138,6 +139,6 @@ export default function RootLayout({
 }
 
 async function CookieControls() {
-  const profile = await getBusinessProfile();
-  return <Analytics showBanner={profile.cookieBannerEnabled !== "false"} />;
+  const [profile, marketing] = await Promise.all([getBusinessProfile(), getMarketingSettings()]);
+  return <Analytics showBanner={profile.cookieBannerEnabled !== "false"} trackingEnabled={marketing.enable_optional_tracking === "true"} />;
 }

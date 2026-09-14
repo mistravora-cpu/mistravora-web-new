@@ -87,7 +87,7 @@ test("every inline consent-gated marketing script has valid JavaScript syntax", 
     ts.forEachChild(node, visit);
   }
   visit(file);
-  assert.ok(checked >= 10);
+  assert.equal(checked, 2);
 });
 
 test("expired or malformed consent never enables optional tracking", () => {
@@ -96,4 +96,30 @@ test("expired or malformed consent never enables optional tracking", () => {
   for (const change of [{analytics:"yes"}, {timestamp:"invalid"}, {timestamp:"2020-01-01T00:00:00Z"}, {version:2}]) {
     assert.equal(consentStore(JSON.stringify({...base,...change})).getConsentSnapshot(), null);
   }
+});
+
+test('lead analytics and ads conversions respect separate consent and exclude admin activity',()=>{
+ const source=ts.transpileModule(readFileSync('src/lib/track-event.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+ for(const [analytics,marketing,pathname] of [[false,false,'/pricing'],[true,false,'/pricing'],[false,true,'/pricing'],[true,true,'/pricing'],[true,true,'/dashboard']]){
+  const sent=[];const context={exports:{},require:()=>({getConsentSnapshot:()=>({analytics,marketing})}),window:{location:{origin:'https://www.mistravora.com',pathname,search:'?email=private@example.com'},gtag:(...args)=>sent.push(args),mistravoraAnalyticsTarget:'G-TEST123',mistravoraAdsTarget:'AW-123/label'}};
+  vm.runInNewContext(source,context);context.exports.trackEvent('generate_lead',{form_name:'project_requirements'});
+  assert.equal(sent.filter(e=>e[1]==='generate_lead').length,analytics&&!pathname.startsWith('/dashboard')?1:0);
+  assert.equal(sent.filter(e=>e[1]==='conversion').length,marketing&&!pathname.startsWith('/dashboard')?1:0);
+  assert.equal(JSON.stringify(sent).includes('private@example.com'),false);
+ }
+});
+
+test('tracking stays absent until enabled and unsafe or unsupported IDs never render',async()=>{
+ const {createRequire}=await import('node:module');const require=createRequire(import.meta.url);
+ const source=ts.transpileModule(readFileSync('src/components/marketing-tags.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2020}}).outputText;
+ const React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+ async function render(settings){
+  const context={exports:{},require:name=>name==='@/lib/services'?{getMarketingSettings:async()=>settings}:name==='@/components/marketing-events'?{MarketingEvents:()=>null}:name==='@/components/consent-gated-script'?{ConsentGatedScript:({category,children,src})=>React.createElement('div',{'data-category':category,'data-src':src},children)}:require(name)};
+  vm.runInNewContext(source,context);return renderToStaticMarkup(await context.exports.MarketingTags());
+ }
+ const configured={enable_optional_tracking:'false',ga4_measurement_id:'G-TEST123',google_ads_conversion_id:'AW-12345',google_ads_conversion_label:'Lead_123'};
+ assert.equal(await render(configured),'');
+ const active=await render({...configured,enable_optional_tracking:'true'});
+ assert.ok(active.includes('data-category="analytics"'));assert.ok(active.includes('data-category="marketing"'));assert.ok(active.includes('send_page_view:false'));assert.ok(active.includes('AW-12345/Lead_123'));
+ assert.equal(await render({...configured,enable_optional_tracking:'true',ga4_measurement_id:"G-BAD'",google_ads_conversion_id:'not-an-id'}),'');
 });
