@@ -182,9 +182,12 @@ async function SolutionsSection() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await getBusinessProfile();
-  return applySeoOverrides(withSocialMetadata({
+  const metadata = await applySeoOverrides(withSocialMetadata({
     title: profile.seoTitle || `${profile.name} — Software & Digital Marketing in Sri Lanka`,
     description: contentText(profile.intro, 160),
     alternates: { canonical: site.url },
   }));
+  const title = typeof metadata.title === "string" ? metadata.title : profile.seoTitle || profile.name;
+  // The homepage title already names the company; bypass the inherited suffix.
+  return { ...metadata, title: { absolute: title }, openGraph: { ...metadata.openGraph, title }, twitter: { ...metadata.twitter, title } };
 }
