@@ -28,7 +28,6 @@ const RobotHero = dynamic(
 export function RobotHeroClient({ hero, description }: { hero?: HeroSection | null; description?: React.ReactNode }) {
   const profile = useBusinessProfile();
   const sectionRef = useRef<HTMLElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   // Let the headline's fonts and layout finish before starting the 3D bundle.
@@ -58,50 +57,6 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
     };
   }, []);
 
-  // Track cursor position and move the glow mask behind the text.
-  // The robot follows the same cursor, so the glow stays aligned with it.
-  useEffect(() => {
-    const section = sectionRef.current;
-    const glow = glowRef.current;
-    if (!section || !glow) return;
-
-    let rafId = 0;
-    let targetX = 0.5; // normalized 0–1
-    let targetY = 0.7; // biased toward bottom where text sits
-    let currentX = 0.5;
-    let currentY = 0.7;
-    let width = section.clientWidth;
-    let height = section.clientHeight;
-
-    const handleMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
-      targetX = (e.clientX - rect.left) / rect.width;
-      targetY = (e.clientY - rect.top) / rect.height;
-      if (!rafId) rafId = requestAnimationFrame(animate);
-    };
-
-    const animate = () => {
-      rafId = 0;
-      // Smooth lerp toward cursor for fluid motion
-      currentX += (targetX - currentX) * 0.12;
-      currentY += (targetY - currentY) * 0.12;
-      glow.style.transform = `translate(${currentX * width}px, ${currentY * height}px) translate(-50%, -50%)`;
-      if (Math.abs(targetX - currentX) > 0.0001 || Math.abs(targetY - currentY) > 0.0001) {
-        rafId = requestAnimationFrame(animate);
-      }
-    };
-
-    section.addEventListener("mousemove", handleMove);
-    rafId = requestAnimationFrame(animate);
-
-    return () => {
-      section.removeEventListener("mousemove", handleMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
   return (
     <section
       ref={sectionRef}
@@ -122,21 +77,15 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         )}
       </div>
 
-      {/* Cursor-tracking glow mask — moves with the robot to keep text readable */}
-      <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
-        <div
-          ref={glowRef}
-          className="absolute h-[420px] w-[640px] rounded-full opacity-80 sm:blur-[60px]"
-          style={{
-            left: 0,
-            top: 0,
-            background:
-              "radial-gradient(circle, color-mix(in oklab, var(--background) 95%, transparent) 0%, color-mix(in oklab, var(--background) 70%, transparent) 45%, transparent 75%)",
-            transform: "translate(50%, 70%) translate(-50%, -50%)",
-          }}
-          aria-hidden
-        />
-      </div>
+      {/* A stationary fade keeps text readable without a flashing cursor trail. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[5]"
+        style={{
+          background:
+            "linear-gradient(to bottom, transparent 25%, color-mix(in oklab, var(--background) 65%, transparent) 65%, var(--background) 100%)",
+        }}
+      />
 
       {/* Company information and native links share the hero's pointer events. */}
       <div className="pointer-events-none relative z-10 flex flex-col items-center gap-4 site-gutter pb-12 pt-40 text-center sm:gap-5 sm:pb-16">

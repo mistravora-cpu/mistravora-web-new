@@ -29,3 +29,13 @@ The text backdrop uses valid theme colours and follows hero coordinates rather t
 Mobile/coarse-pointer sessions start at a device pixel ratio of 1 without multisample antialiasing; desktop keeps its existing 1–1.5 resolution range and antialiasing. This reduces GPU work without a tap-to-load gate or disabling the 3D interaction. A mobile Lighthouse trace previously attributed a 320 ms main-thread commit stall to a matching GPU task.
 
 Small-screen/coarse-pointer sessions also use diffuse lighting for the chassis and simpler flat materials for the dark face and small ear details; desktop retains the original physically based materials. The geometry, colour texture, pointer response and click animation are shared. The radial text backdrop supplies its own soft fade on phones, avoiding the extra large blur filter.
+
+## Homepage click freeze and cursor flash — 15 September 2026
+
+The previous lifecycle changed the Three.js render loop directly while the Canvas prop stayed `frameloop="never"`. Canvas reapplies its props when React contexts or dimensions change. A theme-button click therefore reset rendering to `never`, and pointer invalidation could not restart it. A local production reproduction measured 54 rendered frames over 900 ms before the click and zero afterward, including after pointer movement and resize.
+
+The lifecycle now updates one React state value that is passed to Canvas. Theme changes, navigation and resizing receive the current render mode. Preparation, offscreen/background suspension, reduced-motion demand rendering and context restoration still use the same lifecycle rules. The same reproduction after the fix measured 54–55 frames per 900 ms through every tested interaction.
+
+The moving, blurred cursor backdrop has been replaced with a stationary CSS gradient. This removes its mouse listener, animation-frame loop, per-movement layout reads and large moving blur layer while keeping a readable background for the hero text. The robot still starts automatically and responds to pointer movement and clicks.
+
+Validation: all 111 automated tests, ESLint and the production build passed. Thirty production-browser lifecycle checks across desktop and mobile passed, including theme buttons, mobile menus, cookie preferences, hero interactions, navigation to Pricing and back, resize, offscreen suspension, and reduced-motion changes. Mobile was also tested with 4× CPU throttling. No console warnings, JavaScript errors or horizontal overflow were observed. These are browser lab checks, not a physical-device frame-rate guarantee. Results: `docs/audits/robot-click-recovery.json`.

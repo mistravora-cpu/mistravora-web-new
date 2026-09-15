@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { smoothTowards } from "@/lib/animation";
-import { Canvas, events, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, events, useFrame, useThree, type Frameloop } from "@react-three/fiber";
 import {
   AdditiveBlending,
   CanvasTexture,
@@ -720,8 +720,8 @@ function RobotPrototype({
   );
 }
 
-function SceneLifecycle() {
-  const { gl, scene, camera, setFrameloop, invalidate, pointer, events: sceneEvents } = useThree();
+function SceneLifecycle({ onFrameloopChange }: { onFrameloopChange: (mode: Frameloop) => void }) {
+  const { gl, scene, camera, invalidate, pointer, events: sceneEvents } = useThree();
   useEffect(() => {
     let disposed = false;
     let ready = false;
@@ -732,7 +732,7 @@ function SceneLifecycle() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
       const running = ready && visible && document.visibilityState !== "hidden" && !contextLost;
-      setFrameloop(running ? (reducedMotion.matches ? "demand" : "always") : "never");
+      onFrameloopChange(running ? (reducedMotion.matches ? "demand" : "always") : "never");
       if (running) invalidate();
     };
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
@@ -802,7 +802,7 @@ function SceneLifecycle() {
       disposed = true;
       observer.disconnect();
     };
-  }, [gl, scene, camera, setFrameloop, invalidate, pointer, sceneEvents.connected]);
+  }, [gl, scene, camera, onFrameloopChange, invalidate, pointer, sceneEvents.connected]);
   return null;
 }
 
@@ -826,6 +826,9 @@ export function RobotHero({
   metalness = 0.0,
 }: RobotHeroProps = {}) {
   const [compact] = useState(() => window.matchMedia("(max-width: 767px), (pointer: coarse)").matches);
+  // Canvas reapplies its props on theme changes, navigation and resize. Keep
+  // its render mode in React so those updates cannot restore a stale "never".
+  const [frameloop, setFrameloop] = useState<Frameloop>("never");
   const entorno = {
     luzAmbiente: 0.75,
     sombraOpacidad: 0.85,
@@ -850,13 +853,13 @@ export function RobotHero({
             state.invalidate();
           },
         })}
-        frameloop="never"
+        frameloop={frameloop}
         camera={{ position: [0, 0, 4.5], fov: 42 }}
         gl={{ alpha: true, antialias: !compact, powerPreference: "high-performance" }}
         dpr={compact ? 1 : [1, 1.5]}
         performance={{ min: 0.5 }}
       >
-        <SceneLifecycle />
+        <SceneLifecycle onFrameloopChange={setFrameloop} />
         <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
         <hemisphereLight args={["#ffffff", "#888888", 0.3]} />
         <ResponsiveGroup scale={scale}>

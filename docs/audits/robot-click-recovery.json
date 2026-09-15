@@ -1,0 +1,184 @@
+{
+  "base": "http://localhost:3356",
+  "checkedAt": "2026-09-15T04:30:42.414Z",
+  "results": [
+    {
+      "mobile": false,
+      "cpuSlowdown": 1,
+      "checks": [
+        {
+          "label": "automatic startup",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 1",
+          "renderedFrames": 40,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 2",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 3",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "hero interaction",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "cookie dialog close",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "offscreen",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "offscreen resize",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "return to hero",
+          "renderedFrames": 40,
+          "expected": "running"
+        },
+        {
+          "label": "return from pricing",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme after navigation",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "reduced motion at rest",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "reduced motion after theme",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "return to normal motion",
+          "renderedFrames": 39,
+          "expected": "running"
+        }
+      ],
+      "errors": [],
+      "cursorBackdrop": "stationary, no blur filter",
+      "horizontalOverflow": false
+    },
+    {
+      "mobile": true,
+      "cpuSlowdown": 4,
+      "checks": [
+        {
+          "label": "automatic startup",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 1",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 2",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme button 3",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "mobile menu open",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "mobile menu close",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "hero interaction",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "cookie dialog close",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "offscreen",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "offscreen resize",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "return to hero",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "return from pricing",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "theme after navigation",
+          "renderedFrames": 39,
+          "expected": "running"
+        },
+        {
+          "label": "reduced motion at rest",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "reduced motion after theme",
+          "renderedFrames": 0,
+          "expected": "paused"
+        },
+        {
+          "label": "return to normal motion",
+          "renderedFrames": 39,
+          "expected": "running"
+        }
+      ],
+      "errors": [],
+      "cursorBackdrop": "stationary, no blur filter",
+      "horizontalOverflow": false
+    }
+  ],
+  "baseline": {
+    "windowMs": 900,
+    "beforeThemeClick": 54,
+    "afterThemeClick": 0,
+    "afterPointerMove": 0,
+    "afterResize": 0
+  },
+  "automatedTestsPassed": 111,
+  "lint": "passed without warnings",
+  "productionBuild": "passed (webpack)"
+}
