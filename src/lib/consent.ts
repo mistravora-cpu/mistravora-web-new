@@ -1,7 +1,7 @@
 "use client";
 
 const CONSENT_KEY = "mistravora-consent";
-export const CONSENT_VERSION = 3;
+export const CONSENT_VERSION = 4;
 
 export type ConsentChoice = {
   version: number;
@@ -77,10 +77,16 @@ export function setConsentValue(value: Consent) {
   consentListeners.forEach((l) => l());
 }
 
+// The Google tag queue expects an Arguments object for each command.
+function queueGoogleCommand() {
+  // eslint-disable-next-line prefer-rest-params -- gtag requires Arguments, not an Array.
+  window.dataLayer?.push(arguments);
+}
+
 function updateGoogleConsent(consent: Consent) {
   if (typeof window === "undefined") return;
   window.dataLayer ??= [];
-  window.gtag ??= (...args: unknown[]) => { window.dataLayer!.push(args); };
+  window.gtag ??= queueGoogleCommand;
   window.gtag("consent", "update", {
     analytics_storage: consent?.analytics ? "granted" : "denied",
     ad_storage: consent?.marketing ? "granted" : "denied",
@@ -90,7 +96,7 @@ function updateGoogleConsent(consent: Consent) {
 }
 if (typeof window !== "undefined") {
   window.dataLayer ??= [];
-  window.gtag ??= (...args: unknown[]) => { window.dataLayer!.push(args); };
+  window.gtag ??= queueGoogleCommand;
   window.gtag("consent", "default", { analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
   if (storedConsent) updateGoogleConsent(storedConsent);
 }

@@ -26,20 +26,35 @@ function consentStore(raw, storageBlocked = false) {
     },
   });
   vm.runInContext(outputText, context);
-  return context.exports;
+  return { ...context.exports, queuedCommands: context.window.dataLayer };
 }
+
+test("Google consent commands use the Arguments format required by gtag", () => {
+  const store = consentStore(null);
+  const initial = store.queuedCommands[0];
+  assert.equal(Object.prototype.toString.call(initial), "[object Arguments]");
+  assert.equal(initial[0], "consent");
+  assert.equal(initial[1], "default");
+  assert.equal(initial[2].analytics_storage, "denied");
+  store.setConsentValue({ version: 4, analytics: true, marketing: false, functional: true, timestamp: new Date().toISOString() });
+  const update = store.queuedCommands.at(-1);
+  assert.equal(Object.prototype.toString.call(update), "[object Arguments]");
+  assert.equal(update[2].analytics_storage, "granted");
+  assert.equal(update[2].ad_storage, "denied");
+});
 
 test("legacy consent requires a fresh explicit choice", () => {
   assert.equal(consentStore("accepted").getConsentSnapshot(), null);
   assert.equal(consentStore("declined").getConsentSnapshot(), null);
   assert.equal(consentStore("invalid").getConsentSnapshot(), null);
   assert.equal(consentStore('{"version":1}').getConsentSnapshot(), null);
+  assert.equal(consentStore(JSON.stringify({version: 3, analytics: true, marketing: true, functional: true, timestamp: new Date().toISOString()})).getConsentSnapshot(), null);
 });
 
 test("consent subscribers update immediately even when storage is blocked", () => {
   const store = consentStore(null, true);
   const choice = {
-    version: 3,
+    version: 4,
     analytics: true,
     marketing: false,
     functional: true,
@@ -91,7 +106,7 @@ test("every inline consent-gated marketing script has valid JavaScript syntax", 
 });
 
 test("expired or malformed consent never enables optional tracking", () => {
-  const base = { version: 3, analytics: true, marketing: true, functional: true, timestamp: new Date().toISOString() };
+  const base = { version: 4, analytics: true, marketing: true, functional: true, timestamp: new Date().toISOString() };
   assert.equal(consentStore(JSON.stringify(base)).getConsentSnapshot().analytics, true);
   for (const change of [{analytics:"yes"}, {timestamp:"invalid"}, {timestamp:"2020-01-01T00:00:00Z"}, {version:2}]) {
     assert.equal(consentStore(JSON.stringify({...base,...change})).getConsentSnapshot(), null);

@@ -1,0 +1,31 @@
+{
+  "project": "ghixwjdxzrovdmdzocxj",
+  "appliedAt": "2026-09-15T04:12:59.668Z",
+  "measurementId": "G-VXV3H2K030",
+  "optionalTrackingEnabled": true,
+  "policiesUpdated": [
+    "privacy-policy",
+    "cookie-policy"
+  ],
+  "settingsAndPoliciesReadBackVerified": true,
+  "googleAdsEnabled": false,
+  "verification": {
+    "automatedTestsPassed": 111,
+    "lint": "passed without warnings",
+    "productionBuild": "passed (webpack)",
+    "browser": {
+      "base": "http://localhost:3356",
+      "checkedAt": "2026-09-15T04:14:27.534Z",
+      "id": "G-VXV3H2K030",
+      "noTrackingBeforeConsent": true,
+      "declineRespected": true,
+      "singleSdk": true,
+      "navigationPageViews": 2,
+      "realSdkRequestsIntercepted": 4,
+      "measurementRequestsForwarded": 0,
+      "withdrawalRespected": true,
+      "adminScriptsAbsent": true,
+      "consoleErrorsAndWarnings": []
+    }
+  }
+}

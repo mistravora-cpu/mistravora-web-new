@@ -15,7 +15,7 @@ export async function MarketingTags() {
   return <>
     {m.ga4 && <>
       <ConsentGatedScript category="analytics" id="ga4-src" src={`https://www.googletagmanager.com/gtag/js?id=${m.ga4}`} />
-      <ConsentGatedScript category="analytics" id="ga4">{`window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('js',new Date());window.mistravoraAnalyticsTarget='${m.ga4}';gtag('config','${m.ga4}',{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:location.origin+location.pathname});window.dispatchEvent(new Event('mistravora:tracking-ready'));`}</ConsentGatedScript>
+      <ConsentGatedScript category="analytics" id="ga4">{`window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('js',new Date());window.mistravoraAnalyticsTarget='${m.ga4}';gtag('config','${m.ga4}',{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,cookie_expires:15552000,cookie_update:false,page_location:location.origin+location.pathname});window.dispatchEvent(new Event('mistravora:tracking-ready'));`}</ConsentGatedScript>
     </>}
     {m.ads && <>
       <ConsentGatedScript category="marketing" id="google-ads-src" src={`https://www.googletagmanager.com/gtag/js?id=${m.ads}`} />

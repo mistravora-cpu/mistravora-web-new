@@ -47,9 +47,9 @@ Business settings, homepage introduction, two existing service pages, three FAQs
 
 The homepage metadata uses editable business settings. The organization schema links published services and public social profiles. Footer links make the software, SEO and digital marketing service pages easier to find. Questions and reviews render as readable HTML. No self-serving Organization/LocalBusiness review-star schema was added.
 
-**Optional tracking remains off.** In Marketing & SEO, the owner can configure GA4 and/or Google Ads and enable them after reviewing provider settings and policy disclosures. Analytics and marketing require their respective visitor consent. Scripts only mount in the public layout. GA4 page views and lead events use page paths without query strings. Successful contact/quotation submissions can send Ads conversion events when an Ads ID and conversion label are configured and marketing consent is granted. No contact form contents, names, email addresses or phone numbers are added to these events. No paid campaign or live advertising conversion was created during testing.
+**Google Analytics `G-VXV3H2K030` was enabled on 15 September 2026.** The ID and tracking switch remain editable in Marketing & SEO. Cookie/privacy disclosures were updated in Supabase and the local policy source. Consent version 4 requests a fresh choice; the Google tag only loads after analytics consent. Analytics cookies are configured for up to 180 days with expiry renewal disabled. Google Ads remains unconfigured and inactive. Analytics and marketing require their respective visitor consent. Scripts only mount in the public layout. GA4 page views and lead events use page paths without query strings. Successful contact/quotation submissions can send Ads conversion events when an Ads ID and conversion label are configured and marketing consent is granted. No contact form contents, names, email addresses or phone numbers are added to these events. No paid campaign or live advertising conversion was created during testing.
 
-Google Analytics enhanced measurement settings and Ads conversion definitions still belong to the account owner. Before enabling tracking, check those account settings and confirm current cookie/privacy disclosures. Country-specific Google advertising endpoints may require a CSP update if Tag Assistant reports one for a target market.
+Google Analytics enhanced measurement settings and Ads conversion definitions still belong to the account owner. Review those account settings separately, including enhanced measurement and event-data retention; this installation does not change the Google Analytics account configuration. Country-specific Google advertising endpoints may require a CSP update if Tag Assistant reports one for a target market.
 
 Search visibility depends on useful original content, actual customer evidence, site performance, business citations and search indexing. Website changes cannot guarantee first place in Google or inclusion in an LLM answer. Useful next inputs are genuine reviews, approved case-study results, confirmed marketing deliverables, and verified business/search account details. Do not publish “Sri Lanka's best” as an unsupported fact.
 
@@ -59,7 +59,11 @@ Sources checked:
 - [Google: review rich results](https://developers.google.com/search/blog/2019/09/making-review-rich-results-more-helpful) — self-serving business review stars are not eligible.
 - [Google tag API](https://developers.google.com/tag-platform/gtagjs/reference) and [CSP requirements](https://developers.google.com/tag-platform/security/guides/csp) — supported conversion events and restricted provider endpoints.
 
-## Verification
+## Google Analytics activation verification — 15 September 2026
+
+111 automated tests, lint and the production build passed. A production-browser check loaded the real Google SDK but intercepted collection requests, so test events were not sent to the Analytics property. It verified no tag before consent or after declining, one SDK after analytics consent, one page-view event per tested navigation, withdrawal on reload, and no tag on the admin page even with consent. No browser errors or warnings appeared. See `docs/content/google-analytics-activation.json` for the database and local browser receipt.
+
+## Reviews release verification
 
 110 automated tests, lint and the production build passed. All 57 sitemap URLs passed the status/title/description/canonical/heading checks. Browser verification covered 40 page/width combinations plus five review-card fixture widths; it found no JavaScript errors, console warnings or automated accessibility violations. Local mobile Lighthouse scored 91 performance and 100 accessibility, best practices and SEO, with the robot starting automatically. This is a local production measurement, not a guarantee for every live connection.
 
