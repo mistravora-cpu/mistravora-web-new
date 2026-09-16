@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { getBusinessProfile } from "@/lib/business-profile";
 
 // POST responses are never cached — always fresh.
 export const dynamic = "force-dynamic";
@@ -15,6 +16,10 @@ export async function POST(request: Request) {
 
     if (typeof email !== "string" || email.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
+    }
+
+    if ((await getBusinessProfile()).newsletterEnabled === "false") {
+      return NextResponse.json({ error: "Newsletter subscriptions are currently closed." }, { status: 403 });
     }
 
     const supabase = await createClient();

@@ -2,7 +2,7 @@ import { Testimonials } from "@/components/testimonials";
 import { PageFaqs } from "@/components/page-faqs";
 import { quoteLink } from "@/lib/quote-links";
 import Image from "@/components/content-image";
-import { contentText } from "@/lib/content-preview";
+import { contentDescription, contentText } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import Link from "next/link";
@@ -22,7 +22,7 @@ async function load(params: Promise<{ section: string; slug: string }>) {
   return { section, entry, related: entries.filter(e => e.slug !== slug && (!entry.category || e.category === entry.category)).slice(0, 3) };
 }
 export async function generateMetadata({ params }: { params: Promise<{ section: string; slug: string }> }) {
-  const { section, entry } = await load(params); const metadata=pageMetadata(entry.title,contentText(entry.description,160),`/${section}/${entry.slug}`); return applySeoOverrides(entry.image ? withSocialMetadata({...metadata,openGraph:{...metadata.openGraph,images:[{url:entry.image,alt:entry.title}]},twitter:{...metadata.twitter,images:[entry.image]}}) : metadata);
+  const { section, entry } = await load(params); const metadata=pageMetadata(entry.title,contentDescription(entry.description,entry.body),`/${section}/${entry.slug}`); return applySeoOverrides(entry.image ? withSocialMetadata({...metadata,openGraph:{...metadata.openGraph,images:[{url:entry.image,alt:entry.title}]},twitter:{...metadata.twitter,images:[entry.image]}}) : metadata);
 }
 
 /** Parse policy body into structured sections with headings */

@@ -18,7 +18,7 @@ import { getHeroSection, getCaseStudies } from "@/lib/services";
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Projects",
   description:
-    "Real results from Mistravora projects — measurable outcomes, not vanity screenshots.",
+    "Explore Mistravora projects across websites, mobile apps and business software. Read the client requirements, work delivered and available project details.",
   alternates: { canonical: `${site.url}/projects` },
 });
 

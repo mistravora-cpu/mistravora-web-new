@@ -107,11 +107,9 @@ Mistravora-web/
 │   │   ├── chat-widget*.tsx       # Floating chat widget
 │   │   ├── clients-marquee.tsx    # Client logo marquee
 │   │   ├── faq.tsx                # FAQ accordion
-│   │   ├── gradient-orbs.tsx      # Interactive gradient orbs
 │   │   ├── json-ld.tsx            # Structured data injector
 │   │   ├── newsletter-signup.tsx  # Newsletter form
 │   │   ├── process.tsx            # 4-step process timeline
-│   │   ├── scroll-indicator.tsx   # Animated scroll-down hint
 │   │   ├── scroll-progress.tsx    # Reading progress bar
 │   │   ├── scroll-reveal.tsx      # IntersectionObserver animations
 │   │   ├── section-divider.tsx    # SVG wave divider
@@ -119,7 +117,7 @@ Mistravora-web/
 │   │   ├── site-header.tsx        # Sticky nav header
 │   │   ├── stats-counter.tsx      # Animated number counters
 │   │   ├── tech-stack.tsx         # Technology grid
-│   │   └── testimonials.tsx       # Dual-row marquee testimonials
+│   │   └── testimonials.tsx       # Approved customer review cards
 │   ├── lib/
 │   │   ├── auth.ts                # requireAdmin() helper
 │   │   ├── env.ts                 # Zod-validated env vars + serverEnv
@@ -127,8 +125,6 @@ Mistravora-web/
 │   │   ├── rate-limit.ts          # In-memory rate limiter
 │   │   ├── services.ts            # All Supabase data queries
 │   │   ├── site.ts                # Site config, nav, static fallbacks
-│   │   ├── social-proof.ts        # Client list fallback
-│   │   ├── technologies.ts        # Tech stack categories
 │   │   ├── track-event.ts         # Analytics event tracking
 │   │   ├── types.ts               # All TypeScript types
 │   │   └── utils.ts               # cn() class merge utility

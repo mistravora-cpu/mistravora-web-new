@@ -14,7 +14,7 @@ import { getHeroSection, getPublishedPosts } from "@/lib/services";
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Blog",
   description:
-    "Insights on web performance, software, and digital growth from the Mistravora team.",
+    "Explore Mistravora's published articles on software, websites, performance and digital marketing, or ask our team for guidance on your next digital project.",
   alternates: {
     canonical: `${site.url}/blog`,
     types: { "application/rss+xml": "/blog/rss.xml" },
@@ -85,12 +85,13 @@ export default async function BlogPage() {
         <ScrollReveal animation="fade-up" className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-card p-12 text-center">
           <h2 className="text-lg font-semibold tracking-tight">No posts yet</h2>
           <p className="text-sm leading-6 text-muted-foreground">
-            Our first articles are being written. Subscribe or check back soon —
-            or tell us what you&apos;d like to read about.
+            No blog articles are published yet. Explore our current research and
+            resources, or tell us what you&apos;d like to read about.
           </p>
           <Button asChild variant="outline">
             <Link href="/contact">Suggest a topic</Link>
           </Button>
+          <Link href="/insights" className="text-sm font-medium text-primary underline">Browse published insights</Link>
         </ScrollReveal>
       )}
     </section>

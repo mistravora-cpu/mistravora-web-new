@@ -19,7 +19,7 @@ import { getIcon as getMappedIcon } from "@/lib/icon-map";
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Solutions",
   description:
-    "Custom web platforms, business software, e-commerce, and AI-powered features built by Mistravora.",
+    "Explore Mistravora's web platforms, business software, e-commerce and automation solutions. Discuss features and integrations for your project requirements.",
   alternates: { canonical: `${site.url}/solutions` },
 });
 

@@ -66,3 +66,11 @@ export function primaryContentImage(
 export function firstContent(...values: (string | null | undefined)[]): string {
   return values.find((value) => value?.trim()) ?? "";
 }
+
+/** Prefer a useful summary; use existing page copy when the summary is sparse. */
+export function contentDescription(summary?: string | null, body?: string | null): string {
+  const short = contentText(summary, 160);
+  if (short.length >= 100) return short;
+  const detail = contentText(body, 160);
+  return detail.length > short.length ? detail : short;
+}

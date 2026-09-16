@@ -1,7 +1,7 @@
 import { Testimonials } from "@/components/testimonials";
 import { PageFaqs } from "@/components/page-faqs";
 import { estimatePath } from "@/lib/quote-links";
-import { contentText, firstContent } from "@/lib/content-preview";
+import { contentDescription, contentText, firstContent } from "@/lib/content-preview";
 import { isPublicMediaUrl } from "@/lib/media-url";
 import { ArticleBody } from "@/components/article-body";
 import { jsonLd, withSocialMetadata } from "@/lib/seo";
@@ -31,21 +31,22 @@ export async function generateMetadata({
   if (!cs) return { title: "Project not found" };
 
   const url = `${site.url}/projects/${cs.slug}`;
+  const description = contentDescription(cs.outcome, firstContent(cs.problem_statement, cs.body)) || undefined;
   return applySeoOverrides(withSocialMetadata({
     title: cs.title,
-    description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
+    description,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title: cs.title,
-      description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
+      description,
       images: cs.cover_image ? [{ url: cs.cover_image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: cs.title,
-      description: contentText(firstContent(cs.outcome,cs.problem_statement),160) || undefined,
+      description,
       images: cs.cover_image ? [cs.cover_image] : undefined,
     },
   }));

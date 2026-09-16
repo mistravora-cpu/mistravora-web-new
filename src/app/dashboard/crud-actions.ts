@@ -14,6 +14,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { publicBusinessKeys } from "@/lib/business-profile-data";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { captureIndexNowPaths, queueIndexNow } from "@/lib/indexnow";
 
 // Expire shared CMS reads immediately after writes. Root layout invalidation
 // covers all public routes, including dynamic detail pages and new routes.
@@ -169,6 +170,7 @@ export async function upsertRow(
     if (result.changed) {
       revalidatePath("/dashboard");
       revalidatePublicPaths();
+      queueIndexNow(table);
     }
     return result;
   }
@@ -248,6 +250,9 @@ export async function upsertRow(
   if (table === "email_campaigns" && !["draft", "scheduled", "paused"].includes(String(parentData.status))) return { error: "Invalid campaign status" };
   if (table === "email_campaigns" && parentData.status === "scheduled" && (!parentData.scheduled_at || !Number.isFinite(Date.parse(String(parentData.scheduled_at))))) return { error: "Provide a valid schedule before scheduling delivery." };
   let parentId: string | undefined = id;
+  // Read the old public URL before a rename, unpublish or delete. Indexing
+  // service failures must never prevent an authorized content save.
+  const previousPaths = await captureIndexNowPaths(table, id).catch(() => null);
 
   // Save parent row
   if (id) {
@@ -303,6 +308,7 @@ export async function upsertRow(
 
   revalidatePath("/dashboard");
   revalidatePublicPaths();
+  queueIndexNow(table, parentId, previousPaths);
   return { error: null };
 }
 
@@ -311,17 +317,20 @@ export async function deleteRow(table: string, id: string) {
   if (!isAllowedTable(table)) return { error: "Invalid table" };
 
   const supabase = await createClient();
+  const previousPaths = await captureIndexNowPaths(table, id).catch(() => null);
   const { error } = await supabase.from(table).delete().eq("id", id);
   if (error) return { error: error.message };
   if (table === "testimonials") {
     const metadata = await supabase.from("settings").delete().eq("key", reviewKey(id));
     revalidatePath("/dashboard");
     revalidatePublicPaths();
+    queueIndexNow(table);
     if (metadata.error) return { error: "Review deleted. Its unused source metadata could not be removed." };
     return { error: null };
   }
   revalidatePath("/dashboard");
   revalidatePublicPaths();
+  queueIndexNow(table, undefined, previousPaths);
   return { error: null };
 }
 
@@ -438,5 +447,6 @@ export async function saveSettings(data: Record<string, string>) {
   if (firstError?.error) return { error: firstError.error.message };
   revalidatePath("/dashboard");
   revalidatePublicPaths();
+  queueIndexNow("settings");
   return { error: null };
 }

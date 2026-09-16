@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowRight, ArrowUpRight, Home, Search, Compass, Microscope, Layers, MessageCircle } from "lucide-react";
 
 const destinations = [
@@ -7,10 +8,15 @@ const destinations = [
   { href: "/contact", title: "Talk to our team", description: "Let’s help you find the next step.", icon: MessageCircle },
 ];
 
+export const metadata: Metadata = {
+  title: "Page not found",
+  description: "This Mistravora page could not be found. Search our services, projects and articles, or contact the team to find the information you need.",
+  robots: { index: false, follow: true },
+};
+
 export default function NotFound() {
   return (
     <section className="relative isolate flex flex-1 flex-col items-center overflow-hidden px-4 py-16 sm:px-8 sm:py-24" aria-labelledby="missing-title">
-      <meta name="robots" content="noindex, follow" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_20%,rgba(0,153,255,0.12),transparent_65%)]" />
       <div aria-hidden className="pointer-events-none absolute top-12 -z-10 h-72 w-72 rounded-full border border-primary/15 sm:h-96 sm:w-96" />
       <div className="flex w-full max-w-3xl flex-col items-center text-center">

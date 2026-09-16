@@ -19,6 +19,7 @@ export function NewsletterSignup({
   compact?: boolean;
 }) {
   const profile = useBusinessProfile();
+  const emailId = React.useId();
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
   const alreadySubscribed = React.useSyncExternalStore(
@@ -40,6 +41,7 @@ export function NewsletterSignup({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), privacyConsent: "yes" }),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (!res.ok) throw new Error("Failed");
@@ -55,7 +57,7 @@ export function NewsletterSignup({
 
   if (alreadySubscribed || status === "success") {
     return (
-      <div className={`flex items-center gap-4 ${compact ? "" : "gradient-border-card rounded-2xl p-6 sm:p-8"}`}>
+      <div role="status" className={`flex items-center gap-4 ${compact ? "" : "gradient-border-card rounded-2xl p-6 sm:p-8"}`}>
         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/10">
           <CheckCircle2 className="h-6 w-6 text-primary" />
         </span>
@@ -86,21 +88,23 @@ export function NewsletterSignup({
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">Newsletter</span>
             </div>
-            <h3 className="text-lg font-bold tracking-tight">{title}</h3>
+            <h2 className="text-lg font-bold tracking-tight">{title}</h2>
             <p className="text-sm leading-6 text-muted-foreground">{description}</p>
           </div>
         </div>
 
         {/* Right — form */}
         <div className="flex w-full flex-col gap-3 lg:max-w-md">
-          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
-            <label htmlFor="newsletter-email" className="sr-only">
+          <form onSubmit={handleSubmit} aria-busy={status === "loading"} data-form-name="newsletter" className="flex w-full flex-col gap-3">
+            <label htmlFor={emailId} className="sr-only">
               Email address
             </label>
             <input
-              id="newsletter-email"
+              id={emailId}
+              name="email"
               type="email"
               required
+              maxLength={200}
               placeholder="you@business.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -110,7 +114,7 @@ export function NewsletterSignup({
             />
             <Button type="submit" disabled={status === "loading"} className="shrink-0 ripple-click">
               {status === "loading" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <><Loader2 aria-hidden className="h-4 w-4 animate-spin" />Subscribing…</>
               ) : (
                 <>
                   Subscribe

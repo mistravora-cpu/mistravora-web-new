@@ -24,6 +24,7 @@ function load(file, overrides = {}) {
     },
     Buffer,
     URL,
+    AbortSignal,
     setTimeout,
     clearTimeout,
   });
@@ -43,6 +44,25 @@ test("unsubscribe signatures reject tampering and unrelated subscriber IDs", () 
   );
   assert.equal(api.verifyUnsubscribeToken(token + ".extra"), null);
   assert.equal(api.verifyUnsubscribeToken("invalid"), null);
+});
+test("malformed author profile URLs cannot crash public detail pages", async () => {
+  const query = {
+    select: () => query,
+    order: () => query,
+    abortSignal: async () => ({ error: null, data: [
+      { slug: "first", name: "First", linkedin: "https://[", github: "https://github.com/example" },
+      { slug: "second", name: "Second", linkedin: "https://user:password@example.com", github: "javascript:alert(1)" },
+    ] }),
+  };
+  const api = load("src/lib/content.ts", {
+    "next/cache": { unstable_cache: (fn) => fn },
+    "@/lib/services": {},
+    "@/lib/supabase/public": { createPublicClient: () => ({ from: () => query }) },
+  });
+  const entries = await api.getCollection("authors");
+  assert.deepEqual([...entries[0].links], ["https://github.com/example"]);
+  assert.deepEqual([...entries[1].links], []);
+  for (const entry of entries) for (const link of entry.links) assert.doesNotThrow(() => new URL(link));
 });
 test("JSON-LD cannot terminate its script element", () => {
   const api = load("src/lib/seo.ts", {

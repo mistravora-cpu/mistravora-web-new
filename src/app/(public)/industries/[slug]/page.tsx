@@ -1,7 +1,7 @@
 import { Testimonials } from "@/components/testimonials";
 import { PageFaqs } from "@/components/page-faqs";
 import { estimatePath } from "@/lib/quote-links";
-import { contentText, firstContent } from "@/lib/content-preview";
+import { contentDescription } from "@/lib/content-preview";
 import { ArticleBody } from "@/components/article-body";
 import { withSocialMetadata } from "@/lib/seo";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -43,13 +43,13 @@ export async function generateMetadata({
   const url = `${site.url}/industries/${industry.slug}`;
   return applySeoOverrides(withSocialMetadata({
     title: `${industry.title} — Software Solutions`,
-    description: contentText(firstContent(industry.summary,industry.description),160) || undefined,
+    description: contentDescription(industry.summary,industry.description) || undefined,
     alternates: { canonical: url },
     openGraph: {
       type: "website",
       url,
       title: `${industry.title} — Software Solutions | Mistravora`,
-      description: contentText(firstContent(industry.summary,industry.description),160) || undefined,
+      description: contentDescription(industry.summary,industry.description) || undefined,
       images: industry.image ? [{ url: industry.image }] : undefined,
     },
   }));

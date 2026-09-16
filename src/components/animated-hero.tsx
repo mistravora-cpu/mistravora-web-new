@@ -153,7 +153,7 @@ export function AnimatedHero({
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           {primaryText && primaryLink !== "#form" ? (
             <Button size="lg" asChild className="w-full sm:w-auto">
-              {primaryLink.startsWith("/") ? (
+              {primaryLink.startsWith("/") || primaryLink.startsWith("#") ? (
                 <Link href={primaryLink}>
                   {primaryText}
                   <ArrowRight aria-hidden className="h-4 w-4" />
@@ -173,7 +173,7 @@ export function AnimatedHero({
               asChild
               className="w-full sm:w-auto"
             >
-              {secondaryLink.startsWith("/") ? (
+              {secondaryLink.startsWith("/") || secondaryLink.startsWith("#") ? (
                 <Link href={secondaryLink}>{secondaryText}</Link>
               ) : (
                 <a href={secondaryLink} target="_blank" rel="noopener noreferrer">

@@ -26,18 +26,24 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: "Post not found" };
+  if (!post) return {
+    title: "Article not found",
+    description: "This Mistravora article is unavailable. Browse our published insights about software, websites and digital marketing, or contact us for help.",
+    robots: { index: false, follow: true },
+  };
 
   const url = `${site.url}/blog/${post.slug}`;
+  const description = contentText(post.excerpt, 160) || contentText(post.body, 160)
+    || `Read ${post.title} on Mistravora Insights. Explore practical perspectives on software, business technology and digital services from our team.`;
   return applySeoOverrides(withSocialMetadata({
     title: post.title,
-    description: post.excerpt ?? undefined,
+    description,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title: post.title,
-      description: post.excerpt ?? undefined,
+      description,
       images: post.cover_image ? [{ url: post.cover_image }] : undefined,
       publishedTime: post.published_at ?? undefined,
       modifiedTime: post.updated_at,
@@ -46,7 +52,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt ?? undefined,
+      description,
       images: post.cover_image ? [post.cover_image] : undefined,
     },
   }));
@@ -123,7 +129,7 @@ export default async function BlogPostPage({
 
           {post.excerpt && (
             <p className="mt-8 text-lg leading-8 text-muted-foreground">
-              {post.excerpt}
+              {contentText(post.excerpt)}
             </p>
           )}
 

@@ -16,7 +16,7 @@ const RobotHero = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="flex h-[75vh] min-h-[560px] w-full items-center justify-center"
+        className="flex h-full w-full items-center justify-center"
         aria-hidden
       >
         <div className="h-10 w-10 animate-pulse rounded-full border-2 border-primary/30 border-t-primary" />
@@ -61,10 +61,14 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
     <section
       ref={sectionRef}
       aria-label="Mistravora hero — custom software and digital products"
-      className="relative flex min-h-[max(560px,75svh)] w-full flex-col justify-end overflow-hidden"
+      className="relative isolate grid w-full items-center gap-6 overflow-hidden site-gutter pb-12 pt-4 sm:gap-8 sm:py-12 lg:min-h-[min(700px,80svh)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-10"
     >
       {/* The shared hero event source keeps movement working over the text. */}
-      <div className="absolute inset-0 z-0">
+      <div className="relative h-[260px] min-w-0 w-full sm:h-[340px] lg:order-2 lg:h-[clamp(380px,55svh,560px)]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(0,153,190,0.12),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(0,180,210,0.18),transparent_70%)]"
+        />
         {isVisible ? (
           <RobotHero eventSource={sectionRef} />
         ) : (
@@ -77,18 +81,8 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         )}
       </div>
 
-      {/* A stationary fade keeps text readable without a flashing cursor trail. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-[5]"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent 25%, color-mix(in oklab, var(--background) 65%, transparent) 65%, var(--background) 100%)",
-        }}
-      />
-
       {/* Company information and native links share the hero's pointer events. */}
-      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-4 site-gutter pb-12 pt-40 text-center sm:gap-5 sm:pb-16">
+      <div className="relative flex min-w-0 flex-col items-center gap-4 text-center sm:gap-5 lg:order-1 lg:items-start lg:py-8 lg:text-left">
         {/* Badge */}
         <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-border bg-card/95 px-4 py-1.5 text-xs font-medium text-foreground/90 backdrop-blur-sm transition-colors hover:border-primary/30">
           <Sparkles aria-hidden className="h-3.5 w-3.5 text-primary" />
@@ -96,17 +90,17 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         </span>
 
         {/* H1 — primary SEO headline */}
-        <h1 className="max-w-4xl text-3xl font-bold leading-[1.15] tracking-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)] sm:text-4xl lg:text-5xl">
+        <h1 className="max-w-3xl text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl xl:text-5xl">
           {hero?.headline ?? profile.headline}{hero?.highlighted_text && <span className="text-primary"> {hero.highlighted_text}</span>}
         </h1>
 
         {/* Subheadline */}
-        <div className="pointer-events-auto max-w-2xl text-sm leading-7 text-foreground/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7">
+        <div className="max-w-2xl text-sm leading-7 text-foreground/85 sm:text-base sm:leading-7">
           {description ?? hero?.description ?? profile.intro}
         </div>
 
         {/* CTAs */}
-        <div className="pointer-events-auto flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
           <Button size="lg" asChild className="w-full sm:w-auto">
             <Link prefetch={false} href={resolveQuoteLink(hero?.primary_button_link || estimatePath, hero?.primary_button_text || "Start your project")}>
               {hero?.primary_button_text || "Start your project"}
@@ -127,11 +121,11 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         </div>
 
         {/* Trust signals */}
-        <div className="mt-1 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-foreground/75 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] sm:text-sm">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            {profile.showHours !== "false" ? profile.availability : ""}
-          </span>
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm lg:justify-start">
+          {profile.showHours !== "false" && profile.availability && <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            {profile.availability}
+          </span>}
           <span className="inline-flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             {profile.response}
@@ -143,11 +137,6 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         </div>
       </div>
 
-      {/* Gradient fade — merges hero into the next section seamlessly */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] h-24 bg-gradient-to-b from-transparent to-background"
-      />
     </section>
   );
 }

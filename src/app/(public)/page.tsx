@@ -29,10 +29,8 @@ import { Process } from "@/components/process";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { RobotHeroClient } from "@/components/hero/RobotHeroClient";
 import { StatsCounter } from "@/components/stats-counter";
-import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ClientsMarquee } from "@/components/clients-marquee";
 import { getStatistics, getHeroSection } from "@/lib/services";
-import { getIcon as getSolutionIcon } from "@/lib/icon-map";
 
 const fallbackIcons = [
   Globe,
@@ -50,7 +48,6 @@ export default async function Home() {
       {/* Keep the CMS headline in the initial server-rendered content. */}
       <RobotHeroClient hero={hero} description={hero?.description ? <ArticleBody body={hero.description} title="Introduction" /> : undefined} />
       <HeroMedia page="/" />
-      <ScrollIndicator />
 
       {/* Stats counter — animated numbers that count up on scroll */}
       <Suspense fallback={null}>
@@ -127,8 +124,6 @@ async function StatsSection() {
 
 async function SolutionsSection() {
   const services = await getCollection("services");
-  const solutions = services.map(service => ({ id: service.slug, slug: service.slug, title: service.title,
-    short_description: service.description, summary: service.description, image:service.image, icon: null }));
 
   return (
     <section data-cv="auto" className="relative w-full overflow-hidden site-gutter pb-20 pt-8">
@@ -142,11 +137,11 @@ async function SolutionsSection() {
       </ScrollReveal>
 
       <div className="relative mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {solutions.map((solution, index) => {
-          const Icon = solution.icon ? getSolutionIcon(solution.icon) : fallbackIcons[index % fallbackIcons.length];
+        {services.map((service, index) => {
+          const Icon = fallbackIcons[index % fallbackIcons.length];
           return (
             <ScrollReveal
-              key={solution.id}
+              key={service.slug}
               animation="fade-up"
               delay={index * 60}
               className={`group interactive-card hover:-translate-y-0.5 p-6 ${
@@ -154,13 +149,13 @@ async function SolutionsSection() {
               }`}
             >
               <article>
-              <CatalogImage src={solution.image} title={solution.title} />
+              <CatalogImage src={service.image} title={service.title} />
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/10 transition-transform duration-300 group-hover:scale-105">
                 <Icon aria-hidden className="h-5 w-5 text-primary" />
               </span>
-              <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${solution.slug}`} className="transition-colors group-hover:text-primary">{solution.title}</Link></h3>
+              <h3 className="mt-4 font-semibold tracking-tight"><Link href={`/services/${service.slug}`} className="transition-colors group-hover:text-primary">{service.title}</Link></h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {contentText(solution.short_description ?? solution.summary,200)}
+                {contentText(service.description,200)}
               </p>
               </article>
             </ScrollReveal>

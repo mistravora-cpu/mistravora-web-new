@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { getMarketingSettings } from "@/lib/services";
 import { MarketingEditor } from "./marketing-editor";
 import { marketingKeys } from "./marketing-keys";
+import { requireAdmin } from "@/lib/auth";
+import { getIndexNowStatus } from "@/lib/indexnow";
+import { IndexNowPanel } from "./indexnow-panel";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Marketing & SEO",
@@ -9,7 +13,14 @@ export const metadata: Metadata = {
 };
 
 export default async function MarketingAdminPage() {
-  const m = await getMarketingSettings();
+  if (!(await requireAdmin())) redirect("/admin");
+  const [m, status] = await Promise.all([
+    getMarketingSettings(),
+    getIndexNowStatus().then(initial => ({ initial, error: "" })).catch(() => ({
+      initial: null,
+      error: "Submission history could not be loaded. Check the database connection and reload this page.",
+    })),
+  ]);
   const initialData: Record<string, string> = {};
   for (const key of marketingKeys) {
     initialData[key] = (m as Record<string, string>)[key] || (key === "enable_optional_tracking" ? "false" : "");
@@ -25,6 +36,7 @@ export default async function MarketingAdminPage() {
         </p>
       </div>
       <MarketingEditor initialData={initialData} />
+      <IndexNowPanel initial={status.initial} statusError={status.error} production={process.env.VERCEL_ENV === "production"} />
     </div>
   );
 }

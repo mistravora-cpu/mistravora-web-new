@@ -27,7 +27,7 @@ export async function applySeoOverrides(base: Metadata): Promise<Metadata> {
       : path === "/about"
         ? `Meet the ${profile.name} team. Founded in ${profile.founded} by ${profile.founder} and co-founded by ${profile.cofounder}. ${profile.industries}`
         : path === "/industries"
-          ? `${profile.name}: ${profile.industries} ${profile.coverage}`
+          ? `Explore software, websites and digital marketing from ${profile.name}. ${profile.industries} ${profile.coverage}`
           : profile.intro;
     base = { ...base, description, ...(path === "/" ? { title: profile.seoTitle || `${profile.name} — ${profile.headline}` } : {}), openGraph: { ...base.openGraph, description, ...(path === "/" ? { title: profile.headline } : {}) }, twitter: { ...base.twitter, description, ...(path === "/" ? { title: profile.headline } : {}) } };
   }

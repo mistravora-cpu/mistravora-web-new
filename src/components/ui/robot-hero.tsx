@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { smoothTowards } from "@/lib/animation";
+import { robotFrame, smoothTowards } from "@/lib/animation";
 import { Canvas, events, useFrame, useThree, type Frameloop } from "@react-three/fiber";
 import {
   AdditiveBlending,
@@ -48,7 +48,7 @@ function ResponsiveGroup({
   scale?: number;
 }) {
   const { viewport } = useThree();
-  const s = Math.min(1.7, viewport.width / 2.5) * scale;
+  const s = robotFrame(viewport.width, viewport.height, scale).scale;
   return <group scale={s}>{children}</group>;
 }
 
@@ -355,6 +355,7 @@ function RobotEye({
 
 function RobotPrototype({
   compact = false,
+  scale = 1.2,
   neckParams = {
     baseR: 0.25,
     baseH: -0.01,
@@ -375,6 +376,7 @@ function RobotPrototype({
   metalness = 0.0,
 }: {
   compact?: boolean;
+  scale?: number;
   neckParams?: Record<string, number>;
   bodyParams?: Record<string, number>;
   color?: string;
@@ -390,12 +392,7 @@ function RobotPrototype({
   const { viewport, invalidate } = useThree();
   const idleTime = useRef(0);
 
-  // Compute the actual ResponsiveGroup scale so we can account for the
-  // robot's real size when clamping movement to the viewport bounds.
-  const robotScale = Math.min(1.7, viewport.width / 2.5) * 1.2;
-  // Robot approximate half-extents in local space (body + head + ears)
-  const robotHalfWidth = 0.42 * robotScale;
-  const robotHalfHeight = 0.85 * robotScale;
+  const frame = robotFrame(viewport.width, viewport.height, scale);
 
   const textures = useMemo(() => {
     if (typeof document === "undefined") return { colorMap: null, bumpMap: null };
@@ -469,11 +466,6 @@ function RobotPrototype({
     headLookY: 1.8,
   };
 
-  // Base Y offset — robot sits below center on desktop so there's room to
-  // move up toward the navbar (without reaching it) and down toward the
-  // text (without overlapping it).
-  const basePosY = -0.35;
-
   useFrame((state, delta) => {
     if (!bodyRef.current || !headRef.current) return;
 
@@ -485,7 +477,7 @@ function RobotPrototype({
 
     // --- X-axis movement ---
     // Clamp so the robot's edges stay within the viewport width.
-    const xLimit = Math.max(0, state.viewport.width / 2 - robotHalfWidth);
+    const xLimit = frame.xLimit;
     const targetPosX = MathUtils.clamp(tx * xLimit * 0.6, -xLimit, xLimit);
     bodyRef.current.position.x = smoothTowards(
       bodyRef.current.position.x,
@@ -495,17 +487,13 @@ function RobotPrototype({
     );
 
     // --- Y-axis movement ---
-    // Clamp so the robot's top edge never reaches the navbar (upper bound)
-    // and the robot's bottom edge never goes behind the text (lower bound).
-    // Movement is 70% of the available range so the robot clearly moves
-    // vertically but always stays fully within the frame.
-    const yUpperLimit = Math.max(0, state.viewport.height / 2 - robotHalfHeight - 0.3);
-    const yLowerLimit = Math.max(0, state.viewport.height / 2 - robotHalfHeight - 0.1);
-    const yRange = Math.min(yUpperLimit, yLowerLimit);
+    // Convert the viewport to group-local coordinates before clamping. Mixing
+    // world and local units can push a larger robot beyond the canvas edges.
+    const yRange = Math.max(0, Math.min(frame.upperY - frame.centerY, frame.centerY - frame.lowerY));
     const targetPosY = MathUtils.clamp(
-      basePosY + ty * yRange * 0.7 + Math.sin(idleTime.current * 1.4) * 0.025,
-      basePosY - yRange,
-      basePosY + yRange,
+      frame.centerY + ty * yRange * 0.7 + Math.sin(idleTime.current * 1.4) * 0.025,
+      frame.lowerY,
+      frame.upperY,
     );
     bodyRef.current.position.y = smoothTowards(
       bodyRef.current.position.y,
@@ -622,7 +610,7 @@ function RobotPrototype({
   return (
     <group
       ref={bodyRef}
-      position={[0, -0.35, 0]}
+      position={[0, frame.centerY, 0]}
       onPointerDown={handlePointerDown}
     >
       <mesh>
@@ -829,10 +817,6 @@ export function RobotHero({
   // Canvas reapplies its props on theme changes, navigation and resize. Keep
   // its render mode in React so those updates cannot restore a stale "never".
   const [frameloop, setFrameloop] = useState<Frameloop>("never");
-  const entorno = {
-    luzAmbiente: 0.75,
-    sombraOpacidad: 0.85,
-  };
 
   return (
     <div className="relative w-full h-full">
@@ -860,21 +844,13 @@ export function RobotHero({
         performance={{ min: 0.5 }}
       >
         <SceneLifecycle onFrameloopChange={setFrameloop} />
-        <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
+        <ambientLight intensity={0.75} color="#ffffff" />
         <hemisphereLight args={["#ffffff", "#888888", 0.3]} />
+        <directionalLight position={[3, 4, 5]} intensity={1.6} color="#e2f5ff" />
         <ResponsiveGroup scale={scale}>
-          {/* Simple shadow plane. */}
-          <mesh position={[0, -1.14, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[1.5, 32]} />
-            <meshBasicMaterial
-              color="#000000"
-              transparent
-              opacity={entorno.sombraOpacidad * 0.4}
-              depthWrite={false}
-            />
-          </mesh>
           <RobotPrototype
             compact={compact}
+            scale={scale}
             neckParams={{
               baseR: 0.215,
               baseH: -0.05,

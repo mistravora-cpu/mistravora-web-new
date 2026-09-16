@@ -1,4 +1,5 @@
 import { firstContent, contentText, primaryContentImage } from "./content-preview";
+import { isPublicMediaUrl } from "./media-url";
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
 import {
@@ -23,26 +24,26 @@ export const collections = {
   glossary: {
     title: "Technology glossary",
     description:
-      "Plain-language explanations of software, AI, and business technology.",
+      "Browse Mistravora's published explanations of software, AI and business technology terms, with practical context for planning and discussing digital projects.",
   },
   "knowledge-base": {
     title: "Guides & knowledge base",
     description:
-      "Practical guidance for planning, building, and maintaining your software.",
+      "Browse Mistravora's published guides to planning, building and maintaining software, or contact our team with questions about your digital project requirements.",
   },
   authors: {
     title: "Our authors",
     description:
-      "Meet the people behind Mistravora’s insights and technical guides.",
+      "Meet the authors behind Mistravora's published insights and technical guides. Explore their profiles, areas of expertise and available public professional links.",
   },
   resources: {
     title: "Resources",
     description:
-      "Download planning resources, guides, and practical tools for your next project.",
+      "Find Mistravora's available planning resources and guides for software and digital projects, or ask our team for help preparing your requirements and next steps.",
   },
   policies: {
     title: "Policies",
-    description: "Read Mistravora’s published policies and service terms.",
+    description: "Read Mistravora's privacy, cookie, service and refund policies. Find information about personal data, website use, project terms and contacting our team.",
   },
 } as const;
 export type Collection = keyof typeof collections;
@@ -171,7 +172,7 @@ export const getCollection = unstable_cache(
       published: p.published_at,
       category: p.category,
       links: [p.linkedin, p.github].filter(
-        (link): link is string => !!link && /^https:\/\//.test(link),
+        (link): link is string => !!link && isPublicMediaUrl(link),
       ),
       features: p.service_features?.map((f: { feature: string }) => f.feature),
       technologies: p.service_technologies?.map(

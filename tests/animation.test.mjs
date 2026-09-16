@@ -7,7 +7,7 @@ const context = { exports: {} };
 vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/animation.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS },
 }).outputText, context);
-const { smoothTowards } = context.exports;
+const { smoothTowards, robotFrame } = context.exports;
 
 test('robot movement converges without overshoot at low frame rates', () => {
   for (const speed of [12, 30, 40]) {
@@ -24,4 +24,17 @@ test('robot smoothing preserves its 60 Hz response across frame rates', () => {
   const oneFrame = smoothTowards(0, 1, 12, 1 / 30);
   const twoFrames = smoothTowards(smoothTowards(0, 1, 12, 1 / 60), 1, 12, 1 / 60);
   assert.ok(Math.abs(oneFrame - twoFrames) < 1e-12);
+});
+
+test('robot bounds stay inside narrow, wide and short canvases after group scaling', () => {
+  // World viewport for the actual 42-degree camera at z=4.5.
+  const height = 2 * 4.5 * Math.tan(42 * Math.PI / 360);
+  for (const [pxWidth, pxHeight] of [[288,260], [358,260], [736,340], [470,380], [640,495], [1600,560]]) {
+    const width = height * pxWidth / pxHeight;
+    const f = robotFrame(width, height);
+    assert.ok(f.lowerY <= f.centerY && f.centerY <= f.upperY);
+    assert.ok((f.xLimit + 0.65) * f.scale <= width / 2 + 1e-10);
+    assert.ok((f.upperY + 1.05) * f.scale <= height / 2 + 1e-10);
+    assert.ok((f.lowerY - 0.65) * f.scale >= -height / 2 - 1e-10);
+  }
 });

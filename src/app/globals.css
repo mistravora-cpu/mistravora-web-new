@@ -438,17 +438,6 @@ body {
   }
 }
 
-@keyframes scroll-down {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(12px);
-    opacity: 0;
-  }
-}
-
 @utility animate-flip-in {
   animation: flip-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -493,10 +482,6 @@ body {
 @utility animate-border-flow {
   background-size: 200% 200%;
   animation: border-flow 3s linear infinite;
-}
-
-@utility animate-scroll-down {
-  animation: scroll-down 1.5s ease-in-out infinite;
 }
 
 @utility text-shimmer {

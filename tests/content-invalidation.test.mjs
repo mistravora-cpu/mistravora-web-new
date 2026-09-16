@@ -12,6 +12,7 @@ function loadReviewModule(file) {
 }
 function load({authorized = true, fail = false} = {}) {
   const calls = [];
+  const notifications = [];
   const writes = [];
   const result = {error: fail ? {message: 'Write failed'} : null, data: {id: 'saved'}};
   const db = {auth: {getUser: async () => ({data: {user: authorized ? {id: 'admin'} : null}})}, from(table) {
@@ -21,6 +22,10 @@ function load({authorized = true, fail = false} = {}) {
     return query;
   }};
   const context = {exports: {}, require: name => {
+    if(name === '@/lib/indexnow') return {
+      captureIndexNowPaths: async () => ['/policies/previous-slug'],
+      queueIndexNow: (...args) => notifications.push(args),
+    };
     if(name === '@/lib/review-save') return loadReviewModule('src/lib/review-save.ts');
     if(name === '@/lib/reviews') return loadReviewModule('src/lib/reviews.ts');
     if(name === '@/lib/requirements/notification-config') return {quoteRecipientsSchema:{parse:v=>v}};
@@ -36,16 +41,20 @@ function load({authorized = true, fail = false} = {}) {
     return require(name);
   }};
   vm.runInNewContext(ts.transpileModule(readFileSync('src/app/dashboard/crud-actions.ts','utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020}}).outputText, context);
-  return {actions: context.exports, calls, writes};
+  return {actions: context.exports, calls, writes, notifications};
 }
 for (const action of ['upsertRow', 'deleteRow', 'saveSettings']) {
   const args = action === 'upsertRow' ? ['policies', {title: 'Updated'}, 'existing'] : action === 'deleteRow' ? ['policies', 'existing'] : [{site_name: 'Mistravora'}];
   test(`${action} expires shared content only after an authorized successful write`, async () => {
     for(const options of [{}, {authorized:false}, {fail:true}]) {
-      const {actions,calls} = load(options);
+      const {actions,calls,notifications} = load(options);
       const result = await actions[action](...args);
-      if(options.authorized === false || options.fail) {assert.ok(result.error); assert.equal(calls.length,0);}
-      else {assert.equal(result.error,null); assert.ok(calls.some(c=>c[0]==='tag' && c[1]==='public-data')); assert.ok(calls.some(c=>c[0]==='path' && c[1]==='/' && c[2]==='layout'));}
+      if(options.authorized === false || options.fail) {assert.ok(result.error); assert.equal(calls.length,0); assert.equal(notifications.length,0);}
+      else {
+        assert.equal(result.error,null); assert.ok(calls.some(c=>c[0]==='tag' && c[1]==='public-data')); assert.ok(calls.some(c=>c[0]==='path' && c[1]==='/' && c[2]==='layout'));
+        assert.equal(notifications.length,1);
+        if(action !== 'saveSettings') assert.deepEqual([...notifications[0][2]], ['/policies/previous-slug']);
+      }
     }
   });
 }

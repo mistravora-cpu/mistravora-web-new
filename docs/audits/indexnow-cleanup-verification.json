@@ -1,0 +1,668 @@
+{
+  "checkedAt": "2026-09-16T04:47:55.669Z",
+  "environment": "local production build",
+  "tests": {
+    "passed": 130,
+    "failed": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "typescript": "passed including unused locals and parameters",
+  "build": "npm run build passed",
+  "metadata": {
+    "testedAt": "2026-09-16T04:44:31.269Z",
+    "base": "http://127.0.0.1:3356",
+    "userAgent": "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+    "results": [
+      {
+        "path": "/",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/solutions",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/industries",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/pricing",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/blog",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/research",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/about",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/careers",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/tools",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/demos",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/contact",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (97 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/assistant",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/brand",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (94 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/insights",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (90 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/glossary",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/knowledge-base",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/authors",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/resources",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/policies",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/book",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (74 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/tools/roi-calculator",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/tools/website-audit",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/shopmate-multi-service-marketplace-website-mobile-app",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/unic-motors-services-pos-inventory-management-system",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/the-dubai-store-retail-pos-inventory-management-system",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/tamdrill-global-drilling-solutions-website",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/amaluna-resorts-booking-system",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/wijesinghe-jewellers-inventory-pos",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/projects/assalafiya-book-shop-management",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/industries/retail",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (94 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/industries/hospitality",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (98 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/industries/healthcare",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (96 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/industries/manufacturing",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (95 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/research/how-google-finds-crawls-understands-your-website",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/research/sri-lanka-smart-bus-fares",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/research/pwa-vs-native-apps",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/policies/privacy-policy",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/policies/terms-of-service",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/policies/cookie-policy",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/policies/refund-policy",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/about/team/mohamad-husni",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/about/team/shakeel-mohamed",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/about/team/fathima-asna",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/about/team/mohamd-arham",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/services/mobile-application-development",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (83 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/custom-software-development",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (64 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/websites-and-web-applications",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (90 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/business-software-and-management-systems",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (83 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/e-commerce-solutions",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (51 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/ai-and-automation-solutions",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (71 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/crm-and-booking-solutions-where-applicable",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (72 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/ui-ux-and-digital-product-development",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (80 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/cloud-deployment-and-technical-solutions",
+        "status": 200,
+        "issues": [],
+        "notes": [
+          "Short description (63 characters): review whether it explains the page clearly."
+        ]
+      },
+      {
+        "path": "/services/seo-and-website-optimization",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/services/digital-marketing-and-related-digital-services",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      },
+      {
+        "path": "/solutions/offline-first-pwa-hybrid-web-app-development",
+        "status": 200,
+        "issues": [],
+        "notes": []
+      }
+    ]
+  },
+  "robot": {
+    "base": "http://127.0.0.1:3356",
+    "checkedAt": "2026-09-16T04:45:07.054Z",
+    "results": [
+      {
+        "mobile": false,
+        "cpuSlowdown": 1,
+        "checks": [
+          {
+            "label": "automatic startup",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 1",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 2",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 3",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "hero interaction",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "cookie dialog close",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "offscreen",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "offscreen resize",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "return to hero",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "return from pricing",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme after navigation",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "reduced motion at rest",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "reduced motion after theme",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "return to normal motion",
+            "renderedFrames": 39,
+            "expected": "running"
+          }
+        ],
+        "errors": [],
+        "cursorBackdrop": "stationary, no blur filter",
+        "horizontalOverflow": false
+      },
+      {
+        "mobile": true,
+        "cpuSlowdown": 4,
+        "checks": [
+          {
+            "label": "automatic startup",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 1",
+            "renderedFrames": 40,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 2",
+            "renderedFrames": 40,
+            "expected": "running"
+          },
+          {
+            "label": "theme button 3",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "mobile menu open",
+            "renderedFrames": 40,
+            "expected": "running"
+          },
+          {
+            "label": "mobile menu close",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "hero interaction",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "cookie dialog close",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "offscreen",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "offscreen resize",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "return to hero",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "return from pricing",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "theme after navigation",
+            "renderedFrames": 39,
+            "expected": "running"
+          },
+          {
+            "label": "reduced motion at rest",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "reduced motion after theme",
+            "renderedFrames": 0,
+            "expected": "paused"
+          },
+          {
+            "label": "return to normal motion",
+            "renderedFrames": 39,
+            "expected": "running"
+          }
+        ],
+        "errors": [],
+        "cursorBackdrop": "stationary, no blur filter",
+        "horizontalOverflow": false
+      }
+    ]
+  },
+  "sourceGraph": {
+    "entries": 96,
+    "sourceFiles": 228,
+    "unreachable": []
+  },
+  "lighthouse": [
+    {
+      "name": "standard",
+      "checkedAt": "2026-09-16T04:46:59.038Z",
+      "version": "13.4.1",
+      "method": "simulate",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "scores": {
+        "performance": 92,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 3380.5766000000003,
+      "tbtMs": 41,
+      "cls": 0,
+      "warnings": []
+    },
+    {
+      "name": "network",
+      "checkedAt": "2026-09-16T04:46:08.817Z",
+      "version": "13.4.1",
+      "method": "devtools",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 300,
+        "downloadThroughputKbps": 800,
+        "uploadThroughputKbps": 400,
+        "cpuSlowdownMultiplier": 4
+      },
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 1593.94,
+      "tbtMs": 63.38299999999981,
+      "cls": 0,
+      "warnings": []
+    },
+    {
+      "name": "slow-simulated",
+      "checkedAt": "2026-09-16T04:45:12.531Z",
+      "version": "13.4.1",
+      "method": "simulate",
+      "throttling": {
+        "rttMs": 300,
+        "throughputKbps": 800,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "scores": {
+        "performance": 74,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 6683.1658,
+      "tbtMs": 49.5,
+      "cls": 0,
+      "warnings": []
+    }
+  ],
+  "database": {
+    "project": "ghixwjdxzrovdmdzocxj",
+    "pageSeoTable": "missing; migration 0043 prepared, not applied",
+    "reportedBlogArticle": "no matching post exists",
+    "recordsModified": 0
+  },
+  "limitations": [
+    "No production admin mutation test",
+    "Deeper link crawl rejected by automatic approval review usage limit",
+    "Lighthouse results are local measurements; strict slow simulation is below 85",
+    "Deployment and initial IndexNow submission pending at report creation"
+  ]
+}
