@@ -17,16 +17,14 @@ async function metadata(post) {
     if (name === '@/lib/content-preview') return preview.exports;
     if (name === '@/lib/seo') return { withSocialMetadata: value => value };
     if (name === '@/lib/seo-overrides') return { applySeoOverrides: async value => value };
+    if (name === 'next/navigation') return { notFound: () => { throw Error('NEXT_HTTP_ERROR_FALLBACK;404'); } };
     return {};
   }};
   vm.runInNewContext(transpile('src/app/(public)/blog/[slug]/page.tsx'), context);
   return context.exports.generateMetadata({ params: Promise.resolve({ slug: 'example' }) });
 }
-test('missing articles have a dedicated title and description and cannot be indexed', async () => {
-  const result = await metadata(null);
-  assert.equal(result.title, 'Article not found');
-  assert.match(result.description, /unavailable/);
-  assert.equal(result.robots.index, false);
+test('missing articles terminate metadata rendering with a not-found response', async () => {
+  await assert.rejects(() => metadata(null), /NEXT_HTTP_ERROR_FALLBACK;404/);
 });
 test('article metadata uses readable unique text from its excerpt or body', async () => {
   for (const excerpt of ['<p>Example <strong>article</strong> summary.</p>', '']) {

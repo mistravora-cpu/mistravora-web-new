@@ -15,7 +15,7 @@ The supplied text identified `/industries`, `/careers` and `/blog/business-proce
 
 - Industries and Careers already define distinct titles and descriptions. The Industries fallback now describes the services and broad industry coverage more clearly, while keeping admin overrides.
 - The live project currently lacks `page_seo`. Migration `0043_legacy_page_seo.sql` creates this table if missing, with public reads and admin-only writes protected by row-level security. On deployments that already have it, the migration replaces only the exact obsolete description quoted in the report, if present on those paths. It preserves newer editorial copy, canonical choices, and noindex settings. It does not create or publish an article.
-- A privileged, read-only database check confirmed that the reported blog slug has no row in `posts`. Unavailable articles now have explicit not-found metadata and noindex. Published articles use plain text from their excerpt, then their body, then a title-specific fallback. The actual article must be created and published in the admin if it should be available; an unrelated redirect would conceal the missing content.
+- A privileged, read-only database check confirmed that the reported blog slug has no row in `posts`. Unavailable articles now stop rendering during the metadata lookup and use the not-found metadata with noindex. The loading boundary was moved from the root to the dashboard so public responses do not commit HTTP 200 before discovering a missing article. Local production checks confirm HTTP 404 for Bing and browser user agents. Published articles use plain text from their excerpt, then their body, then a title-specific fallback. The actual article must be created and published in the admin if it should be available; an unrelated redirect would conceal the missing content.
 - The content-audit script now sends Bing's crawler user agent and inspects metadata inside `<head>`. It also detects duplicate descriptions and sitemap pages marked noindex. Short descriptions are editorial notes, not an invented hard ranking requirement.
 - Next.js already includes Bingbot in its blocking-metadata defaults. Those defaults were retained so visitors can still benefit from streamed metadata.
 
@@ -36,7 +36,7 @@ Removed the unused gradient-orbs/social-proof modules and overlapping scroll hin
 5. Run `AUDIT_URL=https://www.mistravora.com npm run audit:content` and start a fresh Bing Site Scan. Inspect the reported article separately: publish real content if wanted, otherwise retain its not-found response.
 6. Recheck the robot in light/dark themes and on mobile, including theme clicks, menu clicks and returning from other pages.
 
-No successful live submission or database migration is implied by the source changes. See the completion report for checks actually run and any deployment restrictions.
+The initial release was pushed as `35d2978` and Vercel reported successful deployment. The live ownership file returned HTTP 200 with the exact key. IndexNow accepted 58 published URLs with HTTP 200 at `2026-09-16T14:00:11.110Z`; that receipt was read back from the project's settings table. Receipt is not a promise of indexing. The SEO-table migration has not been applied.
 
 ## Local verification — 16 September 2026
 
@@ -45,7 +45,7 @@ No successful live submission or database migration is implied by the source cha
 - Desktop and mobile browser checks pass repeated theme changes, hero clicks, cookie-dialog dismissal, mobile menu use, resize, returning from Pricing and resuming after scrolling back. No browser errors/warnings or horizontal overflow were observed. Mobile used four-times CPU throttling. Screenshots were inspected in light and dark themes.
 - A source dependency scan found no unreachable modules among 228 source files and 96 Next entry points.
 - Lighthouse results and their different throttling configurations are recorded in `docs/audits/indexnow-cleanup-verification.json`; they are local measurements, not a guarantee for the deployed site or every connection.
-- The deeper internal-link crawl was not completed: automatic approval review rejected that command because of an approval-service usage limit. The independent sitemap and browser checks above completed successfully.
+- The initially blocked deeper link crawl subsequently ran with approval on production: 70 internal link targets had no broken-link failures. It exposed a soft 404 on the reported missing blog article, which prompted the loading-boundary correction described above. The audit script now includes a random missing-article check to detect this regression.
 - The Supabase CLI has no management access token, so the missing SEO table migration remains pending the owner's CLI login or SQL Editor action. Public metadata and IndexNow do not require that optional table; the Page SEO editor does.
 
 References: [IndexNow protocol](https://www.indexnow.org/documentation), [Bing Site Scan](https://www.bing.com/webmasters/help/site-scan-623520c9), [Next.js crawler metadata behavior](https://nextjs.org/docs/app/api-reference/config/next-config-js/htmlLimitedBots), [Next.js background work](https://nextjs.org/docs/app/api-reference/functions/after).

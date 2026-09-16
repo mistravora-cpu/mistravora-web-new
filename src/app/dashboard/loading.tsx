@@ -1,3 +1,5 @@
+// Keep the loading boundary inside the private dashboard. A root loading
+// boundary can commit HTTP 200 before public detail routes call notFound().
 export default function Loading() {
   return (
     <div

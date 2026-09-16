@@ -57,11 +57,22 @@ for (const result of results) {
   result.notes = result.description && result.description.length < 100
     ? [`Short description (${result.description.length} characters): review whether it explains the page clearly.`] : [];
 }
+// A random nonexistent article catches soft-404 regressions caused by a
+// loading boundary committing HTTP 200 before a CMS lookup finishes.
+const missingPath = `/blog/audit-missing-${crypto.randomUUID()}`;
+const missingResponse = await request(new URL(missingPath, base));
+const missingHtml = await missingResponse.text();
+const notFoundCheck = {
+  path: missingPath,
+  status: missingResponse.status,
+  noindex: /<meta name="robots" content="[^"]*noindex/.test(missingHtml),
+};
+const missingPassed = notFoundCheck.status === 404 && notFoundCheck.noindex;
 mkdirSync("docs/audits", { recursive: true });
 writeFileSync(
   "docs/audits/public-content.json",
   JSON.stringify(
-    { testedAt: new Date().toISOString(), base, userAgent, results },
+    { testedAt: new Date().toISOString(), base, userAgent, results, notFoundCheck },
     null,
     2,
   ) + "\n",
@@ -72,4 +83,5 @@ for (const result of results)
     result.issues.length ? result.issues.join("; ") : "PASS",
     result.notes.join("; "),
   );
-if (results.some((r) => r.issues.length)) process.exitCode = 1;
+console.log("Missing article status", missingPassed ? "PASS (404, noindex)" : JSON.stringify(notFoundCheck));
+if (results.some((r) => r.issues.length) || !missingPassed) process.exitCode = 1;

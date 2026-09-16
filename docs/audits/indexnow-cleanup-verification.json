@@ -657,12 +657,236 @@
     "project": "ghixwjdxzrovdmdzocxj",
     "pageSeoTable": "missing; migration 0043 prepared, not applied",
     "reportedBlogArticle": "no matching post exists",
-    "recordsModified": 0
+    "recordsModified": 1,
+    "modification": "Only the IndexNow submission receipt in settings; no customer content or publication flags changed."
   },
   "limitations": [
     "No production admin mutation test",
-    "Deeper link crawl rejected by automatic approval review usage limit",
-    "Lighthouse results are local measurements; strict slow simulation is below 85",
-    "Deployment and initial IndexNow submission pending at report creation"
-  ]
+    "SEO table migration pending Supabase management access",
+    "Lighthouse results are local measurements; strict slow simulation is below 85"
+  ],
+  "liveVerification": {
+    "checkedAt": "2026-09-16T14:05:44.910Z",
+    "codeCommit": "35d2978",
+    "vercel": "success",
+    "ownershipFile": {
+      "status": 200,
+      "exactKey": true
+    },
+    "indexNow": {
+      "project": "ghixwjdxzrovdmdzocxj",
+      "ok": true,
+      "status": 200,
+      "count": 58,
+      "checkedAt": "2026-09-16T14:00:11.110Z",
+      "persistedReceiptVerified": true
+    },
+    "metadata": {
+      "base": "https://www.mistravora.com",
+      "pages": 58,
+      "failures": []
+    },
+    "robot": {
+      "base": "https://www.mistravora.com",
+      "checkedAt": "2026-09-16T14:01:16.323Z",
+      "results": [
+        {
+          "mobile": false,
+          "cpuSlowdown": 1,
+          "checks": [
+            {
+              "label": "automatic startup",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 1",
+              "renderedFrames": 40,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 2",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 3",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "hero interaction",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "cookie dialog close",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "offscreen",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "offscreen resize",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "return to hero",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "return from pricing",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme after navigation",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "reduced motion at rest",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "reduced motion after theme",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "return to normal motion",
+              "renderedFrames": 39,
+              "expected": "running"
+            }
+          ],
+          "errors": [],
+          "cursorBackdrop": "stationary, no blur filter",
+          "horizontalOverflow": false
+        },
+        {
+          "mobile": true,
+          "cpuSlowdown": 4,
+          "checks": [
+            {
+              "label": "automatic startup",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 1",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 2",
+              "renderedFrames": 40,
+              "expected": "running"
+            },
+            {
+              "label": "theme button 3",
+              "renderedFrames": 40,
+              "expected": "running"
+            },
+            {
+              "label": "mobile menu open",
+              "renderedFrames": 40,
+              "expected": "running"
+            },
+            {
+              "label": "mobile menu close",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "hero interaction",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "cookie dialog close",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "offscreen",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "offscreen resize",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "return to hero",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "return from pricing",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "theme after navigation",
+              "renderedFrames": 39,
+              "expected": "running"
+            },
+            {
+              "label": "reduced motion at rest",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "reduced motion after theme",
+              "renderedFrames": 0,
+              "expected": "paused"
+            },
+            {
+              "label": "return to normal motion",
+              "renderedFrames": 39,
+              "expected": "running"
+            }
+          ],
+          "errors": [],
+          "cursorBackdrop": "stationary, no blur filter",
+          "horizontalOverflow": false
+        }
+      ]
+    },
+    "links": {
+      "checkedAt": "2026-09-16T14:01:55.611Z",
+      "sitemapPages": 58,
+      "internalTargets": 70,
+      "additionalTargets": 17,
+      "failures": [],
+      "reportedArticle": {
+        "status": 200,
+        "noindex": true,
+        "title": "Article not found | Mistravora"
+      }
+    }
+  },
+  "followUp404Fix": {
+    "localProduction": true,
+    "build": "passed",
+    "tests": 130,
+    "lintWarnings": 0,
+    "bingAndBrowserArticleStatus": 404,
+    "noindex": true,
+    "otherMissingRoutes": [
+      "/research",
+      "/projects",
+      "/industries",
+      "/services"
+    ],
+    "otherMissingStatus": 404,
+    "change": "Move loading boundary to dashboard and stop metadata rendering when an article is absent"
+  }
 }

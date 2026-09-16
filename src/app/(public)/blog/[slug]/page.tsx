@@ -26,11 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return {
-    title: "Article not found",
-    description: "This Mistravora article is unavailable. Browse our published insights about software, websites and digital marketing, or contact us for help.",
-    robots: { index: false, follow: true },
-  };
+  if (!post) notFound();
 
   const url = `${site.url}/blog/${post.slug}`;
   const description = contentText(post.excerpt, 160) || contentText(post.body, 160)
@@ -63,10 +59,10 @@ export default async function BlogPostPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const profile = await getBusinessProfile();
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
+  const profile = await getBusinessProfile();
 
   return (
     <article className="w-full site-gutter py-16">
