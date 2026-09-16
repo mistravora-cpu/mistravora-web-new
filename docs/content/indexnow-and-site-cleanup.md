@@ -23,7 +23,7 @@ The backlink warning cannot be repaired with a website code change. Use approved
 
 ## Robot and cleanup
 
-The robot has its own responsive visual area, stationary background lighting, and an added light on its body. Overlapping fades no longer obscure it in dark mode. Both scale and movement limits account for canvas width and height, with movement coordinates converted into the scaled group's local space. Removed the clipped black shadow plane found during screenshot review. Automatic startup, interaction, tab visibility handling and the earlier render-loop fix remain in place.
+The robot now shares one full-width hero scene with centered content, replacing the separate desktop column. Fluid scene height and reserved content spacing keep the composition stable before the 3D bundle loads, including on phones and short landscape screens. Stationary background lighting sits behind both the robot and copy; no fade obscures the robot in dark mode. Both scale and movement limits account for canvas width and height, with movement coordinates converted into the scaled group's local space. Removed the clipped black shadow plane found during screenshot review. Automatic startup, interaction, tab visibility handling and the earlier render-loop fix remain in place.
 
 Removed the unused gradient-orbs/social-proof modules and overlapping scroll hint. Insights now links to collections with published entries and connects the existing admin-controlled newsletter form. Improved empty-page navigation, mobile search forms, newsletter labels/status/timeout handling, same-page hero links and malformed author-link handling.
 
@@ -47,5 +47,12 @@ The initial release was pushed as `35d2978` and Vercel reported successful deplo
 - Lighthouse results and their different throttling configurations are recorded in `docs/audits/indexnow-cleanup-verification.json`; they are local measurements, not a guarantee for the deployed site or every connection.
 - The initially blocked deeper link crawl subsequently ran with approval on production: 70 internal link targets had no broken-link failures. It exposed a soft 404 on the reported missing blog article, which prompted the loading-boundary correction described above. The audit script now includes a random missing-article check to detect this regression.
 - The Supabase CLI has no management access token, so the missing SEO table migration remains pending the owner's CLI login or SQL Editor action. Public metadata and IndexNow do not require that optional table; the Page SEO editor does.
+
+### Unified hero follow-up — 16 September 2026
+
+- Production build, all 130 tests, ESLint with zero warnings and strict TypeScript unused-code checks pass after the layout change.
+- Chromium checks at 320×568, 390×844, 768×1024, 1024×768, 1440×900, 1920×1080 and 844×390 confirm a full-width scene, centered headline, contained 44px-high action links and no horizontal overflow. Both themes pass the automated WCAG A/AA checks scoped to the hero. Desktop and phone screenshots were reviewed; automated checks do not replace testing on physical devices.
+- All 30 desktop/mobile animation lifecycle checks pass, including menu/theme interactions, navigation back from pricing, offscreen pause/resume and reduced motion. Mobile used four-times CPU throttling. No browser console errors or warnings were observed.
+- One local production Lighthouse run with the default simulated mobile settings scored performance **91**, accessibility **100**, best practices **100** and SEO **100**; LCP 3.3s, blocking time 70ms and layout shift 0, with no run warnings. These are local measurements, not production or all-network guarantees.
 
 References: [IndexNow protocol](https://www.indexnow.org/documentation), [Bing Site Scan](https://www.bing.com/webmasters/help/site-scan-623520c9), [Next.js crawler metadata behavior](https://nextjs.org/docs/app/api-reference/config/next-config-js/htmlLimitedBots), [Next.js background work](https://nextjs.org/docs/app/api-reference/functions/after).

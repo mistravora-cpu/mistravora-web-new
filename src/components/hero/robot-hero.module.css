@@ -1,0 +1,20 @@
+.hero {
+  --scene-height: clamp(19rem, 38vw, 29rem);
+}
+
+.scene {
+  height: var(--scene-height);
+}
+
+.content {
+  /* Reserve space before the first paint, with a small overlap at the robot's
+     base. The canvas and copy form one composition without covering its face. */
+  padding-top: calc(var(--scene-height) * 0.82);
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 40rem) and (max-height: 32rem) {
+  .hero {
+    --scene-height: 17rem;
+  }
+}
