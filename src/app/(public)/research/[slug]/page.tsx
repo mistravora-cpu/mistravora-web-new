@@ -15,7 +15,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -24,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const research = await getResearchBySlug(slug);
-  if (!research) return { title: "Research not found" };
+  if (!research) notFound();
 
   const url = `${site.url}/research/${slug}`;
   return applySeoOverrides(withSocialMetadata({

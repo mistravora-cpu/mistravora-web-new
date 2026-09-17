@@ -14,7 +14,7 @@ const fields: FieldDef[] = [{ name: "title", label: "Title", type: "text", requi
 { name: "sort_order", label: "Sort order", type: "number" }];
 export default async function ContentAdmin() {
   const client = await createClient();
-  const { data, error } = await client.from("services").select("*, service_features(feature), service_technologies(technology)");
+  const { data, error } = await client.from("services").select("*, service_features(feature), service_technologies(technology)").order("sort_order");
   const rows = (data ?? []).map(r => ({ ...r, features: r.service_features.map((x: {feature: string}) => x.feature), technologies: r.service_technologies.map((x: {technology: string}) => x.technology) }));
   return <div><h1 className="mb-6 text-2xl font-bold">Services</h1>{error ? <p role="alert">Content unavailable. Apply the required database migrations.</p> : <CrudManager table="services" fields={fields} columns={[{ name: "title", label: "Services" }, { name: "slug", label: "Slug" }]} rows={rows} />}</div>;
 }

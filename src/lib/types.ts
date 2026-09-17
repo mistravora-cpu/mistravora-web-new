@@ -65,6 +65,7 @@ export type Post = {
   featured: boolean;
   published: boolean;
   published_at: string | null;
+  sort_order?: number;
   created_at: string;
   updated_at: string;
 };

@@ -119,3 +119,14 @@ test('optional tracking settings require a deliberate switch and valid provider 
  assert.equal((await actions.saveSettings({enable_optional_tracking:'false',ga4_measurement_id:'G-ABC123',google_ads_conversion_id:'AW-12345',google_ads_conversion_label:'Lead_123'})).error,null);
  for(const data of [{enable_optional_tracking:'yes'},{ga4_measurement_id:'G-test<script>'},{google_ads_conversion_id:'AW-text'},{google_ads_conversion_label:'bad/target'}])assert.ok((await actions.saveSettings(data)).error);
 });
+
+test('research publication dates support immediate publication and Sri Lanka calendar dates', async () => {
+  for (const [input, expected] of [['',null], ['2026-09-17','2026-09-16T18:30:00.000Z'], ['2026-09-17T09:00:00Z','2026-09-17T09:00:00.000Z']]) {
+    const {actions,writes}=load();
+    assert.equal((await actions.upsertRow('research',{published_at:input},'existing')).error,null);
+    assert.equal(writes.find(row=>row.table==='research').data.published_at,expected);
+  }
+  const {actions,writes}=load();
+  assert.ok((await actions.upsertRow('research',{published_at:'not a date'},'existing')).error);
+  assert.equal(writes.length,0);
+});

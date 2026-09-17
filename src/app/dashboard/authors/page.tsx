@@ -11,7 +11,7 @@ const fields: FieldDef[] = [{ name: "name", label: "Name", type: "text", require
 { name: "github", label: "GitHub URL", type: "text" }];
 export default async function ContentAdmin() {
   const client = await createClient();
-  const { data, error } = await client.from("authors").select("*");
+  const { data, error } = await client.from("authors").select("*").order("name");
   const rows = data ?? [];
   return <div><h1 className="mb-6 text-2xl font-bold">Authors</h1>{error ? <p role="alert">Content unavailable. Apply the required database migrations.</p> : <CrudManager table="authors" fields={fields} columns={[{ name: "name", label: "Authors" }, { name: "slug", label: "Slug" }]} rows={rows} />}</div>;
 }

@@ -11,6 +11,7 @@ const columns: ColumnDef[] = [
   { name: "title", label: "Title" },
   { name: "author", label: "Author" },
   { name: "category", label: "Category" },
+  { name: "sort_order", label: "Order" },
   { name: "featured", label: "Featured" },
   { name: "published", label: "Active" },
 ];
@@ -28,12 +29,14 @@ const fields: FieldDef[] = [
   { name: "read_time", label: "Read Time", placeholder: "6 min read" },
   { name: "tags", label: "Tags (comma-separated)", type: "list", placeholder: "PWA, Mobile Apps" },
   { name: "published_at", label: "Publish Date", placeholder: "2025-07-29" },
+  { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "featured", label: "Featured", type: "boolean" },
   { name: "published", label: "Active", type: "boolean" },
 ];
 
 export default async function BlogAdminPage() {
   const posts = await getPosts();
+  const supportsOrdering = posts.some(post => typeof post.sort_order === "number");
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,8 +48,8 @@ export default async function BlogAdminPage() {
       </div>
       <CrudManager
         table="posts"
-        columns={columns}
-        fields={fields}
+        columns={supportsOrdering ? columns : columns.filter(column => column.name !== "sort_order")}
+        fields={supportsOrdering ? fields : fields.filter(field => field.name !== "sort_order")}
         rows={posts as unknown as Record<string, unknown>[]}
       />
     </div>

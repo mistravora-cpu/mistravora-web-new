@@ -6,6 +6,7 @@ export { memberSlug } from "./team-slug";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import type {
   Benefit,
   CaseStudy,
@@ -180,13 +181,20 @@ const _getCaseStudies = unstable_cache(
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
+// posts.sort_order is added by migration 0044. Ordering rows here keeps the
+// blog working before and after that migration lands — rows without the
+// column keep the database's published_at order.
+function sortPosts<T extends { sort_order?: number | null }>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+}
+
 const _getPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const supabase = createPublicClient();
     const rows = await queryRows(
       supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false })
     );
-    return rows.map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
+    return sortPosts(rows).map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
   },
   ["posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -198,7 +206,7 @@ const _getPublishedPosts = unstable_cache(
     const rows = await queryRows(
       supabase.from("posts").select(POST_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false })
     );
-    return rows.map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
+    return sortPosts(rows).map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
   },
   ["published-posts-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
@@ -504,7 +512,7 @@ export async function getAdminCaseStudies(): Promise<CaseStudy[]> {
 export async function getAdminPosts(): Promise<Post[]> {
   const supabase = await createClient();
   const rows = await queryRows(supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false }));
-  return rows.map((r) => mapChildArrays(r, postMapping) as unknown as Post);
+  return sortPosts(rows).map((r) => mapChildArrays(r, postMapping) as unknown as Post);
 }
 export async function getAdminJobs(): Promise<Job[]> {
   const supabase = await createClient();
@@ -621,15 +629,16 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
   );
 }
 
-const publicResearch = unstable_cache(async (): Promise<Research[]> => {
-  const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("published_at", { ascending: false }));
+// Deduplicate within a request, without serving a stale publication list.
+const publicResearch = cache(async (): Promise<Research[]> => {
+  const rows = await queryRows(createPublicClient().from("research").select(RESEARCH_SELECT).eq("published", true).or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`).order("sort_order", { ascending: true }).order("published_at", { ascending: false }));
   return rows.map((r) => ({...mapChildArrays(r,researchMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Research);
-}, ["reviewed-public-research-v3"], { revalidate: CACHE_TTL, tags: CACHE_TAGS });
+});
 
 export async function getResearch(publishedOnly = false): Promise<Research[]> {
   if (publishedOnly) return publicResearch();
   const supabase = await createClient();
-  const rows = await queryRows(supabase.from("research").select(RESEARCH_SELECT).order("published_at", { ascending: false }));
+  const rows = await queryRows(supabase.from("research").select(RESEARCH_SELECT).order("sort_order", { ascending: true }).order("published_at", { ascending: false }));
   return rows.map((r) => mapChildArrays(r, researchMapping) as unknown as Research);
 }
 export async function getResearchBySlug(slug: string): Promise<Research | null> {

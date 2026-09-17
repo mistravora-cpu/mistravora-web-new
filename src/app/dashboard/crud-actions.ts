@@ -219,6 +219,17 @@ export async function upsertRow(
     delete parentData.website_url;
   }
 
+  if (table === "research" && "published_at" in parentData) {
+    const value = typeof parentData.published_at === "string" ? parentData.published_at.trim() : "";
+    if (!value) parentData.published_at = null;
+    else {
+      // Date-only editorial inputs refer to the business's Sri Lanka timezone.
+      const timestamp = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00+05:30` : value;
+      if (!Number.isFinite(Date.parse(timestamp))) return { error: "Provide a valid publish date, or leave it blank to publish immediately." };
+      parentData.published_at = new Date(timestamp).toISOString();
+    }
+  }
+
   if (table === "research" && "slug" in parentData) {
     const slug = typeof parentData.slug === "string" ? normalizeResearchSlug(parentData.slug) : null;
     if (!slug) return { error: "Use a research slug such as pwa-vs-native-apps (letters, numbers and hyphens)." };

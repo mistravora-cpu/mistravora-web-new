@@ -25,7 +25,7 @@ const fields: FieldDef[] = [
   { name: "tags", label: "Tags", type: "list", placeholder: "web-performance, seo, nextjs" },
   { name: "cover_image", label: "Primary image (article and catalog)", type: "image" },
   { name: "author", label: "Author" },
-  { name: "published_at", label: "Published Date", placeholder: "2025-01-15" },
+  { name: "published_at", label: "Publish date (Sri Lanka time; blank publishes immediately)", placeholder: "2026-09-17" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "published", label: "Published", type: "boolean" },
 ];
@@ -38,7 +38,7 @@ export default async function ResearchAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Research</h1>
         <p className="text-sm text-muted-foreground">
-          Publish original research, analysis, and studies.
+          Enable Published to make an article public. Future publish dates keep it hidden until that date; leave the date blank to publish immediately.
         </p>
       </div>
 

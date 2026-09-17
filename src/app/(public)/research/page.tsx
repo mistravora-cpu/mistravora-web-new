@@ -11,6 +11,8 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { site } from "@/lib/site";
 import { getHeroSection, getResearch } from "@/lib/services";
 
+export const dynamic = "force-dynamic";
+
 const baseMetadata: Metadata = withSocialMetadata({
   title: "Research",
   description:
