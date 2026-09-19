@@ -1,68 +1,40 @@
 .hero {
-  --scene-height: clamp(19rem, 38vw, 29rem);
+  display: flex;
+  align-items: center;
+  min-height: clamp(36rem, 85svh, 46rem);
 }
 
 .scene {
-  height: var(--scene-height);
-  /* Pointer events come through the hero section (eventSource), so the canvas
-     itself never needs to intercept touches — this keeps scrolling and link
-     taps working where the robot sits behind the copy. */
+  position: absolute;
+  inset: 0;
+  /* The shared section receives pointer events, leaving scroll and links usable. */
   pointer-events: none;
 }
 
 .content {
-  /* Reserve space before the first paint, with a small overlap at the robot's
-     base. The canvas and copy form one composition without covering its face. */
-  padding-top: calc(var(--scene-height) * 0.82);
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  width: 100%;
+  padding-block: clamp(3rem, 8svh, 5rem);
+  /* Text-only contrast, without covering or masking the scene. */
+  text-shadow: 0 1px 2px var(--background), 0 0 5px var(--background);
 }
 
-/* Mobile: the robot becomes the hero backdrop and the copy is centred on top
-   of it, so the headline is the first thing on screen instead of the canvas. */
-@media (max-width: 39.98rem) {
+@media (min-width: 64rem) {
   .hero {
-    display: flex;
-    flex-direction: column;
-    min-height: clamp(36rem, 88vh, 44rem);
-    min-height: clamp(36rem, 88svh, 44rem);
+    min-height: clamp(36rem, 78svh, 48rem);
   }
 
   .scene {
-    bottom: 0;
-    height: auto;
-  }
-
-  /* Soft scrim keeps the copy readable while the robot stays visible and
-     animated around it. */
-  .scene::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(
-        ellipse 85% 62% at 50% 50%,
-        color-mix(in oklab, var(--background) 80%, transparent),
-        transparent 100%
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in oklab, var(--background) 40%, transparent),
-        transparent 32%,
-        transparent 68%,
-        color-mix(in oklab, var(--background) 60%, transparent)
-      );
+    left: 55%;
   }
 
   .content {
-    flex: 1;
-    justify-content: center;
-    padding-top: clamp(4rem, 12svh, 6rem);
-    padding-bottom: clamp(3rem, 10svh, 5rem);
+    width: 55%;
+    align-items: flex-start;
+    text-align: left;
+    text-shadow: none;
   }
-}
 
-@media (min-width: 40rem) and (max-height: 32rem) {
-  .hero {
-    --scene-height: 17rem;
+  .content > div {
+    justify-content: flex-start;
   }
 }

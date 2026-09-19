@@ -70,8 +70,8 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_32%,rgba(0,153,190,0.10),transparent_65%)] dark:bg-[radial-gradient(ellipse_at_50%_32%,rgba(0,180,210,0.16),transparent_65%)]"
       />
 
-      {/* The robot shares the hero rather than occupying a separate column or card. */}
-      <div className={`${styles.scene} absolute inset-x-0 top-0`} aria-hidden>
+      {/* One scene sits beside the desktop copy and behind it on smaller screens. */}
+      <div className={styles.scene} aria-hidden>
         {isVisible ? (
           <RobotHero eventSource={sectionRef} />
         ) : (
