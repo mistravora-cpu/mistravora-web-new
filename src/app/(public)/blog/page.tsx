@@ -1,3 +1,5 @@
+import { ArticleFilters } from "@/components/article-filters";
+import { filterArticles, type ArticleSearchParams } from "@/lib/article-filter";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
@@ -21,11 +23,13 @@ const baseMetadata: Metadata = withSocialMetadata({
   },
 });
 
-export default async function BlogPage() {
+export default async function BlogPage({ searchParams }: { searchParams: Promise<ArticleSearchParams> }) {
   const [hero, posts] = await Promise.all([
     getHeroSection("blog"),
     getPublishedPosts(),
   ]);
+
+  const filtered = filterArticles(posts, await searchParams);
 
   return (
     <>
@@ -45,9 +49,12 @@ export default async function BlogPage() {
         </a>
       </div>
 
-      {posts.length > 0 ? (
+      <ArticleFilters path="/blog" {...filtered} count={filtered.rows.length} />
+        {filtered.rows.length === 0 && (filtered.q || filtered.category) ? (
+          <p className="py-12 text-center text-muted-foreground">No articles match these filters. Try another search or clear the filters.</p>
+        ) : posts.length > 0 ? (
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post, i) => (
+          {filtered.rows.map((post, i) => (
             <ScrollReveal key={post.id} animation="fade-up" delay={i * 70} className="group interactive-card hover:-translate-y-0.5 flex flex-col gap-3 p-6">
               <Link href={`/blog/${post.slug}`} className="flex flex-col gap-3">
               <article className="flex flex-col gap-3">
@@ -99,4 +106,8 @@ export default async function BlogPage() {
   );
 }
 
-export async function generateMetadata() { return applySeoOverrides(baseMetadata); }
+export async function generateMetadata({ searchParams }: { searchParams: Promise<ArticleSearchParams> }) {
+  const params = await searchParams;
+  const metadata = await applySeoOverrides(baseMetadata);
+  return params.q || params.category ? { ...metadata, robots: { index: false, follow: true, googleBot: { index: false, follow: true } } } : metadata;
+}

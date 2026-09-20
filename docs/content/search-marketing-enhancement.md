@@ -153,3 +153,9 @@ Checked 2026-09-20T07:05:26.982Z against https://www.mistravora.com. Pre-deploym
 - Article update dates are visible when more than a day newer than publication, using actual stored timestamps. This is a record-update timestamp, not a claim that the author substantially revised the article.
 - All 134 tests pass, including new anchor/collision/short-content regression cases. Lint and TypeScript pass. Production build checked; browser/device visuals remain unverified.
 - Supabase CLI management access was checked again and still has no access token. Run `supabase login` locally, then migrations can be applied to the verified project; never paste credentials into chat.
+
+## Article filtering follow-up — verified for release
+
+Blog and Research now expose server-rendered GET search/category forms, using only their own published CMS records. Search covers readable titles, summaries/excerpts and tags. Categories derive from the current entries; unknown categories show a recoverable empty result. Clear-filter links and correctly associated labels are included. Query variants retain the collection canonical and use noindex/follow to avoid indexing internal search permutations. No client JavaScript or third-party service was added.
+
+Local lint, TypeScript and all 136 automated tests pass. The production build subsequently passed after approval access returned. Six local production HTTP checks passed for Blog/Research unfiltered lists, unmatched searches and unknown categories, including correct canonical URLs, filtered noindex/follow directives, labelled search forms and clear-filter links. Browser/device visual checks remain unperformed.

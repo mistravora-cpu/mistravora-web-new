@@ -1,3 +1,5 @@
+import { ArticleFilters } from "@/components/article-filters";
+import { filterArticles, type ArticleSearchParams } from "@/lib/article-filter";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { withSocialMetadata } from "@/lib/seo";
@@ -20,11 +22,13 @@ const baseMetadata: Metadata = withSocialMetadata({
   alternates: { canonical: `${site.url}/research` },
 });
 
-export default async function ResearchPage() {
+export default async function ResearchPage({ searchParams }: { searchParams: Promise<ArticleSearchParams> }) {
   const [hero, research] = await Promise.all([
     getHeroSection("research"),
     getResearch(true),
   ]);
+
+  const filtered = filterArticles(research, await searchParams);
 
   return (
     <>
@@ -35,9 +39,12 @@ export default async function ResearchPage() {
           description="Original research on web performance, AI tools, and software engineering — backed by data, not opinions."
         />
 
-        {research.length > 0 ? (
+        <ArticleFilters path="/research" {...filtered} count={filtered.rows.length} />
+        {filtered.rows.length === 0 && (filtered.q || filtered.category) ? (
+          <p className="py-12 text-center text-muted-foreground">No articles match these filters. Try another search or clear the filters.</p>
+        ) : research.length > 0 ? (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {research.map((item, i) => (
+            {filtered.rows.map((item, i) => (
               <ScrollReveal
                 key={item.id}
                 animation="fade-up"
@@ -109,4 +116,8 @@ export default async function ResearchPage() {
   );
 }
 
-export async function generateMetadata() { return applySeoOverrides(baseMetadata); }
+export async function generateMetadata({ searchParams }: { searchParams: Promise<ArticleSearchParams> }) {
+  const params = await searchParams;
+  const metadata = await applySeoOverrides(baseMetadata);
+  return params.q || params.category ? { ...metadata, robots: { index: false, follow: true, googleBot: { index: false, follow: true } } } : metadata;
+}
