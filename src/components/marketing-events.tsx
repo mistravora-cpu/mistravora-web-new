@@ -76,7 +76,9 @@ export function MarketingEvents() {
         trackEvent(name, {
           page_path: pathname,
           destination:
-            url.protocol === "https:" || url.protocol === "http:"
+            ["wa.me", "api.whatsapp.com"].includes(url.hostname)
+              ? "whatsapp"
+              : url.protocol === "https:" || url.protocol === "http:"
               ? url.hostname + url.pathname
               : url.protocol,
         });

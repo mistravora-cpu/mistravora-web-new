@@ -65,7 +65,7 @@ export async function SiteFooter() {
 
           <nav aria-label="Footer secondary" className="flex flex-col gap-2.5">
             <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/80">More</h2>
-            <Link href="/services" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Services</Link>
+            <Link href="/careers" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Careers</Link>
             <Link href="/insights" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Insights &amp; resources</Link>
             <Link href="/book" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Book a consultation</Link>
             <Link href="/search" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Search</Link>

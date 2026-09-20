@@ -26,6 +26,7 @@ export async function OrganizationJsonLd() {
         address: {
           "@type": "PostalAddress",
           addressCountry: "LK",
+          ...(site.address && site.address !== "Sri Lanka" ? { name: site.address } : {}),
         },
         foundingDate: site.founded,
         founder: [{ "@type": "Person", name: site.founder }, { "@type": "Person", name: site.cofounder }],
