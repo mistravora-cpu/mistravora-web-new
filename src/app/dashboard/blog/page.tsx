@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import { getAdminPosts as getPosts } from "@/lib/services";
 import { CrudManager, type ColumnDef, type FieldDef } from "../crud-manager";
 
@@ -35,8 +36,12 @@ const fields: FieldDef[] = [
 ];
 
 export default async function BlogAdminPage() {
-  const posts = await getPosts();
-  const supportsOrdering = posts.some(post => typeof post.sort_order === "number");
+  const db = await createClient();
+  const [posts, ordering] = await Promise.all([
+    getPosts(),
+    db.from("posts").select("sort_order").limit(0),
+  ]);
+  const supportsOrdering = !ordering.error;
 
   return (
     <div className="flex flex-col gap-6">

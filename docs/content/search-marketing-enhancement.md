@@ -159,3 +159,11 @@ Checked 2026-09-20T07:05:26.982Z against https://www.mistravora.com. Pre-deploym
 Blog and Research now expose server-rendered GET search/category forms, using only their own published CMS records. Search covers readable titles, summaries/excerpts and tags. Categories derive from the current entries; unknown categories show a recoverable empty result. Clear-filter links and correctly associated labels are included. Query variants retain the collection canonical and use noindex/follow to avoid indexing internal search permutations. No client JavaScript or third-party service was added.
 
 Local lint, TypeScript and all 136 automated tests pass. The production build subsequently passed after approval access returned. Six local production HTTP checks passed for Blog/Research unfiltered lists, unmatched searches and unknown categories, including correct canonical URLs, filtered noindex/follow directives, labelled search forms and clear-filter links. Browser/device visual checks remain unperformed.
+
+## Database setup completed
+
+Supabase CLI login completed and the linked project was verified against the website environment: `ghixwjdxzrovdmdzocxj` (active project `website`). The older similarly named project was not modified.
+
+Migrations `0043_legacy_page_seo.sql` and `0044_posts_sort_order.sql` were applied together in a transaction and recorded in migration history. Existing remote history uses older timestamp versions, so no bulk push or replay of seed migrations was performed. Future migration work must reconcile that history before using a broad `db push`.
+
+Read-back verified the SEO table has RLS enabled, public SELECT and `is_admin()` write policies; `posts.sort_order` is a non-null integer with default 0. Anonymous REST reads of both schemas succeed. The blog admin now checks column availability directly, so ordering is also available when there are no articles. Local CLI state is ignored by Git. Previous management-access blockers above are now resolved.

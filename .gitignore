@@ -46,3 +46,6 @@ next-env.d.ts
 /docs/audits/*.png
 /docs/audits/public-content.json
 /docs/content/business-before-*.json
+
+# Local Supabase CLI link state (never commit credentials)
+/supabase/.temp/
