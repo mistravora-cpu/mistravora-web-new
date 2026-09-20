@@ -94,6 +94,9 @@ export default async function BlogPostPage({
                 {post.author_role && ` · ${post.author_role}`}
               </span>
             )}
+            {post.updated_at && post.published_at && new Date(post.updated_at).getTime() > new Date(post.published_at).getTime() + 86400000 && (
+              <span>Updated <time dateTime={post.updated_at}>{new Date(post.updated_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Colombo" })}</time></span>
+            )}
             {post.published_at && (
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" />
@@ -131,7 +134,7 @@ export default async function BlogPostPage({
 
           {post.body && (
             <div className="mt-8 max-w-none text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground">
-              <ArticleBody body={post.body} title={post.title} />
+              <ArticleBody body={post.body} title={post.title} showContents />
             </div>
           )}
 

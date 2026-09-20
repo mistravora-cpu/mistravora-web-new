@@ -1069,6 +1069,7 @@ h1, h2, h3, h4 {
 /* Server-rendered editorial content. Low-specificity defaults allow the
    administrator's scoped CSS to refine typography without affecting the shell. */
 :where(.rich-content) { line-height: 1.75; }
+:where(.rich-content h2[id], .rich-content h3[id]) { scroll-margin-top: 6rem; }
 :where(.rich-content [data-article-root]) > :first-child { margin-top: 0; }
 :where(.rich-content [data-article-root]) > :last-child { margin-bottom: 0; }
 :where(.rich-content h2) { margin-block: 1.75em .7em; font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 650; line-height: 1.3; letter-spacing: -.025em; }

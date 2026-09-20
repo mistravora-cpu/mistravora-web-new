@@ -61,7 +61,7 @@ Source: supplied 27-section brief; existing implementation inspected before chan
 ### Recommended subsequent work, not claimed complete
 
 - Review the 11 real service records against the 15 service topics in the brief. Extend relevant existing records for POS/ERP, consulting, support and social media marketing where justified; obtain process details and approved project associations instead of generating thin duplicate pages.
-- Article TOCs, richer category filtering, structured citations/methodology and updated-date presentation need an editorial/component pass. Preserve Blog and Research as separate collections.
+- Article TOCs and visible update dates are implemented in the follow-up below. Richer category filtering and structured citations/methodology still need an editorial/component pass. Preserve Blog and Research as separate collections.
 - CRM assignment/reminders, duplicate detection and consented follow-up workflows should follow actual team operations; existing stages, notes, budgets, requirements and email functions already cover the basic workflow.
 - Video/dataset/job/product schema only when eligible underlying assets or real records exist. No unsupported schema, fabricated review/metric, foreign office, badge or country doorway page added.
 - Existing robots permits both search and training crawlers. This release preserves that choice; obtain an explicit business policy before changing training access. Neither llms.txt nor schema guarantees AI citation.
@@ -146,3 +146,10 @@ Checked 2026-09-20T07:05:26.982Z against https://www.mistravora.com. Pre-deploym
 | /services/cloud-deployment-and-technical-solutions | PASS | Short description (63 characters): review whether it explains the page clearly. |
 | /services/seo-and-website-optimization | PASS | — |
 | /services/digital-marketing-and-related-digital-services | PASS | — |
+
+## Article follow-up — 20 September 2026
+
+- Blog/research HTML bodies with at least 400 words and four H2/H3 headings receive a keyboard-accessible, collapsible table of contents. Server-rendered native links add no client JavaScript. Existing heading IDs and internal CSS are preserved, generated IDs avoid collisions, and sticky-header scroll spacing is provided. Short articles and non-editorial content remain unchanged.
+- Article update dates are visible when more than a day newer than publication, using actual stored timestamps. This is a record-update timestamp, not a claim that the author substantially revised the article.
+- All 134 tests pass, including new anchor/collision/short-content regression cases. Lint and TypeScript pass. Production build checked; browser/device visuals remain unverified.
+- Supabase CLI management access was checked again and still has no access token. Run `supabase login` locally, then migrations can be applied to the verified project; never paste credentials into chat.

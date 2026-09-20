@@ -103,6 +103,9 @@ export default async function ResearchDetailPage({
                 {research.author}
               </span>
             )}
+            {research.updated_at && research.published_at && new Date(research.updated_at).getTime() > new Date(research.published_at).getTime() + 86400000 && (
+              <span>Updated <time dateTime={research.updated_at}>{new Date(research.updated_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Colombo" })}</time></span>
+            )}
             {research.published_at && (
               <span className="flex items-center gap-1.5">
                 <Calendar aria-hidden className="h-3.5 w-3.5" />
@@ -140,7 +143,7 @@ export default async function ResearchDetailPage({
           <div
             className="prose prose-sm max-w-none dark:prose-invert sm:prose-base prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm"
           >
-            <ArticleBody body={research.body} title={research.title} />
+            <ArticleBody body={research.body} title={research.title} showContents />
           </div>
         )}
 
