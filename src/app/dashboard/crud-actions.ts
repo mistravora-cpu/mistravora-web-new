@@ -1,5 +1,6 @@
 "use server";
 
+import { heroPages } from "@/lib/hero-pages";
 import { saveReview } from "@/lib/review-save";
 import { reviewKey } from "@/lib/reviews";
 import { quoteRecipientsSchema } from "@/lib/requirements/notification-config";
@@ -82,8 +83,6 @@ const ALLOWED_TABLES = new Set([
   "solution_technologies",
   "solution_services",
   "solution_process_steps",
-  "solution_pricing_packages",
-  "solution_pricing_package_features",
   "case_study_results",
   "case_study_technologies",
   "post_tags",
@@ -92,7 +91,6 @@ const ALLOWED_TABLES = new Set([
   "pricing_tier_features",
   "demo_app_features",
   "research_tags",
-  "solution_demo_links",
   // AI discovery tables
   "authors",
   "glossary_terms",
@@ -163,6 +161,7 @@ export async function upsertRow(
 ) {
   if (!(await verifyAdmin())) return { error: "Unauthorized" };
   if (!isAllowedTable(table)) return { error: "Invalid table" };
+  if (table === "hero_sections" && !heroPages.includes(String(data.page ?? ""))) return { error: "Choose a supported hero page." };
 
   const supabase = await createClient();
   if (table === "testimonials") {

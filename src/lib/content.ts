@@ -114,7 +114,7 @@ export const getCollection = unstable_cache(
         title: p.title,
         description: contentText(p.description,220),
         body:p.description,
-        image:primaryContentImage(null,p.description),
+        image:primaryContentImage(p.cover_image,p.description),
         download: p.file_url,
         category: p.category,
         updated: p.updated_at,

@@ -1,3 +1,4 @@
+import { heroPages } from "@/lib/hero-pages";
 import { getHeroMedia } from "@/lib/hero-media";
 import { HeroMediaEditor } from "./media-editor";
 import type { Metadata } from "next";
@@ -20,7 +21,8 @@ const heroFields: FieldDef[] = [
     name: "page",
     label: "Page",
     required: true,
-    placeholder: "home / about / solutions / pricing / etc.",
+    type: "select",
+    options: heroPages,
   },
   { name: "badge", label: "Badge", placeholder: "Small text above headline" },
   { name: "headline", label: "Headline", required: true },
@@ -40,8 +42,7 @@ export default async function HeroAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Hero Sections</h1>
         <p className="text-sm text-muted-foreground">
-          Manage the hero banner content for each page. The home page and
-          all other pages use the standard animated hero.
+          Edit text and buttons for supported page heroes. Media can be configured separately by page path.
         </p>
       </div>
 
@@ -51,7 +52,7 @@ export default async function HeroAdminPage() {
         title="Page Heroes"
         columns={heroColumns}
         fields={heroFields}
-        rows={heroes as unknown as Record<string, unknown>[]}
+        rows={heroes.filter(hero => heroPages.includes(hero.page)) as unknown as Record<string, unknown>[]}
       />
     </div>
   );

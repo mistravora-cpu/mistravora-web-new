@@ -123,7 +123,7 @@ const researchMapping = {
 };
 
 const SOLUTION_SELECT =
-  "*, solution_features!solution_features_solution_id_fkey(feature), solution_technologies!solution_technologies_solution_id_fkey(technology), solution_services!solution_services_solution_id_fkey(service_name), solution_process_steps!solution_process_steps_solution_id_fkey(step), solution_pricing_packages(package_name, timeline, solution_pricing_package_features(feature))";
+  "*, solution_features!solution_features_solution_id_fkey(feature), solution_technologies!solution_technologies_solution_id_fkey(technology), solution_services!solution_services_solution_id_fkey(service_name), solution_process_steps!solution_process_steps_solution_id_fkey(step)";
 const CASE_STUDY_SELECT = "*, case_study_results!case_study_results_case_study_id_fkey(result), case_study_technologies!case_study_technologies_case_study_id_fkey(technology)";
 const POST_SELECT = "*, post_tags!post_tags_post_id_fkey(tag)";
 const INDUSTRY_SELECT = "*, industry_challenges!industry_challenges_industry_id_fkey(challenge), industry_solutions!industry_solutions_industry_id_fkey(solution)";
@@ -133,17 +133,7 @@ const RESEARCH_SELECT = "*, research_tags!research_tags_research_id_fkey(tag)";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSolution(row: any): Solution {
-  const result = mapChildArrays(row, solutionMapping) as Record<string, unknown>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const packages = (row.solution_pricing_packages ?? []) as any[];
-  (result as Record<string, unknown>).pricing_packages = packages.map((p) => ({
-    package_name: p.package_name,
-    timeline: p.timeline ?? "",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    package_features: (p.solution_pricing_package_features ?? []).map((f: any) => f.feature).filter(Boolean),
-  }));
-  delete (result as Record<string, unknown>).solution_pricing_packages;
-  return result as unknown as Solution;
+  return mapChildArrays(row, solutionMapping) as unknown as Solution;
 }
 
 // ─── Cached public queries ─────────────────────────────────────────────
@@ -188,18 +178,6 @@ function sortPosts<T extends { sort_order?: number | null }>(rows: T[]): T[] {
   return [...rows].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 }
 
-const _getPosts = unstable_cache(
-  async (): Promise<Post[]> => {
-    const supabase = createPublicClient();
-    const rows = await queryRows(
-      supabase.from("posts").select(POST_SELECT).order("published_at", { ascending: false })
-    );
-    return sortPosts(rows).map((r) => ({...mapChildArrays(r, postMapping),cover_image:primaryContentImage(r.cover_image,r.body)}) as unknown as Post);
-  },
-  ["posts-privacy-review"],
-  { revalidate: CACHE_TTL, tags: CACHE_TAGS }
-);
-
 const _getPublishedPosts = unstable_cache(
   async (): Promise<Post[]> => {
     const supabase = createPublicClient();
@@ -238,17 +216,6 @@ const _getHeroSection = unstable_cache(
     );
   },
   ["hero-section-privacy-review"],
-  { revalidate: CACHE_TTL, tags: CACHE_TAGS }
-);
-
-const _getAllHeroSections = unstable_cache(
-  async (): Promise<HeroSection[]> => {
-    const supabase = createPublicClient();
-    return queryRows(
-      supabase.from("hero_sections").select("*").order("page", { ascending: true })
-    );
-  },
-  ["all-hero-sections-privacy-review"],
   { revalidate: CACHE_TTL, tags: CACHE_TAGS }
 );
 
@@ -461,11 +428,9 @@ const _getTestimonials = unstable_cache(
 
 export function getSolutions(publishedOnly = false) { return _getSolutions(publishedOnly); }
 export function getCaseStudies(publishedOnly = false) { return _getCaseStudies(publishedOnly); }
-export function getPosts() { return _getPosts(); }
 export function getPublishedPosts() { return _getPublishedPosts(); }
 export function getJobs(publishedOnly = false) { return _getJobs(publishedOnly); }
 export function getHeroSection(page: string) { return _getHeroSection(page); }
-export function getAllHeroSections() { return _getAllHeroSections(); }
 export function getValueCards(publishedOnly = false) { return _getValueCards(publishedOnly); }
 export function getStatistics(publishedOnly = false) { return _getStatistics(publishedOnly); }
 export function getCoreValues(publishedOnly = false) { return _getCoreValues(publishedOnly); }

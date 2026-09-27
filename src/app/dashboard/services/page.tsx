@@ -3,7 +3,6 @@ import { CrudManager, type FieldDef } from "../crud-manager";
 export const metadata = { title: "Services", robots: { index: false } };
 const fields: FieldDef[] = [{ name: "title", label: "Title", type: "text", required: true },
 { name: "slug", label: "Slug", type: "text", required: true },
-{ name: "tagline", label: "Tagline", type: "text" },
 { name: "description", label: "Description", type: "richtext" },
 { name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
 { name: "cover_image", label: "Primary image (catalog and detail page)", type: "image" },

@@ -64,7 +64,7 @@ export function SettingsEditor({ groups, initialData }: Props) {
             <div className="flex flex-col gap-3">
               {group.fields.map((field) => {
                 const value = values[field.key] ?? "";
-                const isSet = value.length > 0;
+                const isSet = field.type === "boolean" ? value === "true" : value.length > 0;
                 return (
                   <div key={field.key} className="flex flex-col gap-1.5">
                     <div className="flex items-center justify-between">
@@ -78,7 +78,7 @@ export function SettingsEditor({ groups, initialData }: Props) {
                             : "rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
                         }
                       >
-                        {isSet ? "Active" : "Not set"}
+                        {field.type === "boolean" ? (isSet ? "Enabled" : "Disabled") : (isSet ? "Set" : "Not set")}
                       </span>
                     </div>
                     {field.type === "textarea" ? (

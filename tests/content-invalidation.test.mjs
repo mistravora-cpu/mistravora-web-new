@@ -26,6 +26,7 @@ function load({authorized = true, fail = false} = {}) {
       captureIndexNowPaths: async () => ['/policies/previous-slug'],
       queueIndexNow: (...args) => notifications.push(args),
     };
+    if(name === '@/lib/hero-pages') return loadReviewModule('src/lib/hero-pages.ts');
     if(name === '@/lib/review-save') return loadReviewModule('src/lib/review-save.ts');
     if(name === '@/lib/reviews') return loadReviewModule('src/lib/reviews.ts');
     if(name === '@/lib/requirements/notification-config') return {quoteRecipientsSchema:{parse:v=>v}};
@@ -129,4 +130,18 @@ test('research publication dates support immediate publication and Sri Lanka cal
   const {actions,writes}=load();
   assert.ok((await actions.upsertRow('research',{published_at:'not a date'},'existing')).error);
   assert.equal(writes.length,0);
+});
+
+
+test('hero content only saves for a page with a public renderer', async () => {
+  for (const page of ['home', 'about', 'research']) {
+    const {actions,writes}=load();
+    assert.equal((await actions.upsertRow('hero_sections',{page,headline:'Updated'})).error,null);
+    assert.equal(writes.length,1);
+  }
+  for (const page of ['services', 'nonexistent']) {
+    const {actions,writes}=load();
+    assert.ok((await actions.upsertRow('hero_sections',{page,headline:'Hidden'})).error);
+    assert.equal(writes.length,0);
+  }
 });

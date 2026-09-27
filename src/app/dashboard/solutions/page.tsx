@@ -40,7 +40,7 @@ export default async function SolutionsAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Solutions</h1>
         <p className="text-sm text-muted-foreground">
-          Manage services with icons, images, features, technologies, and pricing packages.
+          Manage solution images, descriptions, features, technologies and delivery steps.
         </p>
       </div>
       <CrudManager

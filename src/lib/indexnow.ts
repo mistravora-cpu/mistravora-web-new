@@ -36,7 +36,6 @@ const staticPaths: Record<string, string[]> = {
 const sharedTables = new Set([
   "settings", "page_seo", "hero_sections", "testimonials", "faqs", "social_media",
   "solution_features", "solution_technologies", "solution_services", "solution_process_steps",
-  "solution_pricing_packages", "solution_pricing_package_features", "solution_demo_links",
   "case_study_results", "case_study_technologies", "post_tags", "industry_challenges",
   "industry_solutions", "pricing_tier_features", "demo_app_features", "research_tags",
   "knowledge_base_tags", "service_features", "service_technologies", "service_faqs",

@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 const columns: ColumnDef[] = [
   { name: "title", label: "Title" },
   { name: "category", label: "Category" },
-  { name: "featured", label: "Featured" },
   { name: "published", label: "Active" },
 ];
 
@@ -19,12 +18,9 @@ const fields: FieldDef[] = [
   { name: "slug", label: "Slug", required: true, placeholder: "my-resource" },
   { name: "category", label: "Category", placeholder: "Guides / White Papers / Webinars" },
   { name: "description", label: "Description", type: "richtext" },
-  { name: "icon", label: "Icon", type: "icon" },
   { name: "cover_image", label: "Cover Image", type: "image" },
-  { name: "file_url", label: "File URL", type: "image" },
-  { name: "downloads", label: "Downloads", type: "number" },
+  { name: "file_url", label: "Download file URL (HTTPS)", type: "text" },
   { name: "sort_order", label: "Sort Order", type: "number" },
-  { name: "featured", label: "Featured", type: "boolean" },
   { name: "published", label: "Active", type: "boolean" },
 ];
 

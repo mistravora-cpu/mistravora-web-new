@@ -1,9 +1,3 @@
-export type PricingPackage = {
-  package_name: string;
-  timeline: string;
-  package_features: string[];
-};
-
 export type Solution = {
   id: string;
   title: string;
@@ -20,7 +14,6 @@ export type Solution = {
   features: string[];
   services: string[];
   process_steps: string[];
-  pricing_packages: PricingPackage[];
   published: boolean;
   created_at: string;
   updated_at: string;
@@ -224,8 +217,7 @@ export type Resource = {
   slug: string;
   category: string;
   description: string | null;
-  featured: boolean;
-  downloads: number;
+  cover_image: string | null;
   file_url: string | null;
   sort_order: number;
   published: boolean;
