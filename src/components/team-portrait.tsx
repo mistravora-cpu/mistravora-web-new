@@ -22,7 +22,7 @@ export function TeamPortrait({
         alt={`${name}, ${role} at ${company}`}
         width={864}
         height={1080}
-        quality={85}
+        unoptimized
         sizes={
           profile
             ? "(min-width: 1024px) 432px, (min-width: 768px) 38vw, min(calc(100vw - 32px), 432px)"

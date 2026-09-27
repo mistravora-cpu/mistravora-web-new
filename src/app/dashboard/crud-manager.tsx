@@ -65,7 +65,9 @@ function ImageField({
   value,
   onChange,
   onUploading,
+  preserveOriginal = false,
 }: {
+  preserveOriginal?: boolean;
   id: string;
   name: string;
   label: string;
@@ -88,6 +90,7 @@ function ImageField({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      if (preserveOriginal) formData.append("preserve_original", "true");
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = (await res.json()) as { url?: string; error?: string };
@@ -444,6 +447,7 @@ export function CrudManager({
                   />
                 ) : f.type === "image" ? (
                   <ImageField
+                    preserveOriginal={table === "team_members" && f.name === "photo"}
                     id={`${formId}-${f.name}`}
                     name={f.name}
                     label={f.label}

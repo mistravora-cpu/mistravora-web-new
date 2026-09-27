@@ -62,7 +62,8 @@ const QUALITY = 82;
 async function optimizeImage(
   buffer: Buffer,
   extension: string,
-  contentType: string
+  contentType: string,
+  preserveOriginal = false
 ): Promise<{ buffer: Buffer; extension: string; contentType: string }> {
   // Skip SVGs — they're already vector and tiny
   if (extension === "svg" || contentType === "image/svg+xml") {
@@ -79,6 +80,18 @@ async function optimizeImage(
 
     // Get metadata to decide if resizing is needed
     const metadata = await image.metadata();
+    if (preserveOriginal) {
+      // Decode to validate the upload, but store the original bytes and dimensions.
+      await image.stats();
+      const formats: Record<string, [string, string]> = {
+        jpeg: ["jpg", "image/jpeg"], png: ["png", "image/png"],
+        webp: ["webp", "image/webp"], gif: ["gif", "image/gif"],
+        heif: ["avif", "image/avif"], avif: ["avif", "image/avif"],
+      };
+      const format = formats[metadata.format ?? ""];
+      if (!format) throw new Error("Unsupported original image format");
+      return { buffer, extension: format[0], contentType: format[1] };
+    }
     const needsResize =
       (metadata.width && metadata.width > MAX_WIDTH) ||
       (metadata.height && metadata.height > MAX_HEIGHT);
@@ -178,7 +191,7 @@ export async function POST(request: Request) {
 
   // Optimize images (compress, resize, convert to WebP)
   let optimized: Awaited<ReturnType<typeof optimizeImage>>;
-  try { optimized = await optimizeImage(originalBuffer, originalExtension, file.type || "application/octet-stream"); }
+  try { optimized = await optimizeImage(originalBuffer, originalExtension, file.type || "application/octet-stream", formData.get("preserve_original") === "true"); }
   catch { return NextResponse.json({error:"Invalid or oversized image. Use a valid image under 40 megapixels."},{status:400}); }
   const {buffer: optimizedBuffer, extension, contentType} = optimized;
 
