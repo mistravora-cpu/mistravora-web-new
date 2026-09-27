@@ -1,5 +1,4 @@
-import { Testimonials } from "@/components/testimonials";
-import { PageFaqs } from "@/components/page-faqs";
+import { ServicesPage } from "@/components/services/services-page";
 import { applySeoOverrides } from "@/lib/seo-overrides";
 import { notFound } from "next/navigation";
 import { collections, isCollection, getCollection } from "@/lib/content";
@@ -18,6 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ section: 
 export default async function CollectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params; if (!isCollection(section)) notFound();
   const entries = await getCollection(section);
+
+  if (section === "services") return <ServicesPage entries={entries} />;
 
   /* ── Policies: dedicated animated card grid ── */
   if (section === "policies") {
@@ -91,5 +92,5 @@ export default async function CollectionPage({ params }: { params: Promise<{ sec
   }
 
   /* ── Other sections: standard content grid ── */
-  return <ContentShell {...collections[section]}><ContentGrid entries={entries} prefix={`/${section}`} />{section === "services" && <><Testimonials path="/services" inset /><PageFaqs path="/services" inset /></>}</ContentShell>;
+  return <ContentShell {...collections[section]}><ContentGrid entries={entries} prefix={`/${section}`} /></ContentShell>;
 }
