@@ -50,7 +50,6 @@ export async function generateMetadata({
       url,
       title: `${industry.title} — Software Solutions | Mistravora`,
       description: contentDescription(industry.summary,industry.description) || undefined,
-      images: industry.image ? [{ url: industry.image }] : undefined,
     },
   }));
 }

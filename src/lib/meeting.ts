@@ -6,6 +6,9 @@ export type MeetingState =
   | { ok: false; error: string }
   | null;
 
+/** Set after a successful request so the automatic invitation stops appearing. */
+export const MEETING_SUBMITTED_KEY = "mistravora:meeting-submitted";
+
 /** Custom DOM event used by any "Book a meeting" button to open the dialog. */
 export const OPEN_MEETING_EVENT = "mistravora:book-meeting";
 

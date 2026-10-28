@@ -43,10 +43,23 @@ test("meeting requests are saved as inquiries in the existing table", async () =
   assert.match(inserted[0].row.message, /^\[Meeting request\]/);
 });
 
+test("only name, company email and date are required", async () => {
+  const inserted = [];
+  const { requestMeeting, meeting } = loadAction(inserted);
+  const result = await requestMeeting(null, form({ phone: "", company: "", time: "", format: "", topic: "" }, meeting));
+  assert.equal(result.ok, true);
+  assert.match(inserted[0].row.message, /Preferred time: Any time/);
+  assert.equal(inserted[0].row.phone, null);
+  for (const missing of ["name", "email", "date"]) {
+    assert.equal((await requestMeeting(null, form({ [missing]: "" }, meeting))).ok, false, missing);
+  }
+  assert.equal(inserted.length, 1);
+});
+
 test("meeting requests are validated before any database write", async () => {
   const inserted = [];
   const { requestMeeting, meeting } = loadAction(inserted);
-  for (const overrides of [{ privacyConsent: undefined }, { date: colombo(0) }, { date: colombo(-2) }, { date: colombo(200) }, { email: "nope" }, { topic: "short" }, { time: "Midnight" }, { phone: "<script>" }]) {
+  for (const overrides of [{ privacyConsent: undefined }, { date: colombo(0) }, { date: colombo(-2) }, { date: colombo(200) }, { email: "nope" }, { time: "Midnight" }, { format: "Carrier pigeon" }, { phone: "<script>" }]) {
     const result = await requestMeeting(null, form(overrides, meeting));
     assert.equal(result.ok, false, JSON.stringify(overrides));
   }

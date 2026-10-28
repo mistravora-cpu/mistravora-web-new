@@ -37,7 +37,6 @@ export async function generateMetadata({
   const description =
     contentText(member.bio,160) ||
     `${member.name} is ${member.role} at ${site.name}.`;
-  const photo = safeUrl(member.photo) ?? undefined;
 
   return applySeoOverrides(
     withSocialMetadata({
@@ -49,13 +48,11 @@ export async function generateMetadata({
         url,
         title: `${member.name} — ${member.role}`,
         description,
-        images: photo ? [{ url: photo, alt: `${member.name}, ${member.role}` }] : undefined,
       },
       twitter: {
         card: "summary_large_image",
         title: `${member.name} — ${member.role}`,
         description,
-        images: photo ? [photo] : undefined,
       },
     })
   );

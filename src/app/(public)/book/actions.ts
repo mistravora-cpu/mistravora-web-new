@@ -15,9 +15,9 @@ const schema = z.object({
   phone: z.string().trim().max(30).regex(/^[+\d\s()-]*$/),
   company: z.string().trim().max(150),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  time: z.enum(meetingTimes),
-  format: z.enum(meetingFormats),
-  topic: z.string().trim().min(10).max(2000),
+  time: z.union([z.enum(meetingTimes), z.literal("")]),
+  format: z.union([z.enum(meetingFormats), z.literal("")]),
+  topic: z.string().trim().max(2000),
 });
 
 /** Store a meeting request as an inquiry so the team sees it in the existing dashboard. */
@@ -28,7 +28,7 @@ export async function requestMeeting(_prev: MeetingState, formData: FormData): P
   if (formData.get("privacyConsent") !== "yes") return { ok: false, error: "Please confirm that we may contact you about this meeting." };
 
   const parsed = schema.safeParse(Object.fromEntries(["name", "email", "phone", "company", "date", "time", "format", "topic"].map(k => [k, String(formData.get(k) ?? "")])));
-  if (!parsed.success) return { ok: false, error: "Please check your name, email, preferred date and a short description (at least 10 characters)." };
+  if (!parsed.success) return { ok: false, error: "Please enter your name, a valid company email and choose a date." };
   const { name, email, phone, company, date, time, format, topic } = parsed.data;
 
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Colombo" });
@@ -38,10 +38,10 @@ export async function requestMeeting(_prev: MeetingState, formData: FormData): P
   const message = [
     "[Meeting request]",
     `Preferred date: ${date} (Sri Lanka time)`,
-    `Preferred time: ${time}`,
-    `Meeting format: ${format}`,
+    `Preferred time: ${time || "Any time"}`,
+    `Meeting format: ${format || "No preference"}`,
     "",
-    topic,
+    topic || "(No topic provided)",
   ].join("\n");
 
   try {

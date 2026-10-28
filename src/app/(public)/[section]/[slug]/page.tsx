@@ -11,7 +11,7 @@ import { collections, isCollection, getCollection } from "@/lib/content";
 import { ContentGrid, ContentShell } from "@/components/content-page";
 import { ShareButton } from "@/components/share-button";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { jsonLd, pageMetadata, withSocialMetadata } from "@/lib/seo";
+import { jsonLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ArrowLeft, Calendar, FileText, Shield } from "lucide-react";
 export const revalidate = 300;
@@ -22,7 +22,7 @@ async function load(params: Promise<{ section: string; slug: string }>) {
   return { section, entry, related: entries.filter(e => e.slug !== slug && (!entry.category || e.category === entry.category)).slice(0, 3) };
 }
 export async function generateMetadata({ params }: { params: Promise<{ section: string; slug: string }> }) {
-  const { section, entry } = await load(params); const metadata=pageMetadata(entry.title,contentDescription(entry.description,entry.body),`/${section}/${entry.slug}`); return applySeoOverrides(entry.image ? withSocialMetadata({...metadata,openGraph:{...metadata.openGraph,images:[{url:entry.image,alt:entry.title}]},twitter:{...metadata.twitter,images:[entry.image]}}) : metadata);
+  const { section, entry } = await load(params); const metadata=pageMetadata(entry.title,contentDescription(entry.description,entry.body),`/${section}/${entry.slug}`); return applySeoOverrides(metadata);
 }
 
 /** Parse policy body into structured sections with headings */

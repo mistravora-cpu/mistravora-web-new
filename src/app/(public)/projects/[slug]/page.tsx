@@ -41,13 +41,11 @@ export async function generateMetadata({
       url,
       title: cs.title,
       description,
-      images: cs.cover_image ? [{ url: cs.cover_image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: cs.title,
       description,
-      images: cs.cover_image ? [cs.cover_image] : undefined,
     },
   }));
 }

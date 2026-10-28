@@ -4,21 +4,23 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { CalendarClock, X } from "lucide-react";
-import { OPEN_MEETING_EVENT } from "@/lib/meeting";
-import { getConsentSnapshot } from "@/lib/consent";
+import { MEETING_SUBMITTED_KEY, OPEN_MEETING_EVENT } from "@/lib/meeting";
+import { getConsentSnapshot, subscribeConsent } from "@/lib/consent";
 import { trackEvent } from "@/lib/track-event";
 
-const MeetingForm = dynamic(() => import("./meeting-form").then(m => m.MeetingForm), {
+const loadForm = () => import("./meeting-form").then(m => m.MeetingForm);
+const MeetingForm = dynamic(loadForm, {
   ssr: false,
   loading: () => <div className="h-96 animate-pulse rounded-lg bg-muted/50" aria-hidden />,
 });
 
-const PROMPT_KEY = "mistravora:meeting-prompt";
-const PROMPT_INTERVAL = 14 * 86_400_000;
+const PROMPT_DELAY = 4500;
 const NO_PROMPT = /^\/(book|contact|dashboard|admin|login|unsubscribe)(\/|$)/;
+// One automatic invitation per page load (a refresh starts a new load).
+let promptedThisLoad = false;
 
-function promptedRecently() {
-  try { return Date.now() - Number(localStorage.getItem(PROMPT_KEY) ?? 0) < PROMPT_INTERVAL; } catch { return true; }
+function alreadySubmitted() {
+  try { return Boolean(localStorage.getItem(MEETING_SUBMITTED_KEY)); } catch { return false; }
 }
 
 export function MeetingDialog() {
@@ -31,7 +33,6 @@ export function MeetingDialog() {
     if (!dialog || dialog.open) return;
     setMounted(true);
     dialog.showModal();
-    try { localStorage.setItem(PROMPT_KEY, String(Date.now())); } catch {}
     trackEvent("meeting_dialog_open", { source });
   }, []);
 
@@ -53,29 +54,29 @@ export function MeetingDialog() {
     };
   }, [open]);
 
-  // A single, gentle invitation for engaged visitors: after 40 s on the site or
-  // after reading most of a page. Never on forms, admin pages or before the
-  // visitor has answered the cookie banner.
+  // Invitation 5 seconds after each page load (including a refresh). Never on
+  // forms or admin pages, never on top of the cookie banner (it waits for the
+  // visitor's choice), and not again once a request has been sent.
   React.useEffect(() => {
-    if (NO_PROMPT.test(pathname) || promptedRecently()) return;
-    let fired = false;
+    if (promptedThisLoad || NO_PROMPT.test(pathname) || alreadySubmitted()) return;
+    let unsubscribe: (() => void) | undefined;
     const fire = () => {
-      if (fired || getConsentSnapshot() === null || document.querySelector("dialog[open]")) return;
-      fired = true;
-      cleanup();
+      if (promptedThisLoad) return;
+      if (getConsentSnapshot() === null || document.querySelector("dialog[open]")) {
+        unsubscribe ??= subscribeConsent(() => { if (getConsentSnapshot() !== null) window.setTimeout(fire, 600); });
+        return;
+      }
+      promptedThisLoad = true;
+      unsubscribe?.();
       open("prompt");
     };
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      if (max > 600 && window.scrollY / max > 0.65) fire();
-    };
-    const timer = window.setTimeout(fire, 40_000);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    function cleanup() {
+    const preload = window.setTimeout(() => { void loadForm(); }, PROMPT_DELAY - 1500);
+    const timer = window.setTimeout(fire, PROMPT_DELAY);
+    return () => {
+      window.clearTimeout(preload);
       window.clearTimeout(timer);
-      window.removeEventListener("scroll", onScroll);
-    }
-    return cleanup;
+      unsubscribe?.();
+    };
   }, [pathname, open]);
 
   return (
@@ -84,7 +85,7 @@ export function MeetingDialog() {
       id="book-meeting"
       aria-labelledby="book-meeting-title"
       onClick={(event) => { if (event.target === ref.current) ref.current?.close(); }}
-      className="meeting-dialog m-auto w-[min(40rem,calc(100vw-1.5rem))] max-h-[calc(100svh-1.5rem)] overflow-y-auto rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm"
+      className="meeting-dialog m-auto w-[min(34rem,calc(100vw-1.5rem))] max-h-[calc(100svh-1.5rem)] overflow-y-auto rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm"
     >
       <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border bg-card/95 px-5 py-4 backdrop-blur sm:px-7">
         <div className="flex items-start gap-3">
@@ -100,7 +101,7 @@ export function MeetingDialog() {
           <X aria-hidden className="h-5 w-5" />
         </button>
       </div>
-      <div className="px-5 py-5 sm:px-7 sm:py-6">{mounted && <MeetingForm compact />}</div>
+      <div className="px-5 py-5 sm:px-7 sm:py-6">{mounted && <MeetingForm />}</div>
     </dialog>
   );
 }

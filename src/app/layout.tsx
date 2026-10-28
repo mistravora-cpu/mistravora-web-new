@@ -61,10 +61,10 @@ const baseMetadata: Metadata = {
       "Mistravora builds high-performance software, web platforms, and digital products for ambitious businesses.",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/share/home",
         width: 1200,
         height: 630,
-        alt: "Mistravora Official Logo and Brand Identity",
+        alt: "Mistravora — software development, websites, mobile apps and digital marketing",
       },
     ],
   },
@@ -73,7 +73,7 @@ const baseMetadata: Metadata = {
     title: "Mistravora",
     description:
       "Mistravora builds high-performance software, web platforms, and digital products.",
-    images: ["/twitter-image"],
+    images: ["/share/home"],
   },
   robots: {
     index: true,

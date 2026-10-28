@@ -43,7 +43,6 @@ export async function generateMetadata({
       url,
       title: post.title,
       description,
-      images: post.cover_image ? [{ url: post.cover_image }] : undefined,
       publishedTime: post.published_at ?? undefined,
       modifiedTime: post.updated_at,
       authors: post.author ? [post.author] : undefined,
@@ -52,7 +51,6 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description,
-      images: post.cover_image ? [post.cover_image] : undefined,
     },
   }));
 }

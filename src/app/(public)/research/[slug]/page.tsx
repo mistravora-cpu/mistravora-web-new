@@ -44,13 +44,11 @@ export async function generateMetadata({
       publishedTime: research.published_at ?? undefined,
       modifiedTime: research.updated_at,
       authors: research.author ? [research.author] : undefined,
-      images: research.cover_image ? [{ url: research.cover_image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: research.title,
       description: research.summary,
-      images: research.cover_image ? [research.cover_image] : undefined,
     },
   }));
 }

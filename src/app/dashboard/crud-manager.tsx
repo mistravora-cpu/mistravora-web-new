@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { upsertRow, deleteRow } from "./crud-actions";
 import { previewContent } from "./content-preview-action";
 import { trackButtonClick } from "@/lib/track-event";
+import { ICON_NAMES } from "@/lib/icon-map";
 
 export type FieldDef = {
   name: string;
@@ -18,21 +19,7 @@ export type FieldDef = {
 
 const BOOLEAN_FIELDS = ["published", "active", "popular", "featured", "archived"];
 
-const LUCIDE_ICONS = [
-  "Target", "Shield", "Lightbulb", "Users", "Globe", "Heart", "Award", "Zap",
-  "Code2", "PenTool", "Rocket", "Search", "ShoppingBag", "Hotel", "Factory",
-  "Star", "CheckCircle", "GraduationCap", "Coffee", "Briefcase",
-  "Mail", "Phone", "MapPin", "MessageCircle", "Clock", "DollarSign",
-  "LayoutDashboard", "ShoppingCart", "Smartphone", "Bot", "HeartHandshake",
-  "Gauge", "TrendingUp", "Calculator", "ArrowRight", "Sparkles", "Compass",
-  "Cloud", "Database", "Server", "Cpu", "Lock", "Key", "Eye", "Settings",
-  "FileText", "Image", "Video", "Music", "Camera", "Mic", "Headphones",
-  "Wrench", "Hammer", "Building2", "Home", "Store", "Truck", "Plane",
-  "Anchor", "Battery", "Wifi", "Bluetooth", "Printer", "Scan",
-  "BarChart", "PieChart", "Activity", "TrendingDown", "Filter", "Sort",
-  "Plus", "Minus", "X", "Check", "Edit", "Trash", "Save", "Download",
-  "Upload", "ExternalLink", "Link", "Unlink", "Share", "Bookmark",
-];
+const LUCIDE_ICONS = ICON_NAMES;
 
 export type ColumnDef = {
   name: string;
