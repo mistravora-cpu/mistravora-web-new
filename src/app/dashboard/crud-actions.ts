@@ -215,7 +215,7 @@ export async function upsertRow(
     delete parentData.website_url;
   }
 
-  if (table === "research" && "published_at" in parentData) {
+  if ((table === "research" || table === "posts" || table === "knowledge_base") && "published_at" in parentData) {
     const value = typeof parentData.published_at === "string" ? parentData.published_at.trim() : "";
     if (!value) parentData.published_at = null;
     else {

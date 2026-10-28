@@ -29,7 +29,7 @@ const fields: FieldDef[] = [
   { name: "category", label: "Category", placeholder: "Technical" },
   { name: "read_time", label: "Read Time", placeholder: "6 min read" },
   { name: "tags", label: "Tags (comma-separated)", type: "list", placeholder: "PWA, Mobile Apps" },
-  { name: "published_at", label: "Publish Date", placeholder: "2025-07-29" },
+  { name: "published_at", label: "Publish date (Sri Lanka time; blank publishes immediately)", placeholder: "2026-10-29" },
   { name: "sort_order", label: "Sort Order", type: "number" },
   { name: "featured", label: "Featured", type: "boolean" },
   { name: "published", label: "Active", type: "boolean" },

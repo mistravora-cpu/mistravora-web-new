@@ -132,6 +132,19 @@ test('research publication dates support immediate publication and Sri Lanka cal
   assert.equal(writes.length,0);
 });
 
+test('blog and knowledge base publish dates use the Sri Lanka calendar', async () => {
+  for (const table of ['posts','knowledge_base']) {
+    for (const [input, expected] of [['',null], ['2026-10-29','2026-10-28T18:30:00.000Z'], ['2026-10-29T09:00:00Z','2026-10-29T09:00:00.000Z']]) {
+      const {actions,writes}=load();
+      assert.equal((await actions.upsertRow(table,{published_at:input},'existing')).error,null);
+      assert.equal(writes.find(row=>row.table===table).data.published_at,expected);
+    }
+    const {actions,writes}=load();
+    assert.ok((await actions.upsertRow(table,{published_at:'not a date'},'existing')).error);
+    assert.equal(writes.length,0);
+  }
+});
+
 
 test('hero content only saves for a page with a public renderer', async () => {
   for (const page of ['home', 'about', 'research']) {
