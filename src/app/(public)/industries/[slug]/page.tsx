@@ -106,7 +106,7 @@ export default async function IndustryPage({
           )}
 
           {industry.description && (
-            <div className="mt-8 text-base leading-8 text-muted-foreground"><ArticleBody body={industry.description ?? ""} title="Industry details" /></div>
+            <div className="mt-8 text-base leading-8 text-muted-foreground"><ArticleBody body={industry.description ?? ""} title="Industry details" omitImage={industry.image} /></div>
           )}
         </ScrollReveal>
 

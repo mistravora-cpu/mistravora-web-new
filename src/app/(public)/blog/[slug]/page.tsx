@@ -11,13 +11,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
-import { getPostBySlug } from "@/lib/services";
+import { getPostBySlug, getPublishedPosts } from "@/lib/services";
 import { site } from "@/lib/site";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 300;
+export async function generateStaticParams() {
+  return (await getPublishedPosts().catch(() => [])).map(({ slug }) => ({ slug }));
+}
 
 export async function generateMetadata({
   params,
@@ -78,9 +81,9 @@ export default async function BlogPostPage({
           </Button>
 
           {post.category && (
-            <span className="eyebrow">
+            <p className="eyebrow">
               {post.category}
-            </span>
+            </p>
           )}
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             {post.title}
@@ -119,6 +122,7 @@ export default async function BlogPostPage({
             <Image
               src={post.cover_image}
               alt={post.title}
+              priority
               width={1600}
               height={900}
               sizes="(max-width: 640px) calc(100vw - 32px), calc(100vw - 64px)"
@@ -134,7 +138,7 @@ export default async function BlogPostPage({
 
           {post.body && (
             <div className="mt-8 max-w-none text-base leading-7 text-foreground/90 [&_a]:text-primary [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-4 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground">
-              <ArticleBody body={post.body} title={post.title} showContents />
+              <ArticleBody body={post.body} title={post.title} showContents omitImage={post.cover_image} />
             </div>
           )}
 

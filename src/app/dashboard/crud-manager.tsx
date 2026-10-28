@@ -198,8 +198,8 @@ function ContentImageInsert({ bodyId, onInsert, onUploading }: {
       const body = document.getElementById(bodyId) as HTMLTextAreaElement | null;
       if (position.current === null && body) position.current = body.selectionStart;
     }}>
-      <legend className="px-1 text-sm font-medium">Add an image</legend>
-      <p className="text-xs text-muted-foreground">Place the cursor in the content above, then add an image. Add more images wherever they help explain the content. Include a useful description for each image.</p>
+      <legend className="px-1 text-sm font-medium">Add an image inside the content (optional)</legend>
+      <p className="text-xs text-muted-foreground">Only for extra images within the text. The main image is set in its own field and appears automatically — you don&apos;t need to add it here. Place the cursor in the content above, then insert the image with a short description.</p>
       <label htmlFor={`${id}-image`} className="text-xs">Image upload or URL</label>
       <ImageField id={`${id}-image`} name="screenshot" label="Content image" value={url} onChange={(_, value) => setUrl(String(value))} onUploading={onUploading} />
       <label htmlFor={`${id}-caption`} className="text-xs">Description / caption</label>

@@ -5,7 +5,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { CalendarClock, Menu, X } from "lucide-react";
 import { mainNav } from "@/lib/site";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -97,6 +97,12 @@ export function SiteHeader() {
         {/* Right side actions */}
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <ThemeToggle />
+          <Button asChild size="sm" variant="outline" className="hidden shrink-0 lg:inline-flex">
+            <Link prefetch={false} href="/book" data-book-meeting>
+              <CalendarClock aria-hidden className="h-4 w-4" />
+              Book a meeting
+            </Link>
+          </Button>
           <Button asChild size="sm" className="ripple-click hidden shrink-0 sm:inline-flex">
             <Link prefetch={false} href="/contact">Get in touch</Link>
           </Button>
@@ -136,6 +142,15 @@ export function SiteHeader() {
                     {item.title}
                   </Link>
                 ))}
+                <Link
+                  href="/book"
+                  data-book-meeting
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-1.5 flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-center text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <CalendarClock aria-hidden className="h-4 w-4" />
+                  Book a meeting
+                </Link>
                 <Link
                   href="/contact"
                   onClick={() => setMobileOpen(false)}

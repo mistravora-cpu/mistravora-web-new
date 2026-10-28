@@ -47,7 +47,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tools/website-audit",
   ];
 
-  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
+  // Empty CMS catalogues are thin pages; list them only once they have content.
+  const emptyCatalogues = new Set(contentGroups.filter(group => group.entries.length === 0).map(group => `/${group.key}`));
+  const staticEntries: MetadataRoute.Sitemap = staticRoutes.filter(route => !emptyCatalogues.has(route)).map((route) => ({
     url: `${site.url}${route}`,
     changeFrequency: route === "/" ? "weekly" : "monthly",
     priority: route === "/" ? 1 : route === "/solutions" ? 0.9 : 0.7,

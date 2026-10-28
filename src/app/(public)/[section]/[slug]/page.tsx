@@ -173,10 +173,10 @@ export default async function DetailPage({ params }: { params: Promise<{ section
       <>
         {entry.updated && <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Updated <time dateTime={entry.updated}>{entry.updated.slice(0, 10)}</time></p>}
         {entry.image && (
-          <figure className="relative mt-10 aspect-video w-full overflow-hidden rounded-2xl bg-muted/30"><Image src={entry.image} alt={`${entry.title} overview`} fill sizes="(max-width: 768px) calc(100vw - 32px), 90vw" className="object-contain" /></figure>
+          <figure className="relative mt-10 aspect-video w-full overflow-hidden rounded-2xl bg-muted/30"><Image src={entry.image} alt={`${entry.title} overview`} fill priority sizes="(max-width: 768px) calc(100vw - 32px), 90vw" className="object-contain" /></figure>
         )}
         {entry.intro && <div className="mt-8"><ArticleBody body={entry.intro} title={`${entry.title} introduction`} /></div>}
-        {entry.body && <div className="mt-10 w-full min-w-0 text-base leading-8 text-foreground/90"><ArticleBody body={entry.body} title={entry.title} /></div>}
+        {entry.body && <div className="mt-10 w-full min-w-0 text-base leading-8 text-foreground/90"><ArticleBody body={entry.body} title={entry.title} omitImage={entry.image} /></div>}
         {!!entry.features?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">What&apos;s included</h2><ul className="mt-5 grid gap-2.5 sm:grid-cols-2">{entry.features.map(f => <li key={f} className="flex items-start gap-2.5 text-sm leading-6 text-foreground/85"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" aria-hidden />{f}</li>)}</ul></section>}
         {!!entry.technologies?.length && <section className="mt-12"><h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Technologies</h2><div className="mt-5 flex flex-wrap gap-2">{entry.technologies.map(t => <span key={t} className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground/80">{t}</span>)}</div></section>}
         {!!entry.services?.length && <section className="mt-12"><h2 className="text-xl font-semibold">Included services</h2><ul className="mt-5 grid gap-3 sm:grid-cols-2">{entry.services.map((service,index)=><li key={index} className="rounded-xl border border-border p-4 text-sm">{service}</li>)}</ul></section>}

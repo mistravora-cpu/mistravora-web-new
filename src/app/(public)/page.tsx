@@ -10,7 +10,7 @@ import { site } from "@/lib/site";
 import { Testimonials } from "@/components/testimonials";
 import { PageFaqs } from "@/components/page-faqs";
 import { ValueCards } from "@/components/value-cards";
-import { withSocialMetadata } from "@/lib/seo";
+import { titleText, withSocialMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -182,7 +182,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: contentText(profile.intro, 160),
     alternates: { canonical: site.url },
   }));
-  const title = typeof metadata.title === "string" ? metadata.title : profile.seoTitle || profile.name;
+  const title = titleText(metadata.title) ?? (profile.seoTitle || profile.name);
   // The homepage title already names the company; bypass the inherited suffix.
   return { ...metadata, title: { absolute: title }, openGraph: { ...metadata.openGraph, title }, twitter: { ...metadata.twitter, title } };
 }

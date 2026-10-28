@@ -30,7 +30,7 @@ const staticPaths: Record<string, string[]> = {
   statistics: ["/", "/about"], value_cards: ["/"], core_values: ["/about"],
   trusted_companies: ["/"], tech_stack: ["/about"], demo_apps: ["/demos"],
   pricing_tiers: ["/pricing"], pricing_notes: ["/pricing"], pricing_addons: ["/pricing"],
-  booking_slots: ["/book"], contact_info: ["/contact"],
+  contact_info: ["/contact"],
 };
 // These changes can affect several public pages; use the published sitemap.
 const sharedTables = new Set([

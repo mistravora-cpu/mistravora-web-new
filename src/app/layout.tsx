@@ -16,10 +16,10 @@ import { site } from "@/lib/site";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  // Avoid a late font swap moving the hero on slow connections.
-  display: "optional",
-  // Optional fonts may not be used on the first visit; load through CSS on demand.
-  preload: false,
+  // One typeface on every page and every visit. The preloaded, self-hosted
+  // font arrives early and the metric-matched fallback prevents layout shift.
+  display: "swap",
+  preload: true,
   adjustFontFallback: true,
 });
 

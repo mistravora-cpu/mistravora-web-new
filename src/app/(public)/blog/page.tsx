@@ -1,4 +1,5 @@
 import { ArticleFilters } from "@/components/article-filters";
+import Image from "@/components/content-image";
 import { filterArticles, type ArticleSearchParams } from "@/lib/article-filter";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -59,13 +60,11 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
               <Link href={`/blog/${post.slug}`} className="flex flex-col gap-3">
               <article className="flex flex-col gap-3">
               {post.cover_image && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
+                <Image
                   src={post.cover_image}
-                  loading="lazy"
-                  decoding="async"
                   width={800}
                   height={450}
+                  sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) 48vw, 32vw"
                   alt={post.title}
                   className="-mx-2 -mt-2 h-40 w-[calc(100%+1rem)] rounded-t-lg object-cover"
                 />

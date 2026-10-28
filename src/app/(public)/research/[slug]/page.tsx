@@ -9,13 +9,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Microscope, Calendar, User } from "lucide-react";
-import { getResearchBySlug } from "@/lib/services";
+import { getResearch, getResearchBySlug } from "@/lib/services";
 import { site } from "@/lib/site";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+// Pre-rendered and refreshed every 5 minutes (and immediately after admin
+// saves via cache tags), so articles load instantly instead of on every request.
+export const revalidate = 300;
+export async function generateStaticParams() {
+  return (await getResearch(true).catch(() => [])).map(({ slug }) => ({ slug }));
+}
 
 export async function generateMetadata({
   params,
@@ -132,6 +137,7 @@ export default async function ResearchDetailPage({
           <Image
             src={research.cover_image}
             alt={research.title}
+            priority
             width={1600}
             height={900}
             sizes="(max-width: 640px) calc(100vw - 32px), calc(100vw - 64px)"
@@ -143,7 +149,7 @@ export default async function ResearchDetailPage({
           <div
             className="prose prose-sm max-w-none dark:prose-invert sm:prose-base prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm"
           >
-            <ArticleBody body={research.body} title={research.title} showContents />
+            <ArticleBody body={research.body} title={research.title} showContents omitImage={research.cover_image} />
           </div>
         )}
 

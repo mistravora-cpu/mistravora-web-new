@@ -1,4 +1,5 @@
 import { ArticleFilters } from "@/components/article-filters";
+import Image from "@/components/content-image";
 import { filterArticles, type ArticleSearchParams } from "@/lib/article-filter";
 import { contentText } from "@/lib/content-preview";
 import { applySeoOverrides } from "@/lib/seo-overrides";
@@ -53,8 +54,7 @@ export default async function ResearchPage({ searchParams }: { searchParams: Pro
               >
                 <Link href={`/research/${item.slug}`} className="flex flex-1 flex-col">
                   {item.cover_image && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={item.cover_image} alt={item.title} loading="lazy" decoding="async" width={800} height={450} className="aspect-video w-full rounded-t-2xl object-cover" />
+                    <Image src={item.cover_image} alt={item.title} width={800} height={450} sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) 48vw, 32vw" className="aspect-video w-full rounded-t-2xl object-cover" />
                   )}
                   {/* Header */}
                   <div className="flex items-center gap-3 border-b border-border/50 p-5">

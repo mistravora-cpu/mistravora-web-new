@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Only columns that exist in the production inquiries table.
 const columns: ColumnDef[] = [
   { name: "name", label: "Name" },
   { name: "email", label: "Email" },
+  { name: "request_type", label: "Type" },
   { name: "status", label: "Status" },
-  { name: "lead_stage", label: "Pipeline stage" },
-  { name: "deal_value", label: "Deal value (LKR)" },
   { name: "created_at", label: "Date" },
 ];
 
@@ -24,12 +24,6 @@ const fields: FieldDef[] = [
   { name: "email", label: "Email", required: true },
   { name: "phone", label: "Phone" },
   { name: "company", label: "Company" },
-  { name: "service", label: "Service" },
-  { name: "budget", label: "Budget" },
-  { name: "timeline", label: "Timeline" },
-  { name: "lead_stage", label: "Pipeline stage", type: "select", options: ["new", "qualified", "proposal", "won", "lost"] },
-  { name: "deal_value", label: "Deal value (LKR)", type: "number" },
-  { name: "notes", label: "Internal notes", type: "textarea" },
   { name: "message", label: "Message", type: "textarea" },
   { name: "status", label: "Status", type: "select", options: ["new", "read", "replied"] },
 ];
@@ -46,7 +40,7 @@ export default async function InquiriesAdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Customer Inquiries</h1>
         <p className="text-sm text-muted-foreground">
-          Contact messages and project quotation requests.
+          Contact messages, meeting requests and project quotation requests.
         </p>
       </div>
 
@@ -71,7 +65,7 @@ export default async function InquiriesAdminPage() {
         table="inquiries"
         columns={columns}
         fields={fields}
-        rows={inquiries as unknown as Record<string, unknown>[]}
+        rows={inquiries.map(i => ({ ...i, request_type: i.message.startsWith("[Meeting request]") ? "Meeting request" : "Inquiry" }))}
       />
     </div>
   );

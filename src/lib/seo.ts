@@ -40,7 +40,7 @@ type SeoEntry = {
 export function mergeSeoOverrides(base: Metadata, entry: SeoEntry): Metadata {
   const fallback = canonicalUrl(String(base.alternates?.canonical ?? site.url)) ?? site.url;
   const canonical = canonicalUrl(entry.canonical?.trim() || fallback) ?? fallback;
-  const title = contentText(entry.title) || base.title;
+  const title = contentText(entry.title) || titleText(base.title) || undefined;
   const description = contentText(entry.description) || base.description;
   const image = publicImageUrl(entry.og_image);
   return withSocialMetadata({
@@ -79,14 +79,49 @@ export function pageMetadata(
   });
 }
 
+const TITLE_SUFFIX = " | Mistravora";
+const MAX_TITLE = 60;
+const MAX_DESCRIPTION = 160;
+
+/** Shorten at a word boundary so search snippets never end mid-word. */
+export function clampText(value: string, max: number): string {
+  const text = contentText(value);
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  const space = cut.lastIndexOf(" ");
+  return `${(space > max * 0.6 ? cut.slice(0, space) : cut).replace(/[\s,;:.\-–—|]+$/, "")}…`;
+}
+
+/** Plain text of a Next.js title value (string, absolute or default). */
+export function titleText(title: Metadata["title"]): string | null {
+  if (!title) return null;
+  if (typeof title === "string") return title;
+  if ("absolute" in title && title.absolute) return title.absolute;
+  if ("default" in title && title.default) return title.default;
+  return null;
+}
+
+/**
+ * Keep search titles within ~60 characters: short titles get the brand suffix
+ * from the root template, longer ones drop it, and very long ones are shortened.
+ */
+export function searchTitle(title: Metadata["title"]): Metadata["title"] {
+  if (!title || typeof title !== "string") return title;
+  const text = contentText(title);
+  if (text.length + TITLE_SUFFIX.length <= MAX_TITLE) return text;
+  return { absolute: clampText(text, MAX_TITLE) };
+}
+
 export function withSocialMetadata(metadata: Metadata): Metadata {
-  const title = typeof metadata.title === "string" ? metadata.title : site.name;
-  const description = metadata.description ?? site.description;
+  const title = titleText(metadata.title) ?? site.name;
+  const description = clampText(String(metadata.description ?? site.description), MAX_DESCRIPTION);
   const url = canonicalUrl(String(metadata.alternates?.canonical ?? site.url)) ?? site.url;
   const path = new URL(url, site.url).pathname;
   const image = `${site.url}/share${path === "/" ? "/home" : path}`;
   return {
     ...metadata,
+    title: searchTitle(metadata.title),
+    description,
     alternates: { ...metadata.alternates, canonical: url },
     openGraph: {
       title,

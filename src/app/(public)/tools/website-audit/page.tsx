@@ -6,9 +6,9 @@ import { site } from "@/lib/site";
 import { AuditForm } from "./audit-form";
 
 const baseMetadata: Metadata = withSocialMetadata({
-  title: "AI Website Audit",
+  title: "Free Website Audit Tool",
   description:
-    "Get a free performance, accessibility, and SEO score for your website in seconds — powered by Google Lighthouse.",
+    "Check your website's SEO, accessibility, performance and security best practices for free. Get clear scores and practical fixes from Mistravora in seconds.",
   alternates: { canonical: `${site.url}/tools/website-audit` },
 });
 
@@ -17,8 +17,8 @@ export default function WebsiteAuditPage() {
     <section className="w-full site-gutter py-16">
       <PageHeader
         as="h1"
-        title="AI Website Audit"
-        description="Enter your site's URL and email — get instant Lighthouse scores on mobile, and we'll follow up with a fix plan."
+        title="Free Website Audit"
+        description="Enter your website address to get SEO, accessibility, performance and best-practice scores with a clear list of what to fix. No email required."
       />
       <div className="mt-10">
         <AuditForm />

@@ -2,6 +2,7 @@ import sanitizeHtml from "sanitize-html";
 import postcss from "postcss";
 import selectorParser from "postcss-selector-parser";
 import { publicImageUrl } from "./content-preview";
+import { isOptimizedImageHost, optimizedImageUrl } from "./image-hosts";
 
 const defaultScope = "[data-article-content]";
 function cleanCss(css: string, scope: string | null) {
@@ -18,7 +19,11 @@ function cleanCss(css: string, scope: string | null) {
         ) ||
         /\\|^(position|z-index|behavior|-moz-binding|animation.*)$/i.test(
           decl.prop,
-        )
+        ) ||
+        // Content always uses the site typeface; code samples may stay monospace.
+        (/^font(-family)?$/i.test(decl.prop) &&
+          !/^(inherit|initial|unset)$/i.test(decl.value.trim()) &&
+          !/mono|courier|consolas/i.test(decl.value))
       )
         decl.remove();
     });
@@ -86,12 +91,45 @@ function cleanCss(css: string, scope: string | null) {
   }
 }
 
+/**
+ * Remove the first occurrence of an image (and its wrapping figure) that is
+ * already displayed as the page's main image, so it is not shown twice.
+ */
+export function omitArticleImage(body: string, src: string | null | undefined): string {
+  const target = publicImageUrl(src);
+  if (!target) return body;
+  let removed = false;
+  const matches = (raw: string) => {
+    const decoded = raw.replace(/&amp;/g, "&").trim();
+    return publicImageUrl(decoded) === target;
+  };
+  const withoutFigure = body.replace(/<figure\b[^>]*>[\s\S]*?<\/figure\s*>/gi, (figure) => {
+    if (removed) return figure;
+    const imgs = [...figure.matchAll(/<img\b[^>]*?\bsrc\s*=\s*(["'])(.*?)\1[^>]*>/gi)];
+    if (imgs.length === 1 && matches(imgs[0][2])) { removed = true; return ""; }
+    return figure;
+  });
+  if (removed) return withoutFigure;
+  return body.replace(/<img\b[^>]*?\bsrc\s*=\s*(["'])(.*?)\1[^>]*>/gi, (img, _q, value: string) => {
+    if (removed || !matches(value)) return img;
+    removed = true;
+    return "";
+  });
+}
+
+type RenderOptions = {
+  /** Image already shown as the page's main image. */
+  omitImage?: string | null;
+  /** Serve allow-listed remote images through our own image optimizer. */
+  optimizeImages?: boolean;
+};
+
 /** Render readable HTML and block-local CSS on the server. No executable content. */
-export function renderArticleHtml(body: string, scope = defaultScope) {
+export function renderArticleHtml(body: string, scope = defaultScope, { omitImage, optimizeImages = false }: RenderOptions = {}) {
   if (!/^\[data-article-(?:content|scope="[a-f0-9]+")\]$/.test(scope))
     throw Error("Invalid content scope");
   const styles: string[] = [];
-  const withoutStyles = body.replace(
+  const withoutStyles = omitArticleImage(body, omitImage).replace(
     /<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi,
     (_, css: string) => {
       styles.push(cleanCss(css, scope));
@@ -132,7 +170,7 @@ export function renderArticleHtml(body: string, scope = defaultScope) {
         if (attribs.style) attribs.style = cleanCss(attribs.style, null);
         if (tagName === "img") {
           const src = publicImageUrl(attribs.src);
-          if (src) attribs.src = src;
+          if (src) attribs.src = optimizeImages && isOptimizedImageHost(src) ? optimizedImageUrl(src) : src;
           else delete attribs.src;
           attribs.alt ??= "";
           attribs.loading = "lazy";

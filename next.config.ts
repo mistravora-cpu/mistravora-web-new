@@ -1,4 +1,5 @@
 import redirects from "./src/data/redirects.json";
+import { optimizedImageHosts } from "./src/lib/image-hosts";
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -47,10 +48,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       // Cloudflare R2 — primary media storage
       ...(r2Hostname ? [{ protocol: "https" as const, hostname: r2Hostname }] : []),
-      // External client logos/cover images that may be referenced in DB
-      { protocol: "https", hostname: "shopmateapp.com" },
-      { protocol: "https", hostname: "cdn.simpleicons.org" },
-      { protocol: "https", hostname: "api.iconify.design" },
+      // External client logos, article and cover images referenced in the CMS
+      ...optimizedImageHosts.map((hostname) => ({ protocol: "https" as const, hostname })),
     ],
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],

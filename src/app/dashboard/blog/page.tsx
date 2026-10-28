@@ -22,7 +22,7 @@ const fields: FieldDef[] = [
   { name: "slug", label: "Slug", required: true, placeholder: "my-post" },
   { name: "excerpt", label: "Excerpt", type: "textarea" },
   { name: "body", label: "Content (HTML and internal CSS)", type: "richtext" },
-  { name: "cover_image", label: "Featured Image", type: "image" },
+  { name: "cover_image", label: "Main image (shown at the top of the article and on cards)", type: "image" },
   { name: "author", label: "Author", placeholder: "Mr.Shakeel" },
   { name: "author_role", label: "Author Role", placeholder: "Founder" },
   { name: "medium_url", label: "Medium Article URL (Optional)", placeholder: "https://medium.com/..." },

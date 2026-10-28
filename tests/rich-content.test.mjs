@@ -42,6 +42,26 @@ test("embedded documents preserve main styling without nesting page landmarks", 
 const { primaryContentImage, contentText, firstContent } = load(
   "src/lib/content-preview.ts",
 );
+test("content keeps the site typeface but allows monospace code", () => {
+  const { html, css } = renderArticleHtml('<style>body{font-family:Inter,Arial,sans-serif;color:#111} p{font:16px/1.5 Georgia} code{font-family:ui-monospace,Consolas,monospace}</style><p style="font-family: Times; font-weight: 700">Text</p>');
+  assert.doesNotMatch(css, /Inter|Georgia/);
+  assert.match(css, /color: ?#111/);
+  assert.match(css, /code\s*\{\s*font-family: ?ui-monospace/);
+  assert.doesNotMatch(html, /Times/);
+  assert.match(html, /font-weight: ?700/);
+});
+test("the main image is not repeated inside the article body", () => {
+  const body = '<p>Intro</p><figure><img src="https://cdn.example/a.webp?x=1&amp;y=2" alt="Main"><figcaption>Main</figcaption></figure><p>More</p><img src="https://cdn.example/b.webp" alt="Second">';
+  const main = primaryContentImage("", body);
+  const { html } = renderArticleHtml(body, undefined, { omitImage: main });
+  assert.doesNotMatch(html, /a\.webp/);
+  assert.doesNotMatch(html, /<figcaption>Main/);
+  assert.match(html, /b\.webp/);
+  const explicit = renderArticleHtml(body, undefined, { omitImage: "https://cdn.example/b.webp" }).html;
+  assert.match(explicit, /a\.webp/);
+  assert.doesNotMatch(explicit, /b\.webp/);
+  assert.match(renderArticleHtml(body, undefined, { omitImage: "https://other.example/c.webp" }).html, /a\.webp[\s\S]*b\.webp/);
+});
 test("primary image is consistent: explicit image, then first safe body image", () => {
   const body =
     '<script>"<img src="https://bad.example/tracker">"</script><img src="javascript:alert(1)"><figure><img src="https://cdn.example/photo.webp" alt="Example"></figure>';

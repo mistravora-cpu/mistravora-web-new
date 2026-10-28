@@ -3,14 +3,14 @@ import { createHash } from "node:crypto";
 import { renderArticleHtml } from "@/lib/article-html";
 
 /** Server-rendered content: no browser-side compiler or JavaScript payload. */
-export function ArticleBody({ body, title, showContents = false }: { body: string; title: string; showContents?: boolean }) {
+export function ArticleBody({ body, title, showContents = false, omitImage }: { body: string; title: string; showContents?: boolean; omitImage?: string | null }) {
   if (!/<[a-z][\s\S]*>/i.test(body))
     return <div className="whitespace-pre-wrap">{body}</div>;
   const id = createHash("sha256")
     .update(title + "\0" + body)
     .digest("hex")
     .slice(0, 16);
-  const { html, css } = renderArticleHtml(body, `[data-article-scope="${id}"]`);
+  const { html, css } = renderArticleHtml(body, `[data-article-scope="${id}"]`, { omitImage, optimizeImages: true });
   const navigation = showContents ? articleNavigation(html, `article-${id}`) : { html, headings: [] };
   return (
     <>

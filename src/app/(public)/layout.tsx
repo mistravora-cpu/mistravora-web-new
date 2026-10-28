@@ -8,6 +8,7 @@ import { RevealObserver } from "@/components/reveal-observer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatWidget } from "@/components/chat-widget-lazy";
+import { MeetingDialog } from "@/components/meeting/meeting-dialog";
 
 export default async function PublicLayout({
   children,
@@ -24,6 +25,7 @@ export default async function PublicLayout({
       <SiteHeader />
       <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col"><HeroMedia fallback />{children}</main>
       <SiteFooter />
+      <MeetingDialog />
       {profile.chatEnabled !== "false" && <ChatWidget />}
     </BusinessProfileProvider>
     </HeroMediaProvider>

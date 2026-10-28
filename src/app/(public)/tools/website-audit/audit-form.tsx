@@ -1,16 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { MessageCircle } from "lucide-react";
+import { CheckCircle2, MessageCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBusinessProfile } from "@/components/business-profile-provider";
-
-type Scores = {
-  performance: number;
-  accessibility: number;
-  bestPractices: number;
-  seo: number;
-};
+import type { AuditCheck, AuditResult } from "@/lib/site-audit";
 
 const inputClass =
   "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary/40";
@@ -41,16 +35,46 @@ function ScoreDonut({ label, score }: { label: string; score: number }) {
   );
 }
 
+function AuditChecks({ checks }: { checks: AuditCheck[] }) {
+  const failed = checks.filter(c => !c.passed);
+  const passed = checks.filter(c => c.passed);
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <div>
+        <h3 className="text-sm font-semibold">Needs attention ({failed.length})</h3>
+        {failed.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">No issues found in this check.</p> : (
+          <ul className="mt-3 space-y-3">
+            {failed.map(check => (
+              <li key={check.label} className="flex gap-2 text-sm">
+                <XCircle aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+                <span><span className="font-medium">{check.label}</span><span className="block text-muted-foreground">{check.advice}</span></span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div>
+        <h3 className="text-sm font-semibold">Passed ({passed.length})</h3>
+        <ul className="mt-3 space-y-2">
+          {passed.map(check => (
+            <li key={check.label} className="flex gap-2 text-sm text-muted-foreground">
+              <CheckCircle2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              {check.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 export function AuditForm() {
   const site = useBusinessProfile();
   const [url, setUrl] = React.useState("");
   const [auditConsent, setAuditConsent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [result, setResult] = React.useState<{
-    url: string;
-    scores: Scores;
-  } | null>(null);
+  const [result, setResult] = React.useState<AuditResult | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,18 +88,14 @@ export function AuditForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, auditConsent }),
       });
-      const data = (await response.json()) as {
-        url?: string;
-        scores?: Scores;
-        error?: string;
-      };
+      const data = (await response.json().catch(() => ({}))) as Partial<AuditResult> & { error?: string };
 
       if (!response.ok || !data.scores || !data.url) {
-        setError(data.error ?? "The audit failed — please try again.");
+        setError(response.status === 429 ? "Too many audits in a short time — please wait a minute and try again." : data.error ?? "The audit failed — please try again.");
         return;
       }
 
-      setResult({ url: data.url, scores: data.scores });
+      setResult({ url: data.url, scores: data.scores, source: data.source ?? "quick-check", checks: data.checks ?? [] });
     } catch {
       setError("Network error — please check your connection and try again.");
     } finally {
@@ -110,7 +130,7 @@ export function AuditForm() {
           />
         </div>
 
-        <label className="flex items-start gap-3 text-sm leading-6"><input type="checkbox" required checked={auditConsent} onChange={event => setAuditConsent(event.target.checked)} className="mt-1 h-5 w-5 shrink-0" /><span>Send this public website URL to Google PageSpeed to run the audit. Do not enter a private or token-bearing URL. No email address is required.</span></label>
+        <label className="flex items-start gap-3 text-sm leading-6"><input type="checkbox" required checked={auditConsent} onChange={event => setAuditConsent(event.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-[var(--primary)]" /><span>I agree that this public website address is analysed by Mistravora and, where available, Google PageSpeed. Do not enter a private or token-bearing URL. No email address is required.</span></label>
 
         {error ? (
           <p role="alert" className="text-sm text-red-500">
@@ -118,18 +138,19 @@ export function AuditForm() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={loading}>
-          {loading ? "Analyzing… (up to 30s)" : "Run free audit"}
+        <Button type="submit" disabled={loading} aria-busy={loading}>
+          {loading ? "Analysing… (this can take up to a minute)" : "Run free audit"}
         </Button>
       </form>
 
       {result ? (
         <div className="flex flex-col gap-6 rounded-xl border border-border bg-card p-6">
           <div>
-            <h2 className="font-semibold">Results for {result.url}</h2>
+            <h2 className="font-semibold break-all">Results for {result.url}</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Mobile Lighthouse scores — 90+ is excellent, 50–89 needs work,
-              below 50 is costing you customers.
+              {result.source === "lighthouse"
+                ? "Mobile Google Lighthouse scores — 90+ is excellent, 50–89 needs work, below 50 is costing you customers."
+                : "Quick on-page check of SEO, accessibility, best-practice and performance signals. 90+ is excellent, 50–89 needs work."}
             </p>
           </div>
 
@@ -145,6 +166,8 @@ export function AuditForm() {
             />
             <ScoreDonut label="SEO" score={result.scores.seo} />
           </div>
+
+          {result.checks.length > 0 && <AuditChecks checks={result.checks} />}
 
           <Button asChild>
             <a

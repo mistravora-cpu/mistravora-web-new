@@ -37,22 +37,47 @@ export function RobotHeroClient({ hero, description }: { hero?: HeroSection | nu
     let cancelled = false;
     let rafId = 0;
     let idleId: number | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const start = () => {
+      if (cancelled) return;
+      cancelled = true;
+      cleanupTriggers();
+      setIsVisible(true);
+    };
+    // Phones have far less CPU: keep the main thread free for the headline and
+    // buttons, then start the robot on the first touch/scroll or shortly after
+    // the page has finished loading — whichever comes first.
+    const mobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+    const triggers = ["pointerdown", "touchstart", "scroll", "keydown", "wheel"] as const;
+    function cleanupTriggers() {
+      for (const name of triggers) window.removeEventListener(name, start);
+      window.removeEventListener("load", afterLoad);
+    }
+    function afterLoad() { timer = setTimeout(start, 4000); }
     const afterFonts = () => {
       if (cancelled) return;
       rafId = requestAnimationFrame(() => {
         rafId = requestAnimationFrame(() => {
           if (cancelled) return;
           if (typeof requestIdleCallback === "function") {
-            idleId = requestIdleCallback(() => setIsVisible(true), { timeout: 2000 });
-          } else setIsVisible(true);
+            idleId = requestIdleCallback(start, { timeout: 2000 });
+          } else start();
         });
       });
     };
-    // Font loading errors settle this promise as well; the robot still starts
-    // automatically with the browser's fallback font on every connection.
-    void (document.fonts?.ready ?? Promise.resolve()).then(afterFonts, afterFonts);
+    if (mobile) {
+      for (const name of triggers) window.addEventListener(name, start, { once: true, passive: true });
+      if (document.readyState === "complete") afterLoad();
+      else window.addEventListener("load", afterLoad, { once: true });
+    } else {
+      // Font loading errors settle this promise as well; the robot still starts
+      // automatically with the browser's fallback font on every connection.
+      void (document.fonts?.ready ?? Promise.resolve()).then(afterFonts, afterFonts);
+    }
     return () => {
       cancelled = true;
+      cleanupTriggers();
+      clearTimeout(timer);
       cancelAnimationFrame(rafId);
       if (idleId !== undefined) cancelIdleCallback(idleId);
     };

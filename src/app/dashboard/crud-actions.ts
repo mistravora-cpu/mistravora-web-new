@@ -47,10 +47,7 @@ async function verifyAdmin() {
 // admin session can only mutate these explicitly-allowed tables.
 const ALLOWED_TABLES = new Set([
   // Parent content tables
-  "booking_slots",
-  "bookings",
   "page_seo",
-  "email_campaigns",
   "inquiries",
   "newsletter_subscribers",
   "solutions",
@@ -256,9 +253,6 @@ export async function upsertRow(
       if (parentData[key] && !/^[+\d\s()-]+$/.test(String(parentData[key]))) return { error: "Phone numbers may contain only digits, spaces, +, parentheses and hyphens." };
     }
   }
-  if (table === "bookings" && (!id || Object.keys(parentData).some(key => !["name", "email", "message", "status"].includes(key)))) return { error: "Bookings must be created through the booking form." };
-  if (table === "email_campaigns" && !["draft", "scheduled", "paused"].includes(String(parentData.status))) return { error: "Invalid campaign status" };
-  if (table === "email_campaigns" && parentData.status === "scheduled" && (!parentData.scheduled_at || !Number.isFinite(Date.parse(String(parentData.scheduled_at))))) return { error: "Provide a valid schedule before scheduling delivery." };
   let parentId: string | undefined = id;
   // Read the old public URL before a rename, unpublish or delete. Indexing
   // service failures must never prevent an authorized content save.

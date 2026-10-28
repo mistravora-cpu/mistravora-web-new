@@ -12,7 +12,10 @@ export const dynamicParams = false;
 export function generateStaticParams() { return Object.keys(collections).filter(section => section !== "solutions").map(section => ({ section })); }
 export async function generateMetadata({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params; if (!isCollection(section)) notFound();
-  return applySeoOverrides(pageMetadata(collections[section].title, collections[section].description, `/${section}`));
+  const metadata = await applySeoOverrides(pageMetadata(collections[section].title, collections[section].description, `/${section}`));
+  // Keep empty catalogues out of search results until content is published.
+  const empty = (await getCollection(section).catch(() => [{}])).length === 0;
+  return empty ? { ...metadata, robots: { index: false, follow: true } } : metadata;
 }
 export default async function CollectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params; if (!isCollection(section)) notFound();
